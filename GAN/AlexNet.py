@@ -209,7 +209,7 @@ def resize_imgs(imgset):
 
         list_.append(resized_img)
 
-        if index > 10000:
+        if index >= 10000:
             break
 
     return np.stack(list_)
@@ -246,18 +246,17 @@ if __name__ == "__main__":
     
     # Compile the model
     adam_optimizer = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+    model = multi_gpu_model(model, gpus=2)
     model.compile(
         optimizer=adam_optimizer,
         loss='categorical_crossentropy',
         metrics=['accuracy']
     )
 
-    model = multi_gpu_model(model, gpus=2)
-
-    # model.fit(
-    #     x=trainX,
-    #     y=trainY,
-    #     batch_size=8,
-    #     verbose=2,
-    #     validation_data=(testX, testY)
-    # )
+    model.fit(
+        x=trainX,
+        y=trainY,
+        batch_size=8,
+        verbose=2,
+        validation_data=(testX, testY)
+    )
