@@ -4,3 +4,10 @@
 - Develop adversary to trick model that the 2nd most likely class is the actual class.
 - Learn what features the adversary is transforming to make the model incorrect.
 - Try to translate those features to more understandable features.
+
+
+- Train the north america dataset
+    - Parent class: Last word in the name
+    - Everything else is the name of its subclass
+    - Train a network on both at the same time.
+        - Should output both classes.

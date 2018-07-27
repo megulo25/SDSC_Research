@@ -228,9 +228,16 @@ if __name__ == "__main__":
     trainY = trainY[:trainX.shape[0]]
     testY = testY[:testY.shape[0]]
 
+    print("Input Shape:")
     print(trainX.shape)
     print(testX.shape)
 
+    print("Label Shape:")
+    print(trainY.shape)
+    print(testY.shape)
+
+    import time
+    time.sleep(5000)
     # Normalize data
     mean = np.mean(trainX, axis=0)
     trainX -= mean
