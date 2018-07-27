@@ -229,3 +229,11 @@ if __name__ == "__main__":
 
     model = AlexNet(num_classes=num_classes)
     model = multi_gpu_model(model, gpus=2)
+
+    model.fit(
+        x=trainX,
+        y=trainY,
+        batch_size=8,
+        verbose=2,
+        validation_data=(testX, testY)
+    )
