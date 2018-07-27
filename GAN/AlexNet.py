@@ -80,7 +80,7 @@ from keras.utils.training_utils import multi_gpu_model
 from keras.datasets import cifar10
 from sklearn.preprocessing import LabelBinarizer
 import numpy as np
-import sys
+import cv2
 
 
 # Construct AlexNet
@@ -196,22 +196,34 @@ def AlexNet(num_classes):
         )
     )
 
-    # Compile the model
-    adam_optimizer = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
-    model.compile(
-        optimizer=adam_optimizer,
-        loss='categorical_crossentropy',
-        metrics=['accuracy']
-    )
-
     return model
 
+
+def resize_imgs(imgset):
+
+    list_ = []
+
+    for img in imgset:
+
+        resized_img = cv2.resize(img, (227, 227))
+
+        list_.append(resized_img)
+
+    return np.stack(list_)
+33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333
 if __name__ == "__main__":
 
     # Import dataset
     ((trainX, trainY), (testX, testY)) = cifar10.load_data()
     trainX = trainX.astype("float")
     testX = testX.astype("float")
+
+    # Resize Training and testing sets
+    trainX = resize_imgs(trainX)
+    testX = resize_imgs(testX)
+33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333
+    print(trainX.shape)
+    print(testX.shape)
 
     # Normalize data
     mean = np.mean(trainX, axis=0)
@@ -228,12 +240,21 @@ if __name__ == "__main__":
     print("Number of classes: {0}".format(num_classes))
 
     model = AlexNet(num_classes=num_classes)
-    model = multi_gpu_model(model, gpus=2)
-
-    model.fit(
-        x=trainX,
-        y=trainY,
-        batch_size=8,
-        verbose=2,
-        validation_data=(testX, testY)
+    
+    # Compile the model
+    adam_optimizer = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+    model.compile(
+        optimizer=adam_optimizer,
+        loss='categorical_crossentropy',
+        metrics=['accuracy']
     )
+
+    # model = multi_gpu_model(model, gpus=2)
+
+    # model.fit(
+    #     x=trainX,
+    #     y=trainY,
+    #     batch_size=8,
+    #     verbose=2,
+    #     validation_data=(testX, testY)
+    # )
