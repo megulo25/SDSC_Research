@@ -209,7 +209,7 @@ def resize_imgs(imgset):
 
         list_.append(resized_img)
 
-        if index >= 10000:
+        if index >= 30000:
             break
 
     return np.stack(list_)
@@ -224,6 +224,9 @@ if __name__ == "__main__":
     # Resize Training and testing sets
     trainX = resize_imgs(trainX)
     testX = resize_imgs(testX)
+
+    trainY = trainY[:trainX.shape[0]]
+    testY = testY[:testY.shape[0]]
 
     print(trainX.shape)
     print(testX.shape)
