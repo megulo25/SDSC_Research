@@ -1,9 +1,6 @@
-- Create an empty numpy array of size that will hold all of the resized images.
-- Train AlexNet on Cifar-10 resized
-- Adjust for better accuracy.
-- Develop adversary to trick model that the 2nd most likely class is the actual class.
-- Learn what features the adversary is transforming to make the model incorrect.
-- Try to translate those features to more understandable features.
+- Get the training set up with keras' checkpoint callback function. 
+- The model will only save a checkpoint when there is improvement.
+- Good Link: https://machinelearningmastery.com/check-point-deep-learning-models-keras/
 
 
 - Train the north america dataset

@@ -74,6 +74,7 @@ Input takes in images that are 227x227x3
 from keras import Sequential, optimizers, losses
 from keras.layers.convolutional import Conv2D
 from keras.layers.convolutional import MaxPooling2D
+from keras.preprocessing.image import ImageDataGenerator
 from keras.layers import Flatten
 from keras.layers.core import Dense
 from keras.utils.training_utils import multi_gpu_model
@@ -241,6 +242,17 @@ if __name__ == "__main__":
     trainX -= mean
     testX -= mean
 
+    # Construct the image generator for data augmentation and construct the
+    # set of callbacks.
+    aug = ImageDataGenerator(
+        width_shift_range=0.1,
+        horizontal_shift_range=0.1,
+        horizontal_flip=True,
+        fill_mode="nearest"
+    )
+
+    aug.fit(trainX)
+
     # Convert the labels from integers to vectors
     lb = LabelBinarizer()
     trainY = lb.fit_transform(trainY)
@@ -261,10 +273,14 @@ if __name__ == "__main__":
         metrics=['accuracy']
     )
 
-    model.fit(
-        x=trainX,
-        y=trainY,
-        batch_size=8,
-        verbose=2,
-        validation_data=(testX, testY)
+    model.fit_generator(
+        aug.flow(
+            x=trainX,
+            y=trainY,
+            batch_size=32,  
+        ),
+        validation_data=(testX, testY),
+        epochs=70,
+        steps_per_epoch=trainX.shape[0]//128,
+        verbose=2
     )
