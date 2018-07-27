@@ -203,11 +203,14 @@ def resize_imgs(imgset):
 
     list_ = []
 
-    for img in imgset:
+    for index, img in enumerate(imgset):
 
         resized_img = cv2.resize(img, (227, 227))
 
         list_.append(resized_img)
+
+        if index > 10000:
+            break
 
     return np.stack(list_)
 
