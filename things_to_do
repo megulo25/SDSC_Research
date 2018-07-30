@@ -1,6 +1,9 @@
 - Get the training set up with keras' checkpoint callback function. 
 - The model will only save a checkpoint when there is improvement.
-- Good Link: https://machinelearningmastery.com/check-point-deep-learning-models-keras/
+- Good Link: 
+    * https://machinelearningmastery.com/check-point-deep-learning-models-keras/
+    * https://keras.io/callbacks/#modelcheckpoint
+    * https://keras.io/preprocessing/image/
 
 
 - Train the north america dataset

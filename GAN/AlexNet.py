@@ -71,21 +71,12 @@ Input takes in images that are 227x227x3
 
 12. Softmax
 """
-from keras import Sequential, optimizers, losses
-from keras.layers.convolutional import Conv2D
-from keras.layers.convolutional import MaxPooling2D
-from keras.preprocessing.image import ImageDataGenerator
+from keras import Sequential
+from keras.layers.convolutional import Conv2D, MaxPooling2D
 from keras.layers import Flatten
 from keras.layers.core import Dense
-from keras.utils.training_utils import multi_gpu_model
-from keras.datasets import cifar10
-from sklearn.preprocessing import LabelBinarizer
-import numpy as np
-import cv2
-
 
 # Construct AlexNet
-
 def AlexNet(num_classes):
 
     # Initialize model
@@ -198,89 +189,3 @@ def AlexNet(num_classes):
     )
 
     return model
-
-
-def resize_imgs(imgset):
-
-    list_ = []
-
-    for index, img in enumerate(imgset):
-
-        resized_img = cv2.resize(img, (227, 227))
-
-        list_.append(resized_img)
-
-        if index >= 30000:
-            break
-
-    return np.stack(list_)
-
-if __name__ == "__main__":
-
-    # Import dataset
-    ((trainX, trainY), (testX, testY)) = cifar10.load_data()
-    trainX = trainX.astype("float")
-    testX = testX.astype("float")
-
-    # Resize Training and testing sets
-    trainX = resize_imgs(trainX)
-    testX = resize_imgs(testX)
-
-    trainY = trainY[:trainX.shape[0]]
-    testY = testY[:testY.shape[0]]
-
-    print("Input Shape:")
-    print(trainX.shape)
-    print(testX.shape)
-
-    print("Label Shape:")
-    print(trainY.shape)
-    print(testY.shape)
-
-    # Normalize data
-    mean = np.mean(trainX, axis=0)
-    trainX -= mean
-    testX -= mean
-
-    # Construct the image generator for data augmentation and construct the
-    # set of callbacks.
-    aug = ImageDataGenerator(
-        width_shift_range=0.1,
-        horizontal_shift_range=0.1,
-        horizontal_flip=True,
-        fill_mode="nearest"
-    )
-
-    aug.fit(trainX)
-
-    # Convert the labels from integers to vectors
-    lb = LabelBinarizer()
-    trainY = lb.fit_transform(trainY)
-    testY = lb.transform(testY)
-
-    num_classes = trainY.shape[1]
-
-    print("Number of classes: {0}".format(num_classes))
-
-    model = AlexNet(num_classes=num_classes)
-    
-    # Compile the model
-    adam_optimizer = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
-    model = multi_gpu_model(model, gpus=2)
-    model.compile(
-        optimizer=adam_optimizer,
-        loss='categorical_crossentropy',
-        metrics=['accuracy']
-    )
-
-    model.fit_generator(
-        aug.flow(
-            x=trainX,
-            y=trainY,
-            batch_size=32,  
-        ),
-        validation_data=(testX, testY),
-        epochs=70,
-        steps_per_epoch=trainX.shape[0]//128,
-        verbose=2
-    )
