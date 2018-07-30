@@ -1,4 +1,5 @@
 from keras.utils.training_utils import multi_gpu_model
+from keras.callbacks import ModelCheckpoint
 from AlexNet import AlexNet
 
 # Import data
@@ -21,6 +22,16 @@ model.compile(
     metrics=['accuracy']
 )
 
+# Checkpoint
+filepath = "weights-best.hdf5"
+checkpoint = ModelCheckpoint(
+    filepath=filepath,
+    monitor='val_acc',
+    verbose=2,
+    save_best_only=True,
+    mode='max'
+)
+
 # Train
 model.fit(
     x=x,
@@ -29,5 +40,6 @@ model.fit(
     epochs=70,
     verbose=2,
     validation_split=0.2,
-    shuffle=True
+    shuffle=True,
+    callbacks=[checkpoint]
 )
