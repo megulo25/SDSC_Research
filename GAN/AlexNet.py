@@ -73,6 +73,7 @@ Input takes in images that are 227x227x3
 """
 from keras import Sequential
 from keras.layers.convolutional import Conv2D, MaxPooling2D
+from keras.layers.normalization import BatchNormalization
 from keras.layers import Flatten
 from keras.layers.core import Dense
 
@@ -90,7 +91,7 @@ def AlexNet(num_classes):
             strides=(4,4),
             activation='relu',
             padding='valid',
-            input_shape=(227, 227, 3)
+            input_shape=(224, 224, 3)
         )
     )
 
@@ -102,6 +103,8 @@ def AlexNet(num_classes):
             padding='valid'
         )
     )
+
+    model.add(BatchNormalization())
     
     # 3. Convolution
     model.add(
@@ -121,6 +124,7 @@ def AlexNet(num_classes):
             padding='valid'
         )
     )
+    model.add(BatchNormalization())
 
     # 5. Convolution
     model.add(
@@ -131,6 +135,7 @@ def AlexNet(num_classes):
             padding='same'
         )
     )
+    model.add(BatchNormalization())
 
     # 6. Convolution
     model.add(
@@ -141,6 +146,7 @@ def AlexNet(num_classes):
             padding='same'
         )
     )
+    model.add(BatchNormalization())
 
     # 7. Convolution
     model.add(
@@ -160,6 +166,7 @@ def AlexNet(num_classes):
             padding='valid'
         )
     )
+    model.add(BatchNormalization())
 
     # 9. Flatten to a Fully-Connected Layer
     model.add(Flatten())
@@ -171,6 +178,7 @@ def AlexNet(num_classes):
             activation='relu'
         )
     )
+    model.add(BatchNormalization())
 
     # 11. Fully-Connected Layer
     model.add(
@@ -179,6 +187,7 @@ def AlexNet(num_classes):
             activation='relu'
         )
     )
+    model.add(BatchNormalization())
 
     # 12. Softmax
     model.add(
