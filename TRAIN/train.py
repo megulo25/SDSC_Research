@@ -32,7 +32,7 @@ model.summary()
 
 
 # Make multi-gpu compatible
-# model = multi_gpu_model(model=model, gpus=2)
+model = multi_gpu_model(model=model, gpus=2)
 
 #-----------------------------------------------------------------------------------------------#
 # Image Pre-processing
