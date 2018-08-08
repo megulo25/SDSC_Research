@@ -27,7 +27,8 @@ if resp == 'n':
 
 #-----------------------------------------------------------------------------------------------#
 # Import AlexNet
-model = AlexNet(num_classes=557)
+class_count = 557
+model = AlexNet(num_classes=class_count)
 
 # Output Model Summary
 model.summary()
@@ -68,7 +69,6 @@ validation_generator = test_datagen.flow_from_directory(
 )
 
 #-----------------------------------------------------------------------------------------------#
-
 # Optimizer
 from keras import optimizers
 sgd = optimizers.SGD(lr=0.001, momentum=0.9)
