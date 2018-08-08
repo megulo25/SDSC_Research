@@ -1,3 +1,7 @@
+Things to do:
+- Finish code that will output confusion matrix
+- Finish code that will generate heatmap.
+
 1. Train model
 2. Output image with predicted class and true class
 3. Output confusion matrix 

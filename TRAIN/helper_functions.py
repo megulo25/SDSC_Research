@@ -2,6 +2,10 @@ import os
 from shutil import copyfile
 from random import sample
 from math import floor
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
+import itertools
 
 
 def split_train_test_dir(dir_of_data, train_percentage):
@@ -123,3 +127,37 @@ def move_files(list_, base_dir, flag):
         output_full_path = os.path.join(part_1_dir, flag, part_2_dir, filename)
 
         copyfile(input_full_path, output_full_path)
+
+def plot_confusion_matrix(confusion_matrix, 
+                            classes, 
+                            normalize=False, 
+                            title='Confusion Matrix', 
+                            cmap=plt.cm.Blues):
+
+    if normalize:
+        confusion_matrix = confusion_matrix.astype('float') / confusion_matrix.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")
+    else:
+        print('Confusion matrix, without normalization')
+
+
+    plt.imshow(confusion_matrix, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+
+    fmt = '.2f' if normalize else 'd'
+
+    thresh = confusion_matrix.max() / 2.
+
+    for i, j in itertools.product(range(confusion_matrix.shape[0]), range(confusion_matrix.shape[1])):
+        plt.text(j, i, format(confusion_matrix[i, j], fmt),
+                horizontalalignment="center",
+                color="white" if confusion_matrix[i, j] > thresh else "black")
+
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')

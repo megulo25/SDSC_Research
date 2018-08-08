@@ -4,16 +4,13 @@ from helper_functions import split_train_test_dir
 from AlexNet import AlexNet
 import numpy as np
 import os
-import cv2
 
 #-----------------------------------------------------------------------------------------------#
 # Split to training and testing set
 full_path_to_data = os.path.join(os.getcwd(), 'data', 'nabirds', 'images')
 training_percentage = 0.7
 
-message = """
-Have you already split the images to train and test folders? (y/n)
-"""
+message = "Have you already split the images to train and test folders? (y/n): "
 resp = input(message)
 resp = resp.lower()
 
@@ -51,10 +48,9 @@ train_datagen = ImageDataGenerator(width_shift_range=0.1,
 train_generator = train_datagen.flow_from_directory(
     directory='data/nabirds/images/train',
     target_size=(227,227),
-    batch_size=16,
+    batch_size=1,
     class_mode='categorical'
 )
-
 
 # Validation Generator
 test_datagen = ImageDataGenerator(
@@ -64,7 +60,7 @@ test_datagen = ImageDataGenerator(
 validation_generator = test_datagen.flow_from_directory(
     directory='data/nabirds/images/test',
     target_size=(227,227),
-    batch_size=16,
+    batch_size=1,
     class_mode='categorical'
 )
 
@@ -86,7 +82,7 @@ model.compile(
 model.fit_generator(
     train_generator,
     validation_data=validation_generator,
-    epochs=5,
+    epochs=1,
     verbose=2
 )
 print("Training complete!\n")
