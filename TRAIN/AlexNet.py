@@ -91,7 +91,7 @@ def AlexNet(num_classes):
             strides=(4,4),
             activation='relu',
             padding='valid',
-            input_shape=(224, 224, 3)
+            input_shape=(227, 227, 3)
         )
     )
 

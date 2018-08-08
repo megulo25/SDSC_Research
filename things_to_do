@@ -1,3 +1,8 @@
+1. Train model
+2. Output image with predicted class and true class
+3. Output confusion matrix 
+4. Output Heat Map
+
 - Get the training set up with keras' checkpoint callback function. 
 - The model will only save a checkpoint when there is improvement.
 - Good Link: 
@@ -5,9 +10,21 @@
     * https://keras.io/callbacks/#modelcheckpoint
     * https://keras.io/preprocessing/image/
 
+- Got an accurate model!
+- Now test the model by learning how to use model.predict_generator because fit_generator was used for training.
 
 - Train the north america dataset
     - Parent class: Last word in the name
     - Everything else is the name of its subclass
     - Train a network on both at the same time.
         - Should output both classes.
+
+
+- Have a confusion matrix
+    - 400 x 400 matrix of predicted vs true classes
+    - Use scikit-learn: http://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html
+
+- Heatmap of the image. Highlight important pixels in image.
+    * http://heatmapping.org/
+    
+
