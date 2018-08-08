@@ -17,7 +17,7 @@ Have you already split the images to train and test folders? (y/n)
 resp = input(message)
 resp = resp.lower()
 
-if resp == 'n'
+if resp == 'n':
     print('Spliting data into training and testing folders...')
     split_train_test_dir(
         dir_of_data=full_path_to_data,
@@ -26,18 +26,8 @@ if resp == 'n'
     print('Split Completed!')
 
 #-----------------------------------------------------------------------------------------------#
-# Convert all images to 227x227
-print("Resizing the images for AlexNet...")
-
-
-#-----------------------------------------------------------------------------------------------#
-# Split to train and test sets
-from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(x,y,test_size=0.30)
-
-#-----------------------------------------------------------------------------------------------#
 # Import AlexNet
-model = AlexNet(num_classes=17)
+model = AlexNet(num_classes=557)
 
 # Output Model Summary
 model.summary()
@@ -95,8 +85,8 @@ model.compile(
 # Train
 model.fit_generator(
     train_generator,
-    validation_data=(X_test, y_test),
-    epochs=70,
+    validation_data=validation_generator,
+    epochs=5,
     verbose=2
 )
 print("Training complete!\n")
