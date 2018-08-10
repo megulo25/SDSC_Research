@@ -1,5 +1,4 @@
 from keras.utils.training_utils import multi_gpu_model
-from keras.callbacks import ModelCheckpoint
 from helper_functions import split_train_test_dir
 from AlexNet import AlexNet
 import numpy as np
@@ -8,7 +7,7 @@ import os
 #-----------------------------------------------------------------------------------------------#
 # Split to training and testing set
 full_path_to_data = os.path.join(os.getcwd(), 'data', 'nabirds', 'images')
-training_percentage = 0.7
+training_percentage = 0.99
 
 message = "Have you already split the images to train and test folders? (y/n): "
 resp = input(message)
@@ -32,7 +31,7 @@ model.summary()
 
 
 # Make multi-gpu compatible
-model = multi_gpu_model(model=model, gpus=2)
+# model = multi_gpu_model(model=model, gpus=2)
 
 #-----------------------------------------------------------------------------------------------#
 # Image Pre-processing
@@ -82,12 +81,13 @@ model.compile(
 print('Training Model!')
 import time
 t = time.time()
-model.fit_generator(
+history = model.fit_generator(
     train_generator,
     validation_data=validation_generator,
     epochs=1,
     verbose=2
 )
+np.save('history.npy', history)
 print("Training complete!\nTime: {0}secs".format(time.time()-t))
 
 #-----------------------------------------------------------------------------------------------#
