@@ -4,3 +4,4 @@ data
 *.json
 *.pdf
 mnist
+history_data
