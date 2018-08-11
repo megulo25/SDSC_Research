@@ -84,12 +84,18 @@ t = time.time()
 history = model.fit_generator(
     train_generator,
     validation_data=validation_generator,
-    epochs=1,
+    epochs=50,
     verbose=2
 )
-np.save('history.npy', history)
 print("Training complete!\nTime: {0}secs".format(time.time()-t))
 
+#-----------------------------------------------------------------------------------------------#
+# Save training accuracy and testing accuracy:
+acc = history.history['acc']
+val_acc = history.history['val_acc']
+
+np.save('acc.npy', acc)
+np.save('val_acc.npy', val_acc)
 #-----------------------------------------------------------------------------------------------#
 # Save the weights
 model.save_weights('model_weights.h5')

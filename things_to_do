@@ -1,6 +1,10 @@
 Things to do:
+check alexnet running on server.
+get set up on cluster of 8 gpus.
+
 - Finish code that will output confusion matrix
 - Finish code that will generate heatmap.
+- Consider getting other networks (ResNet) for training.
 
 1. Train model
 2. Output image with predicted class and true class
