@@ -47,7 +47,7 @@ train_datagen = ImageDataGenerator(width_shift_range=0.1,
 train_generator = train_datagen.flow_from_directory(
     directory='data/nabirds/images/train',
     target_size=(227,227),
-    batch_size=1,
+    batch_size=64,
     class_mode='categorical'
 )
 
