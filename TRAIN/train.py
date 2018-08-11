@@ -97,11 +97,11 @@ val_acc = history.history['val_acc']
 train_loss = history.history['loss']
 val_loss = history.history['val_loss']
 
-np.save('train_acc.npy', train_acc)
-np.save('val_acc.npy', val_acc)
+np.save('./history_data/train_acc.npy', train_acc)
+np.save('./history_data/val_acc.npy', val_acc)
 
-np.save('train_loss.npy', train_loss)
-np.save('val_loss.npy', val_loss)
+np.save('./history_data/train_loss.npy', train_loss)
+np.save('./history_data/val_loss.npy', val_loss)
 #-----------------------------------------------------------------------------------------------#
 # Save the weights
 model.save_weights('model_weights.h5')
