@@ -3,3 +3,4 @@ data
 *.h5
 *.json
 *.pdf
+mnist
