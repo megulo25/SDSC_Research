@@ -91,11 +91,17 @@ print("Training complete!\nTime: {0}secs".format(time.time()-t))
 
 #-----------------------------------------------------------------------------------------------#
 # Save training accuracy and testing accuracy:
-acc = history.history['acc']
+train_acc = history.history['acc']
 val_acc = history.history['val_acc']
 
-np.save('acc.npy', acc)
+train_loss = history.history['loss']
+val_loss = history.history['val_loss']
+
+np.save('train_acc.npy', train_acc)
 np.save('val_acc.npy', val_acc)
+
+np.save('train_loss.npy', train_loss)
+np.save('val_loss.npy', val_loss)
 #-----------------------------------------------------------------------------------------------#
 # Save the weights
 model.save_weights('model_weights.h5')
