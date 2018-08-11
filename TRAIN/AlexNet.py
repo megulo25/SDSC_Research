@@ -104,8 +104,8 @@ def AlexNet(num_classes):
             padding='valid'
         )
     )
-    model.add(Dropout(0.4))
-    model.add(BatchNormalization())
+    # model.add(Dropout(0.4))
+    # model.add(BatchNormalization())
     
     # 3. Convolution
     model.add(
@@ -125,8 +125,8 @@ def AlexNet(num_classes):
             padding='valid'
         )
     )
-    model.add(Dropout(0.4))
-    model.add(BatchNormalization())
+    # model.add(Dropout(0.4))
+    # model.add(BatchNormalization())
 
     # 5. Convolution
     model.add(
@@ -137,8 +137,8 @@ def AlexNet(num_classes):
             padding='same'
         )
     )
-    model.add(Dropout(0.4))
-    model.add(BatchNormalization())
+    # model.add(Dropout(0.4))
+    # model.add(BatchNormalization())
 
     # 6. Convolution
     model.add(
@@ -149,8 +149,8 @@ def AlexNet(num_classes):
             padding='same'
         )
     )
-    model.add(Dropout(0.4))
-    model.add(BatchNormalization())
+    # model.add(Dropout(0.4))
+    # model.add(BatchNormalization())
 
     # 7. Convolution
     model.add(
@@ -170,8 +170,8 @@ def AlexNet(num_classes):
             padding='valid'
         )
     )
-    model.add(Dropout(0.4))
-    model.add(BatchNormalization())
+    # model.add(Dropout(0.4))
+    # model.add(BatchNormalization())
 
     # 9. Flatten to a Fully-Connected Layer
     model.add(Flatten())
@@ -183,8 +183,8 @@ def AlexNet(num_classes):
             activation='relu'
         )
     )
-    model.add(Dropout(0.4))
-    model.add(BatchNormalization())
+    # model.add(Dropout(0.4))
+    # model.add(BatchNormalization())
 
     # 11. Fully-Connected Layer
     model.add(
@@ -193,8 +193,8 @@ def AlexNet(num_classes):
             activation='relu'
         )
     )
-    model.add(Dropout(0.4))
-    model.add(BatchNormalization())
+    # model.add(Dropout(0.4))
+    # model.add(BatchNormalization())
 
     # 12. Softmax
     model.add(
