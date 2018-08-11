@@ -7,7 +7,7 @@ import os
 #-----------------------------------------------------------------------------------------------#
 # Split to training and testing set
 full_path_to_data = os.path.join(os.getcwd(), 'data', 'nabirds', 'images')
-training_percentage = 0.99
+training_percentage = 0.7
 
 message = "Have you already split the images to train and test folders? (y/n): "
 resp = input(message)
