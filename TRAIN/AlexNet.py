@@ -3,6 +3,7 @@
 Network Architecture:
 # Contains 60 million parameters
 # Activation: RELU
+# Added dropout: 0.4 (happens after pooling)
 
 Input takes in images that are 227x227x3
 
@@ -74,7 +75,7 @@ Input takes in images that are 227x227x3
 from keras import Sequential
 from keras.layers.convolutional import Conv2D, MaxPooling2D
 from keras.layers.normalization import BatchNormalization
-from keras.layers import Flatten
+from keras.layers import Flatten, Dropout
 from keras.layers.core import Dense
 
 # Construct AlexNet
@@ -103,7 +104,7 @@ def AlexNet(num_classes):
             padding='valid'
         )
     )
-
+    model.add(Dropout(0.4))
     model.add(BatchNormalization())
     
     # 3. Convolution
@@ -124,6 +125,7 @@ def AlexNet(num_classes):
             padding='valid'
         )
     )
+    model.add(Dropout(0.4))
     model.add(BatchNormalization())
 
     # 5. Convolution
@@ -135,6 +137,7 @@ def AlexNet(num_classes):
             padding='same'
         )
     )
+    model.add(Dropout(0.4))
     model.add(BatchNormalization())
 
     # 6. Convolution
@@ -146,6 +149,7 @@ def AlexNet(num_classes):
             padding='same'
         )
     )
+    model.add(Dropout(0.4))
     model.add(BatchNormalization())
 
     # 7. Convolution
@@ -166,6 +170,7 @@ def AlexNet(num_classes):
             padding='valid'
         )
     )
+    model.add(Dropout(0.4))
     model.add(BatchNormalization())
 
     # 9. Flatten to a Fully-Connected Layer
@@ -178,6 +183,7 @@ def AlexNet(num_classes):
             activation='relu'
         )
     )
+    model.add(Dropout(0.4))
     model.add(BatchNormalization())
 
     # 11. Fully-Connected Layer
@@ -187,6 +193,7 @@ def AlexNet(num_classes):
             activation='relu'
         )
     )
+    model.add(Dropout(0.4))
     model.add(BatchNormalization())
 
     # 12. Softmax
