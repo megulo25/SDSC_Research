@@ -31,7 +31,11 @@ test_generator =  test_datagen.flow_from_directory(
 #--------------------------------------------------------------------------------------------#
 # Run Model on test data:
 y_pred = model.predict_generator(test_generator)
-
+y_test_list = test_generator.filenames
+y_test = []
+for item in y_test_list:
+    item_adj = item[:4]
+    y_test.append(item_adj)
 #--------------------------------------------------------------------------------------------#
 # Compute confusion matrix
 cnf_matrix = confusion_matrix(y_test, y_pred)

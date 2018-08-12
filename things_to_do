@@ -8,6 +8,7 @@ get set up on cluster of 8 gpus.
 
 1. Train model
 2. Output image with predicted class and true class
+3. Implement 'two-headed monster' that would output the parent and child class of input.
 3. Output confusion matrix 
 4. Output Heat Map
 
@@ -34,3 +35,4 @@ get set up on cluster of 8 gpus.
 
 - Heatmap of the image. Highlight important pixels in image.
     * http://heatmapping.org/
+

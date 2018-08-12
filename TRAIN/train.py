@@ -59,7 +59,7 @@ train_datagen = ImageDataGenerator(width_shift_range=0.1,
 train_generator = train_datagen.flow_from_directory(
     directory='data/nabirds/images/train',
     target_size=(224,224),
-    batch_size=64,
+    batch_size=int(64*2),
     class_mode='categorical'
 )
 
@@ -96,7 +96,7 @@ t = time.time()
 history = model.fit_generator(
     train_generator,
     validation_data=validation_generator,
-    epochs=30,
+    epochs=50,
     verbose=2
 )
 print("Training complete!\nTime: {0}secs".format(time.time()-t))
