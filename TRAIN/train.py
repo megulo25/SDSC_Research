@@ -53,7 +53,6 @@ train_datagen = ImageDataGenerator(width_shift_range=0.1,
                                     shear_range=0.2,
                                     zoom_range=0.2,
                                     zca_epsilon=1e-6,
-                                    zca_whitening=True,
                                     fill_mode="nearest")
 
 
