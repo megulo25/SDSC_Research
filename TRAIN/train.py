@@ -26,14 +26,13 @@ if resp == 'n':
 class_count = 557
 # model = AlexNet(num_classes=class_count)
 
-# Import Resnet50
-from keras.applications.resnet50 import ResNet50
-model = ResNet50(weights=None, classes=class_count)
+# Import InceptionNet
+from keras.applications.inception_resnet_v2 import InceptionResNetV2
+model = InceptionResNetV2(weights=None, classes=class_count)
 
 
 # Output Model Summary
 model.summary()
-
 
 # Make multi-gpu compatible
 model = multi_gpu_model(model=model, gpus=2)
@@ -51,8 +50,8 @@ train_datagen = ImageDataGenerator(width_shift_range=0.1,
 
 train_generator = train_datagen.flow_from_directory(
     directory='data/nabirds/images/train',
-    target_size=(227,227),
-    batch_size=64*4,
+    target_size=(224,224),
+    batch_size=64,
     class_mode='categorical'
 )
 
@@ -63,7 +62,7 @@ test_datagen = ImageDataGenerator(
 
 validation_generator = test_datagen.flow_from_directory(
     directory='data/nabirds/images/test',
-    target_size=(227,227),
+    target_size=(224,224),
     batch_size=1,
     class_mode='categorical'
 )
