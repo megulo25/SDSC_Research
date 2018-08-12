@@ -45,6 +45,15 @@ from keras.preprocessing.image import ImageDataGenerator
 train_datagen = ImageDataGenerator(width_shift_range=0.1,
                                     height_shift_range=0.1,
                                     horizontal_flip=True,
+                                    vertical_flip=True,
+                                    rescale=1./255,
+                                    featurewise_center=True,
+                                    featurewise_std_normalization=True,
+                                    rotation_range=20,
+                                    shear_range=0.2,
+                                    zoom_range=0.2,
+                                    zca_epsilon=1e-6,
+                                    zca_whitening=True,
                                     fill_mode="nearest")
 
 

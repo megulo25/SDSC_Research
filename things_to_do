@@ -1,5 +1,5 @@
 Things to do:
-check alexnet running on server.
+transform all the images and save them. Flip, add noise, etc.
 get set up on cluster of 8 gpus.
 
 - Finish code that will output confusion matrix
