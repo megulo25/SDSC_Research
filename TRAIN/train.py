@@ -7,7 +7,7 @@ import os
 #-----------------------------------------------------------------------------------------------#
 # Split to training and testing set
 full_path_to_data = os.path.join(os.getcwd(), 'data', 'nabirds', 'images')
-training_percentage = 0.7
+training_percentage = 0.8
 
 message = "Have you already split the images to train and test folders? (y/n): "
 resp = input(message)
@@ -24,7 +24,12 @@ if resp == 'n':
 #-----------------------------------------------------------------------------------------------#
 # Import AlexNet
 class_count = 557
-model = AlexNet(num_classes=class_count)
+# model = AlexNet(num_classes=class_count)
+
+# Import Resnet50
+from keras.applications.resnet50 import ResNet50
+model = ResNet50(weights=None, classes=class_count)
+
 
 # Output Model Summary
 model.summary()
@@ -84,7 +89,7 @@ t = time.time()
 history = model.fit_generator(
     train_generator,
     validation_data=validation_generator,
-    epochs=50,
+    epochs=30,
     verbose=2
 )
 print("Training complete!\nTime: {0}secs".format(time.time()-t))
