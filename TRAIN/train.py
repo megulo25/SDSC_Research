@@ -35,7 +35,7 @@ model = InceptionResNetV2(weights=None, classes=class_count)
 model.summary()
 
 # Make multi-gpu compatible
-model = multi_gpu_model(model=model, gpus=2)
+model = multi_gpu_model(model=model, gpus=6)
 
 #-----------------------------------------------------------------------------------------------#
 # Image Pre-processing
