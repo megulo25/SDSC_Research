@@ -1,10 +1,8 @@
 Things to do:
-transform all the images and save them. Flip, add noise, etc.
-get set up on cluster of 8 gpus.
-
 - Finish code that will output confusion matrix
 - Finish code that will generate heatmap.
-- Consider getting other networks (ResNet) for training.
+- Scrap for information about the bird:
+    * https://www.allaboutbirds.org/guide/Purple_Finch/overview
 
 1. Train model
 2. Output image with predicted class and true class
@@ -20,7 +18,6 @@ get set up on cluster of 8 gpus.
     * https://keras.io/preprocessing/image/
 
 - Got an accurate model!
-- Now test the model by learning how to use model.predict_generator because fit_generator was used for training.
 
 - Train the north america dataset
     - Parent class: Last word in the name
@@ -35,4 +32,3 @@ get set up on cluster of 8 gpus.
 
 - Heatmap of the image. Highlight important pixels in image.
     * http://heatmapping.org/
-

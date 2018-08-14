@@ -1,4 +1,4 @@
-from keras.utils.training_utils import multi_gpu_model
+from keras.utils import multi_gpu_model
 from helper_functions import split_train_test_dir
 from AlexNet import AlexNet
 import numpy as np
