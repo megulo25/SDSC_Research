@@ -1,8 +1,7 @@
 Things to do:
+- Finish Scraping code and begin scraping process. 
 - Finish code that will output confusion matrix
 - Finish code that will generate heatmap.
-- Scrap for information about the bird:
-    * https://www.allaboutbirds.org/guide/Purple_Finch/overview
 
 1. Train model
 2. Output image with predicted class and true class
