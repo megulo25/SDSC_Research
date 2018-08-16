@@ -2,8 +2,6 @@ from keras.utils import multi_gpu_model
 from helper_functions import split_train_test_dir
 import numpy as np
 import os
-
-K.tensorflow_backend._get_available_gpus()
 #-----------------------------------------------------------------------------------------------#
 # Split to training and testing set
 full_path_to_data = os.path.join(os.getcwd(), 'data', 'nabirds', 'images')
