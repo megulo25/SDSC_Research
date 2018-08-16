@@ -31,11 +31,22 @@ test_generator =  test_datagen.flow_from_directory(
 #--------------------------------------------------------------------------------------------#
 # Run Model on test data:
 y_pred = model.predict_generator(test_generator)
+
+# Round off the results to either 0 or 1
+for y_p in y_pred:
+    
+
 y_test_list = test_generator.filenames
+
+# Split by '/' to get the directory name
 y_test = []
-for item in y_test_list:
-    item_adj = item[:4]
-    y_test.append(item_adj)
+
+for y in y_test_list:
+    dir_name = y.split('/')
+    y_test.append(dir_name[0])
+
+# One hot encode y_test to compare against y_pred
+
 #--------------------------------------------------------------------------------------------#
 # Compute confusion matrix
 cnf_matrix = confusion_matrix(y_test, y_pred)

@@ -2,6 +2,11 @@ from keras.utils import multi_gpu_model
 from helper_functions import split_train_test_dir
 import numpy as np
 import os
+
+os.environ["CUDA_VISIBLE_DEVICES"]="0,1,2,3"
+
+from keras import backend as K
+K.tensorflow_backend._get_available_gpus()
 #-----------------------------------------------------------------------------------------------#
 # Split to training and testing set
 full_path_to_data = os.path.join(os.getcwd(), 'data', 'nabirds', 'images')
@@ -94,7 +99,7 @@ t = time.time()
 history = model.fit_generator(
     train_generator,
     validation_data=validation_generator,
-    epochs=200,
+    epochs=300,
     verbose=2
 )
 print("Training complete!\nTime: {0}secs".format(time.time()-t))
