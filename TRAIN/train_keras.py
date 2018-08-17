@@ -32,7 +32,9 @@ class_count = 557
 # Import InceptionNet
 from keras.applications.inception_resnet_v2 import InceptionResNetV2
 model = InceptionResNetV2(weights=None, classes=class_count)
-
+# from tensorflow import device
+# with device('/cpu:0'):
+#     model = InceptionResNetV2(weights=None, classes=class_count)
 
 # Output Model Summary
 model.summary()
