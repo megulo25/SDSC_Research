@@ -31,7 +31,7 @@ def startBrowser(url):
 
     # Inialiaze headless browser
     executable_path = {'executable_path': os.path.join("driver","chromedriver")}
-    browser = Browser('chrome', **executable_path, headless=False)
+    browser = Browser('chrome', **executable_path, headless=True)
     print("Initialized the headless browser!\n")
     
     # URl
@@ -210,7 +210,10 @@ if __name__ == "__main__":
             info_soup = BeautifulSoup(info_page_html, 'html.parser')
 
             # Get the data
-            dict_ = getData(browser, info_soup)
+            try:
+                dict_ = getData(browser, info_soup)
+            except:
+                print('Error with {0}, moving on...'.format(href))
 
             # Add to Mongodb
             db.bird_info.insert_one(dict_)

@@ -1,5 +1,5 @@
 from keras.utils import multi_gpu_model
-from helper_functions import split_train_test_dir
+from helper_functions import split_train_test_dir, multitask_loss
 import numpy as np
 import os
 
@@ -88,7 +88,7 @@ sgd = optimizers.SGD(lr=0.001, momentum=0.9)
 #-----------------------------------------------------------------------------------------------#
 # Compile 
 model.compile(
-    loss='categorical_crossentropy',
+    loss=multitask_loss,
     optimizer=sgd,
     metrics=['accuracy']
 )

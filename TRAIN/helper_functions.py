@@ -206,3 +206,11 @@ def predict_class(model, img):
     output = model.predict(new_img_reshaped)
     output = np.argmax(output.round())
     return output
+
+from keras.backend import clip
+def multitask_loss(y_true, y_pred):
+    # Avoid divide by 0
+    eps = np.finfo(np.float).eps
+    y_pred = clip(y_pred, eps, 1 - eps)
+    # Multi-task loss
+    return np.mean(np.sum(- y_true * np.log(y_pred) - (1 - y_true) * np.log(1 - y_pred), axis=1))
