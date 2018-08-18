@@ -207,10 +207,9 @@ def predict_class(model, img):
     output = np.argmax(output.round())
     return output
 
-from keras.backend import clip
+from keras import backend as K
 def multitask_loss(y_true, y_pred):
     # Avoid divide by 0
-    eps = np.finfo(np.float).eps
-    y_pred = clip(y_pred, eps, 1 - eps)
+    y_pred = K.clip(y_pred, K.epsilon(), 1 - K.epsilon())
     # Multi-task loss
-    return np.mean(np.sum(- y_true * np.log(y_pred) - (1 - y_true) * np.log(1 - y_pred), axis=1))
+    return K.mean(K.sum(- y_true * K.log(y_pred) - (1 - y_true) * K.log(1 - y_pred), axis=1))
