@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 import itertools
+import cv2
 
 
 def split_train_test_dir(dir_of_data, train_percentage):
@@ -161,3 +162,47 @@ def plot_confusion_matrix(confusion_matrix,
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
+
+def get_val_images(dir_):
+
+    # Get list of sub dirs
+    sub_dirs = []
+    for (f1,f2,f3) in os.walk(dir_):
+        sub_dirs.append(f1)
+    sub_dirs = sub_dirs[1:]
+
+    # Get classes
+    dict_ = {}
+    with open('data/nabirds/classes.txt', 'r') as file_reader:
+        classes_list = file_reader.readlines()
+    
+    for row in classes_list:
+        row_list = row.split()
+        dict_[int(row_list[0])] = row_list[1]
+
+    import matplotlib.image as mpimg
+
+    class_list = []
+    img_list = []
+    for sub_dir in sub_dirs:
+        for (_, _, img_ids) in os.walk(sub_dir):
+            pass
+
+        for img_id in img_ids:
+            img_name = os.path.join(sub_dir, img_id)
+
+            cls_name = int(sub_dir.split('/')[-1])
+            class_list.append(dict_[cls_name])
+
+            img = mpimg.imread(img_name)
+            img_list.append(img)
+
+    return class_list, img_list, dict_
+
+
+def predict_class(model, img):
+    new_img = cv2.resize(img, (227,227))
+    new_img_reshaped = new_img.reshape((1,227,227,3))
+    output = model.predict(new_img_reshaped)
+    output = np.argmax(output.round())
+    return output
