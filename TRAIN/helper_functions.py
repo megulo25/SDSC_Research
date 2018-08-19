@@ -239,6 +239,7 @@ def train_test_split_multi_output(full_path_to_data):
     X = np.zeros((1,227,227,3))
     y = []
     count = 0
+    c = 0
     num_dirs = len(image_dir)
     for img_dir in image_dir:
         print('Directory: {0}/{1}'.format(count, num_dirs))
@@ -266,8 +267,10 @@ def train_test_split_multi_output(full_path_to_data):
                 y_output = y_one_hot_enc(dict_, class_)
                 y.append(y_output)
 
-                if count == 0:
+                if c == 0:
                     X = X[1:]
+                    c=1
+
             except:
                 print('Error with {0}'.format(img_file))
 
