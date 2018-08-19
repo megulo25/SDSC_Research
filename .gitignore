@@ -5,3 +5,4 @@ data
 *.pdf
 mnist
 history_data
+__p*
