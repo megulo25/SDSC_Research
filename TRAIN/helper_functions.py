@@ -268,7 +268,7 @@ def train_test_split_multi_output(full_path_to_data):
             if count == 0:
                 X = X[1:]
 
-            count+=1
+        count+=1
 
         np.save('X.npy', X)
         np.save('y.npy', y)
