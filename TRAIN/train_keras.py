@@ -3,7 +3,8 @@ from helper_functions import multitask_loss
 import numpy as np
 import os
 
-# os.environ["CUDA_VISIBLE_DEVICES"]="0"
+gpu_number = 0
+os.environ["CUDA_VISIBLE_DEVICES"]="{0}".format(gpu_number)
 #-----------------------------------------------------------------------------------------------#
 # Split to training and testing set
 full_path_to_data = os.path.join(os.getcwd(), 'data', 'nabirds', 'images')
@@ -58,7 +59,28 @@ model.compile(
 )
 #-----------------------------------------------------------------------------------------------#
 # Train
-model.fit_generator(
+history = model.fit_generator(
     train_datagen.flow(x=X_train, y=y_train, batch_size=32), 
-    epochs=100
+    epochs=200
 )
+#-----------------------------------------------------------------------------------------------#
+# Save training accuracy and testing accuracy:
+train_acc = history.history['acc']
+val_acc = history.history['val_acc']
+
+train_loss = history.history['loss']
+val_loss = history.history['val_loss']
+
+np.save('./history_data/train_acc_{0}.npy'.format(gpu_number), train_acc)
+np.save('./history_data/val_acc_{0}.npy'.format(gpu_number), val_acc)
+
+np.save('./history_data/train_loss_{0}.npy'.format(gpu_number), train_loss)
+np.save('./history_data/val_loss_{0}.npy'.format(gpu_number), val_loss)
+#-----------------------------------------------------------------------------------------------#
+# Save the weights
+model.save_weights('model_weights_{0}.h5'.format(gpu_number))
+
+# Save the model architecture
+model_json = model.to_json()
+with open('model_architecture_{0}.json'.format(gpu_number), 'w') as json_file:
+    json_file.write(model_json)
