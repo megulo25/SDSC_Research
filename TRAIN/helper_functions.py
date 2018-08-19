@@ -250,23 +250,26 @@ def train_test_split_multi_output(full_path_to_data):
 
         # Resize all the images
         for img_file in img_files:
-            img = mpimg.imread(os.path.join(full_path,img_file))
-            img_resized = cv2.resize(img, (227,227))
-            del img
-            img_reshaped = img_resized.reshape((1,227,227,3))
-            del img_resized
+            try:
+                img = mpimg.imread(os.path.join(full_path,img_file))
+                img_resized = cv2.resize(img, (227,227))
+                del img
+                img_reshaped = img_resized.reshape((1,227,227,3))
+                del img_resized
 
-            # Concatenate X
-            X = np.concatenate((X, img_reshaped))
-            del img_reshaped
+                # Concatenate X
+                X = np.concatenate((X, img_reshaped))
+                del img_reshaped
 
-            # Concatenate y
-            class_ = int(img_dir)
-            y_output = y_one_hot_enc(dict_, class_)
-            y.append(y_output)
+                # Concatenate y
+                class_ = int(img_dir)
+                y_output = y_one_hot_enc(dict_, class_)
+                y.append(y_output)
 
-            if count == 0:
-                X = X[1:]
+                if count == 0:
+                    X = X[1:]
+            except:
+                print('Error with {0}'.format(img_file))
 
         count+=1
 
