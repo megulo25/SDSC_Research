@@ -272,3 +272,6 @@ def train_test_split_multi_output(full_path_to_data):
 
         np.save('X.npy', X)
         np.save('y.npy', y)
+
+    np.save('X.npy', X)
+    np.save('y.npy', y)
