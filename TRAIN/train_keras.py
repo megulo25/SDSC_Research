@@ -1,5 +1,5 @@
 from keras.utils import multi_gpu_model
-from helper_functions import split_train_test_dir, multitask_loss
+from helper_functions import multitask_loss
 import numpy as np
 import os
 
@@ -7,19 +7,14 @@ import os
 #-----------------------------------------------------------------------------------------------#
 # Split to training and testing set
 full_path_to_data = os.path.join(os.getcwd(), 'data', 'nabirds', 'images')
-# training_percentage = 0.8
+test_percentage = 0.3
 
-# message = "Have you already split the images to train and test folders? (y/n): "
-# resp = input(message)
-# resp = resp.lower()
+# Import Training Data
+X = np.load('X.npy')
+y = np.load('y.npy')
 
-# if resp == 'n':
-#     print('Spliting data into training and testing folders...')
-#     split_train_test_dir(
-#         dir_of_data=full_path_to_data,
-#         train_percentage=training_percentage
-#     )
-#     print('Split Completed!')
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_percentage)
 
 #-----------------------------------------------------------------------------------------------#
 # Import AlexNet
@@ -48,3 +43,22 @@ train_datagen = ImageDataGenerator(width_shift_range=0.1,
                                     zoom_range=0.2,
                                     zca_epsilon=1e-6,
                                     fill_mode="nearest")
+
+train_datagen.fit(X_train)
+#-----------------------------------------------------------------------------------------------#
+# Optimizer
+from keras import optimizers
+sgd = optimizers.SGD(lr=0.001, momentum=0.9)
+#-----------------------------------------------------------------------------------------------#
+# Compile
+model.compile(
+    loss=multitask_loss,
+    optimizer=sgd,
+    metrics=['accuracy']
+)
+#-----------------------------------------------------------------------------------------------#
+# Train
+model.fit_generator(
+    train_datagen.flow(x=X_train, y=y_train, batch_size=32), 
+    epochs=100
+)

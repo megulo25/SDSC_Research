@@ -152,6 +152,9 @@ if __name__ == "__main__":
     cleaned_list = clean_class_list(class_list)
     cleaned_list = cleaned_list[1:]
 
+    # Temp
+    cleaned_list = cleaned_list[322:]
+
     # Open up the chrome browser
     url = 'https://www.allaboutbirds.org/search/'
     print('Starting chrome browser')

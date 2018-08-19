@@ -217,7 +217,7 @@ def multitask_loss(y_true, y_pred):
 
 def y_one_hot_enc(dict_, class_):
     'return one hot encoding'
-    arr = np.zeros((1011,1))
+    arr = np.zeros((1011))
     list_ = list(dict_[class_])
     arr[list_] = 1
     return arr
@@ -236,13 +236,12 @@ def train_test_split_multi_output(full_path_to_data):
     image_dir = image_dir[0]
 
     # Loop through each image
-    X = np.zeros((227*227*3, 1))
-    y = np.zeros((1011, 1))
+    X = np.zeros((1,227,227,3))
+    y = []
     count = 0
     num_dirs = len(image_dir)
     for img_dir in image_dir:
         print('Directory: {0}/{1}'.format(count, num_dirs))
-        count+=1
 
         # Get each image
         full_path = os.path.join(full_path_to_data, img_dir)
@@ -254,17 +253,23 @@ def train_test_split_multi_output(full_path_to_data):
             img = mpimg.imread(os.path.join(full_path,img_file))
             img_resized = cv2.resize(img, (227,227))
             del img
-            flattened_images = img_resized.flatten().reshape(-1,1)
+            img_reshaped = img_resized.reshape((1,227,227,3))
             del img_resized
 
             # Concatenate X
-            X = np.concatenate((X, flattened_images), axis=1)
-            del flattened_images
+            X = np.concatenate((X, img_reshaped))
+            del img_reshaped
 
             # Concatenate y
             class_ = int(img_dir)
             y_output = y_one_hot_enc(dict_, class_)
-            y = np.concatenate((y, y_output), axis=1)
+            y.append(y_output)
+
+            if count == 0:
+                X = X[1:]
+
+            count+=1
 
         np.save('X.npy', X)
         np.save('y.npy', y)
+        return 0
