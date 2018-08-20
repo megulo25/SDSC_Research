@@ -5,7 +5,8 @@ import os
 import sys
 
 gpu_number = sys.argv[1]
-os.environ["CUDA_VISIBLE_DEVICES"]="{0}".format(gpu_number)
+os.environ["CUDA_VISIBLE_DEVICES"]="0,1,2,3"
+# os.environ["CUDA_VISIBLE_DEVICES"]="{0}".format(gpu_number)
 #-----------------------------------------------------------------------------------------------#
 # Split to training and testing set
 full_path_to_data = os.path.join(os.getcwd(), 'data', 'nabirds', 'images')
@@ -54,22 +55,27 @@ train_datagen.fit(X_train)
 #-----------------------------------------------------------------------------------------------#
 # Optimizer
 from keras import optimizers
-sgd = optimizers.SGD(lr=0.001, momentum=0.9)
+adam = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
 #-----------------------------------------------------------------------------------------------#
 # Compile
+from keras import metrics
 model.compile(
     loss=multitask_loss,
-    optimizer=sgd,
-    metrics=['accuracy']
+    optimizer=adam,
+    metrics=['accuracy', metrics.sparse_categorical_accuracy]
 )
 #-----------------------------------------------------------------------------------------------#
 # Train
 print('Beginning training...')
 history = model.fit_generator(
-    train_datagen.flow(x=X_train, y=y_train, batch_size=32), 
-    epochs=200
+    train_datagen.flow(x=X_train, y=y_train, batch_size=32*4), 
+    epochs=250
 )
 print('Training complete!\n')
+#-----------------------------------------------------------------------------------------------#
+# Save the weights
+print('Saving weights and architecture...')
+model.save_weights('model_weights_{0}.h5'.format(gpu_number))
 #-----------------------------------------------------------------------------------------------#
 # Save training accuracy and testing accuracy:
 print('Saving history...')
@@ -86,10 +92,6 @@ np.save('./history_data/train_loss_{0}.npy'.format(gpu_number), train_loss)
 np.save('./history_data/val_loss_{0}.npy'.format(gpu_number), val_loss)
 print('History saved!\n')
 #-----------------------------------------------------------------------------------------------#
-# Save the weights
-print('Saving weights and architecture...')
-model.save_weights('model_weights_{0}.h5'.format(gpu_number))
-
 # Save the model architecture
 model_json = model.to_json()
 with open('model_architecture_{0}.json'.format(gpu_number), 'w') as json_file:

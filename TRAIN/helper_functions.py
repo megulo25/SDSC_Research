@@ -224,6 +224,11 @@ def y_one_hot_enc(dict_, class_):
 
 def train_test_split_multi_output(full_path_to_data):
 
+    # Ask to load in existing X and y
+    message = input('Where do you want to continue from?')
+    message = int(message)
+    
+    
     # Import dict
     dict_ = np.load('hierarchy_dict.npy').item()
 
