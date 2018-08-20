@@ -227,7 +227,13 @@ def train_test_split_multi_output(full_path_to_data):
     # Ask to load in existing X and y
     message = input('Where do you want to continue from?')
     message = int(message)
-    
+    try:
+        X = np.load('X.npy')
+        y = np.load('y.npy')
+        exist_ = True
+    except:
+        exist_ = False
+        print('There is no X nor y')
     
     # Import dict
     dict_ = np.load('hierarchy_dict.npy').item()
@@ -241,43 +247,46 @@ def train_test_split_multi_output(full_path_to_data):
     image_dir = image_dir[0]
 
     # Loop through each image
-    X = np.zeros((1,227,227,3))
-    y = []
+    if not exist_:
+        X = np.zeros((1,227,227,3))
+        y = []
     count = 0
     c = 0
     num_dirs = len(image_dir)
     for img_dir in image_dir:
-        print('Directory: {0}/{1}'.format(count, num_dirs))
+        
+        if count >= message:
+            print('Directory: {0}/{1}'.format(count, num_dirs))
 
-        # Get each image
-        full_path = os.path.join(full_path_to_data, img_dir)
-        for (_, _, img_files) in os.walk(full_path):
-            pass
+            # Get each image
+            full_path = os.path.join(full_path_to_data, img_dir)
+            for (_, _, img_files) in os.walk(full_path):
+                pass
 
-        # Resize all the images
-        for img_file in img_files:
-            try:
-                img = mpimg.imread(os.path.join(full_path,img_file))
-                img_resized = cv2.resize(img, (227,227))
-                del img
-                img_reshaped = img_resized.reshape((1,227,227,3))
-                del img_resized
+            # Resize all the images
+            for img_file in img_files:
+                try:
+                    img = mpimg.imread(os.path.join(full_path,img_file))
+                    img_resized = cv2.resize(img, (227,227))
+                    del img
+                    img_reshaped = img_resized.reshape((1,227,227,3))
+                    del img_resized
 
-                # Concatenate X
-                X = np.concatenate((X, img_reshaped))
-                del img_reshaped
+                    # Concatenate X
+                    X = np.concatenate((X, img_reshaped))
+                    del img_reshaped
 
-                # Concatenate y
-                class_ = int(img_dir)
-                y_output = y_one_hot_enc(dict_, class_)
-                y.append(y_output)
+                    # Concatenate y
+                    class_ = int(img_dir)
+                    y_output = y_one_hot_enc(dict_, class_)
+                    y.append(y_output)
 
-                if c == 0:
-                    X = X[1:]
-                    c=1
+                    if (c == 0) and (not exist_):
+                        X = X[1:]
+                        c=1
 
-            except:
-                print('Error with {0}'.format(img_file))
+                except:
+                    print('Error with {0}'.format(img_file))
 
         count+=1
 
