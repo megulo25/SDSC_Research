@@ -33,6 +33,8 @@ model = InceptionResNetV2(weights=None, classes=class_count)
 print('Model loaded!\n')
 # Output Model Summary
 model.summary()
+
+model = multi_gpu_model(model)
 #-----------------------------------------------------------------------------------------------#
 # Image Pre-processing
 from keras.preprocessing.image import ImageDataGenerator
