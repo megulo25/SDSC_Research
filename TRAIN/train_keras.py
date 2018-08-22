@@ -1,15 +1,11 @@
-from keras.utils import multi_gpu_model
-from helper_functions import multitask_loss
 import numpy as np
 import os
 import sys
 
 gpu_number = sys.argv[1]
-os.environ["CUDA_VISIBLE_DEVICES"]="0,1,2,3"
-# os.environ["CUDA_VISIBLE_DEVICES"]="{0}".format(gpu_number)
+os.environ["CUDA_VISIBLE_DEVICES"]="{0}".format(gpu_number)
 #-----------------------------------------------------------------------------------------------#
 # Split to training and testing set
-full_path_to_data = os.path.join(os.getcwd(), 'data', 'nabirds', 'images')
 test_percentage = 0.3
 
 # Import Training Data
@@ -29,12 +25,11 @@ class_count = 1011
 # Import InceptionNet
 print('Loading in model...')
 from keras.applications.inception_resnet_v2 import InceptionResNetV2
-model = InceptionResNetV2(weights=None, classes=class_count)
+model = InceptionResNetV2(weights='imagenet', include_top=False, classes=class_count)
 print('Model loaded!\n')
+
 # Output Model Summary
 model.summary()
-
-model = multi_gpu_model(model)
 #-----------------------------------------------------------------------------------------------#
 # Image Pre-processing
 from keras.preprocessing.image import ImageDataGenerator
@@ -62,7 +57,7 @@ adam = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0
 # Compile
 from keras import metrics
 model.compile(
-    loss=multitask_loss,
+    loss='mean_squared_error',
     optimizer=adam,
     metrics=['accuracy', metrics.sparse_categorical_accuracy]
 )
@@ -70,7 +65,7 @@ model.compile(
 # Train
 print('Beginning training...')
 history = model.fit_generator(
-    train_datagen.flow(x=X_train, y=y_train, batch_size=32*4), 
+    train_datagen.flow(x=X_train, y=y_train, batch_size=32), 
     epochs=250
 )
 print('Training complete!\n')
@@ -81,17 +76,19 @@ model.save_weights('model_weights_{0}.h5'.format(gpu_number))
 #-----------------------------------------------------------------------------------------------#
 # Save training accuracy and testing accuracy:
 print('Saving history...')
+
+# Training Accuracy and Loss
 train_acc = history.history['acc']
-val_acc = history.history['val_acc']
-
-train_loss = history.history['loss']
-val_loss = history.history['val_loss']
-
 np.save('./history_data/train_acc_{0}.npy'.format(gpu_number), train_acc)
-np.save('./history_data/val_acc_{0}.npy'.format(gpu_number), val_acc)
-
+train_loss = history.history['loss']
 np.save('./history_data/train_loss_{0}.npy'.format(gpu_number), train_loss)
+
+# Validation Accuracy and Loss
+val_acc = history.history['val_acc']
+val_loss = history.history['val_loss']
+np.save('./history_data/val_acc_{0}.npy'.format(gpu_number), val_acc)
 np.save('./history_data/val_loss_{0}.npy'.format(gpu_number), val_loss)
+
 print('History saved!\n')
 #-----------------------------------------------------------------------------------------------#
 # Save the model architecture
