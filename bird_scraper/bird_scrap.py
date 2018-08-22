@@ -31,7 +31,7 @@ def startBrowser(url):
 
     # Inialiaze headless browser
     executable_path = {'executable_path': os.path.join("driver","chromedriver")}
-    browser = Browser('chrome', **executable_path, headless=True)
+    browser = Browser('chrome', **executable_path, headless=False)
     print("Initialized the headless browser!\n")
     
     # URl
@@ -49,7 +49,6 @@ def clean_class_list(list_):
     Returns:
     new_list = list, Contains only the class names to be used as search queries.
     """
-
     new_list = []
 
     # Loop and clean
@@ -153,7 +152,7 @@ if __name__ == "__main__":
     cleaned_list = cleaned_list[1:]
 
     # Temp
-    cleaned_list = cleaned_list[322:]
+    cleaned_list = cleaned_list[333:]
 
     # Open up the chrome browser
     url = 'https://www.allaboutbirds.org/search/'

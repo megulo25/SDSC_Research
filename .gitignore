@@ -5,4 +5,7 @@ data
 *.pdf
 mnist
 history_data
-__p*
+__pycache__
+*.ipynb*
+*.vscode
+things_to_do
