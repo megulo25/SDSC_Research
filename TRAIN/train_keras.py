@@ -52,7 +52,13 @@ class_count = 9
 # Import InceptionNet
 print('Loading in model...')
 from keras.applications.inception_resnet_v2 import InceptionResNetV2
-model = InceptionResNetV2(weights='imagenet', include_top=False, classes=class_count)
+from keras.layers import Flatten, Dense, Dropout
+from keras.models import Model
+model = InceptionResNetV2(weights='imagenet', include_top=False, input_shape=(299, 299, 3), classes=class_count)
+x = model.output
+x = Flatten()(x)
+output_layer = Dense(class_count, activation='softmax')(x)
+model = Model(inputs=model.input, outputs=output_layer)
 print('Model loaded!\n')
 
 # Output Model Summary
@@ -77,7 +83,7 @@ train_datagen = ImageDataGenerator(width_shift_range=0.1,
 
 train_generator = train_datagen.flow_from_directory(
     directory=training_dir,
-    target_size=(224,224),
+    target_size=(299,299),
     batch_size=16,
     class_mode='categorical'
 )
@@ -89,7 +95,7 @@ test_datagen = ImageDataGenerator(
 
 validation_generator = test_datagen.flow_from_directory(
     directory=validation_dir,
-    target_size=(224,224),
+    target_size=(299,299),
     batch_size=1,
     class_mode='categorical'
 )
