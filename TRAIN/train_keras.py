@@ -8,20 +8,31 @@ gpu_number = sys.argv[1]
 os.environ["CUDA_VISIBLE_DEVICES"]="{0}".format(gpu_number)
 #-----------------------------------------------------------------------------------------------#
 # Split to training and testing set
+message = input('Which nabirds dataset are you working on? (Enter 0 for 9_class or 1 for 555_class)')
+message = int(message)
 
 # Import Training Data
 print('Loading dataset...')
 if not os.path.isdir('data'):
     os.mkdir('data')
-if len(os.listdir('data')) == 0:
-    os.chdir('data')
-    os.system('wget https://www.dropbox.com/sh/g6aatnar4n5s63g/AABBixZUh5SiPvFS7eVVVxlHa')
-    os.system('unzip AABBixZUh5SiPvFS7eVVVxlHa')
-    os.remove('AABBixZUh5SiPvFS7eVVVxlHa')
 
-    # Ignore UncroppedCommonGoldeneye
-    shutil.rmtree('UncroppedCommonGoldeneye')
-    os.chdir('..')
+dataset_not_loaded = True
+if len(os.listdir('data')) == 0:
+
+    while dataset_not_loaded:
+        if message == 0:
+            os.chdir('data')
+            os.system('wget https://www.dropbox.com/sh/g6aatnar4n5s63g/AABBixZUh5SiPvFS7eVVVxlHa')
+            os.system('unzip AABBixZUh5SiPvFS7eVVVxlHa')
+            os.remove('AABBixZUh5SiPvFS7eVVVxlHa')
+            # Ignore UncroppedCommonGoldeneye
+            shutil.rmtree('UncroppedCommonGoldeneye')
+            os.chdir('..')
+            dataset_not_loaded = False
+        elif message == 1:
+            dataset_not_loaded = False
+        else:
+            print('You need to enter either 0 or 1!')
 print('Dataset loaded!\n')
 
 print('Splitting dataset...')
@@ -117,7 +128,7 @@ print('Beginning training...')
 history = model.fit_generator(
     train_generator,
     validation_data=validation_generator,
-    epochs=200,
+    epochs=30,
     verbose=2
 )
 print('Training complete!\n')
