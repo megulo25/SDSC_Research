@@ -1,26 +1,53 @@
+from helper_functions import split_train_test_dir
 import numpy as np
 import os
 import sys
+import shutil
 
 gpu_number = sys.argv[1]
 os.environ["CUDA_VISIBLE_DEVICES"]="{0}".format(gpu_number)
 #-----------------------------------------------------------------------------------------------#
 # Split to training and testing set
-test_percentage = 0.3
 
 # Import Training Data
 print('Loading dataset...')
-X = np.load('X.npy')
-y = np.load('y.npy')
+if not os.path.isdir('data'):
+    os.mkdir('data')
+if len(os.listdir('data')) == 0:
+    os.chdir('data')
+    os.system('wget https://www.dropbox.com/sh/g6aatnar4n5s63g/AABBixZUh5SiPvFS7eVVVxlHa')
+    os.system('unzip AABBixZUh5SiPvFS7eVVVxlHa')
+    os.remove('AABBixZUh5SiPvFS7eVVVxlHa')
+
+    # Ignore UncroppedCommonGoldeneye
+    shutil.rmtree('UncroppedCommonGoldeneye')
+    os.chdir('..')
 print('Dataset loaded!\n')
 
 print('Splitting dataset...')
-from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_percentage)
+
+full_path_to_data = os.path.join(os.getcwd(), 'data')
+training_dir = os.path.join(full_path_to_data, 'train')
+validation_dir = os.path.join(full_path_to_data, 'test')
+training_percentage = 0.7
+
+# Create Training and Validation folders if they don't exist.
+if not os.path.isdir(training_dir):
+    os.mkdir(training_dir)
+if not os.path.isdir(validation_dir):
+    os.mkdir(validation_dir)
+
+if (len(os.listdir(training_dir)) == 0) and (len(os.listdir(validation_dir)) == 0):
+    split_train_test_dir(
+        dir_of_data=full_path_to_data,
+        train_dir=training_dir,
+        test_dir=validation_dir,
+        train_percentage=training_percentage
+    )
 print('Dataset split!\n')
 #-----------------------------------------------------------------------------------------------#
-# Import AlexNet
-class_count = 1011
+# Import Model
+class_count = 9
 
 # Import InceptionNet
 print('Loading in model...')
@@ -48,7 +75,24 @@ train_datagen = ImageDataGenerator(width_shift_range=0.1,
                                     zca_epsilon=1e-6,
                                     fill_mode="nearest")
 
-train_datagen.fit(X_train)
+train_generator = train_datagen.flow_from_directory(
+    directory=training_dir,
+    target_size=(224,224),
+    batch_size=16,
+    class_mode='categorical'
+)
+
+# Validation Generator
+test_datagen = ImageDataGenerator(
+    rescale=1./255
+)
+
+validation_generator = test_datagen.flow_from_directory(
+    directory=validation_dir,
+    target_size=(224,224),
+    batch_size=1,
+    class_mode='categorical'
+)
 #-----------------------------------------------------------------------------------------------#
 # Optimizer
 from keras import optimizers
@@ -65,8 +109,10 @@ model.compile(
 # Train
 print('Beginning training...')
 history = model.fit_generator(
-    train_datagen.flow(x=X_train, y=y_train, batch_size=32), 
-    epochs=250
+    train_generator,
+    validation_data=validation_generator,
+    epochs=200,
+    verbose=2
 )
 print('Training complete!\n')
 #-----------------------------------------------------------------------------------------------#
@@ -79,8 +125,8 @@ print('Saving history...')
 
 # Training Accuracy and Loss
 train_acc = history.history['acc']
-np.save('./history_data/train_acc_{0}.npy'.format(gpu_number), train_acc)
 train_loss = history.history['loss']
+np.save('./history_data/train_acc_{0}.npy'.format(gpu_number), train_acc)
 np.save('./history_data/train_loss_{0}.npy'.format(gpu_number), train_loss)
 
 # Validation Accuracy and Loss
