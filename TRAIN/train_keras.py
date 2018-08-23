@@ -130,6 +130,8 @@ model.save_weights('model_weights_{0}.h5'.format(gpu_number))
 print('Saving history...')
 
 # Training Accuracy and Loss
+if not os.path.isdir('history_data'):
+    os.mkdir('history_data')
 train_acc = history.history['acc']
 train_loss = history.history['loss']
 np.save('./history_data/train_acc_{0}.npy'.format(gpu_number), train_acc)
