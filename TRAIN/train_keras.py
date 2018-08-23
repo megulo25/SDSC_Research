@@ -109,7 +109,7 @@ from keras import metrics
 model.compile(
     loss='mean_squared_error',
     optimizer=adam,
-    metrics=['accuracy', metrics.sparse_categorical_accuracy]
+    metrics=['accuracy']
 )
 #-----------------------------------------------------------------------------------------------#
 # Train
