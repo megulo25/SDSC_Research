@@ -8,7 +8,7 @@ gpu_number = sys.argv[1]
 os.environ["CUDA_VISIBLE_DEVICES"]="{0}".format(gpu_number)
 #-----------------------------------------------------------------------------------------------#
 # Split to training and testing set
-message = input('Which nabirds dataset are you working on? (Enter 0 for 9_class or 1 for 555_class)')
+message = input('Which nabirds dataset are you working on? (Enter 0 for 9_class or 1 for 555_class): ')
 message = int(message)
 
 # Import Training Data
@@ -16,28 +16,44 @@ print('Loading dataset...')
 if not os.path.isdir('data'):
     os.mkdir('data')
 
-dataset_not_loaded = True
-if len(os.listdir('data')) == 0:
 
-    while dataset_not_loaded:
-        if message == 0:
-            os.chdir('data')
-            os.system('wget https://www.dropbox.com/sh/g6aatnar4n5s63g/AABBixZUh5SiPvFS7eVVVxlHa')
-            os.system('unzip AABBixZUh5SiPvFS7eVVVxlHa')
-            os.remove('AABBixZUh5SiPvFS7eVVVxlHa')
-            # Ignore UncroppedCommonGoldeneye
-            shutil.rmtree('UncroppedCommonGoldeneye')
-            os.chdir('..')
-            dataset_not_loaded = False
-        elif message == 1:
-            dataset_not_loaded = False
-        else:
-            print('You need to enter either 0 or 1!')
+os.chdir('data')
+if message == 0:
+    message = 'nabirds_9'
+    if not os.path.isdir('nabirds_9'):
+        os.mkdir('nabirds_9')
+
+    if len(os.listdir('nabirds_9')) == 0:
+        os.chdir('nabirds_9')
+        os.system('wget https://www.dropbox.com/sh/g6aatnar4n5s63g/AABBixZUh5SiPvFS7eVVVxlHa')
+        os.system('unzip AABBixZUh5SiPvFS7eVVVxlHa')
+        os.remove('AABBixZUh5SiPvFS7eVVVxlHa')
+        # Ignore UncroppedCommonGoldeneye
+        shutil.rmtree('UncroppedCommonGoldeneye')
+        os.chdir('../..')
+    else:
+        os.chdir('..')
+elif message == 1:
+    message = 'nabirds_555'
+
+    if not os.path.isdir('nabirds_555'):
+        os.mkdir('nabirds_555')
+
+    if len(os.listdir('nabirds_555')) == 0:
+        os.chdir('nabirds_555')
+        os.system('wget https://www.dropbox.com/s/nf78cbxq6bxpcfc/nabirds.tar.gz')
+        os.system('tar xvzf nabirds.tar.gz')
+        os.chdir('../..')
+    else:
+        os.chdir('..')
+else:
+    raise NameError('You need to enter either 0 or 1!')
+
 print('Dataset loaded!\n')
 
 print('Splitting dataset...')
 
-full_path_to_data = os.path.join(os.getcwd(), 'data')
+full_path_to_data = os.path.join(os.getcwd(), 'data', message)
 training_dir = os.path.join(full_path_to_data, 'train')
 validation_dir = os.path.join(full_path_to_data, 'test')
 training_percentage = 0.7
@@ -56,6 +72,8 @@ if (len(os.listdir(training_dir)) == 0) and (len(os.listdir(validation_dir)) == 
         train_percentage=training_percentage
     )
 print('Dataset split!\n')
+import time
+time.sleep(2323)
 #-----------------------------------------------------------------------------------------------#
 # Import Model
 class_count = 9
@@ -98,7 +116,8 @@ train_generator = train_datagen.flow_from_directory(
     batch_size=16,
     class_mode='categorical'
 )
-
+class_indicies = train_generator.class_indices
+np.save('class_indicies.npy', class_indicies)
 # Validation Generator
 test_datagen = ImageDataGenerator(
     rescale=1./255
@@ -128,7 +147,7 @@ print('Beginning training...')
 history = model.fit_generator(
     train_generator,
     validation_data=validation_generator,
-    epochs=30,
+    epochs=100,
     verbose=2
 )
 print('Training complete!\n')
