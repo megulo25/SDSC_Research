@@ -1,4 +1,4 @@
-from keras.models import model_from_json
+from keras.models import load_model
 from sklearn.metrics import classification_report, confusion_matrix
 from keras.preprocessing.image import ImageDataGenerator
 import cv2
@@ -8,10 +8,7 @@ import numpy as np
 validation_dir = os.path.join(os.getcwd(), 'data', 'nabirds_9', 'test')
 
 # Import model
-with open('model_architecture_1.json', 'r') as f:
-    model = model_from_json(f.read())
-
-model.load_weights('model_weights_1.h5')
+model = load_model('model_best.hdf5')
 
 
 # Validation Generator
