@@ -2,6 +2,7 @@
 from bs4 import BeautifulSoup
 from splinter import Browser
 import pymongo
+import time
 import os
 #----------------------------------------------------------------------#
 # Establish Connection to MongoDB
@@ -152,7 +153,7 @@ if __name__ == "__main__":
     cleaned_list = cleaned_list[1:]
 
     # Temp
-    cleaned_list = cleaned_list[338:]
+    cleaned_list = cleaned_list[372:]
 
     # Open up the chrome browser
     url = 'https://www.allaboutbirds.org/search/'
@@ -177,7 +178,7 @@ if __name__ == "__main__":
         are_there_more = True
         num_problems = 0
         while are_there_more:
-
+            time.sleep(2)
             try:
                 # Click 'See More Birds' to get an exhaustive list of birds
                 browser.find_by_id('btn-guide-more').click()

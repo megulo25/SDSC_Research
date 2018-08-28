@@ -72,8 +72,7 @@ if (len(os.listdir(training_dir)) == 0) and (len(os.listdir(validation_dir)) == 
         train_percentage=training_percentage
     )
 print('Dataset split!\n')
-import time
-time.sleep(2323)
+
 #-----------------------------------------------------------------------------------------------#
 # Import Model
 class_count = 9
@@ -141,14 +140,20 @@ model.compile(
     optimizer=adam,
     metrics=['accuracy']
 )
+
+# Callback function (save best model only)
+from keras.callbacks import ModelCheckpoint
+checkpoint = ModelCheckpoint('./model_best.hdf5', monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Train
 print('Beginning training...')
 history = model.fit_generator(
     train_generator,
     validation_data=validation_generator,
-    epochs=100,
-    verbose=2
+    epochs=95,
+    verbose=2,
+    callbacks=callback_list
 )
 print('Training complete!\n')
 #-----------------------------------------------------------------------------------------------#
