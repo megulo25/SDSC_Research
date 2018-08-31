@@ -1,3 +1,6 @@
+- Make a nicer confusion matrix:
+    *  https://plot.ly/~hema.vakade/162/confusion-matrix/#code
+
 Each of the child class has multiple levels of parent classes that always has birds at the top.
 For instance, 
     295 -> 179 -> 1 -> 0

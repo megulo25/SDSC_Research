@@ -1,6 +1,7 @@
 data
 *.npy
 *.h5
+*.hdf5
 *.json
 *.pdf
 mnist
