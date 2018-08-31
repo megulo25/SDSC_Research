@@ -30,9 +30,9 @@ class_list = list(class_indicies.keys())
 y_true = validation_generator.classes
 
 
-# y_pred = model.predict_generator(validation_generator)
-# np.save('y_pred.npy', y_pred)
-y_pred = np.load('y_pred.npy')
+y_pred = model.predict_generator(validation_generator)
+np.save('y_pred.npy', y_pred)
+
 for i in range(len(y_true)):
     img_old = mpimg.imread(os.path.join(data_base_dir,filename[i]))
     img = cv2.resize(img_old, (299,299))

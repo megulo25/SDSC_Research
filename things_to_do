@@ -1,5 +1,4 @@
-- Make a nicer confusion matrix:
-    *  https://plot.ly/~hema.vakade/162/confusion-matrix/#code
+- Clean up code. Create script that takes the output of the training and prints the data to heroku site so that prof can see it.
 
 Each of the child class has multiple levels of parent classes that always has birds at the top.
 For instance, 

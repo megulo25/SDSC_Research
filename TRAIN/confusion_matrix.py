@@ -8,7 +8,7 @@ import numpy as np
 validation_dir = os.path.join(os.getcwd(), 'data', 'nabirds_9', 'test')
 
 # Import model
-# model = load_model('model_best.hdf5')
+model = load_model('model_best.hdf5')
 
 # Validation Generator
 test_datagen = ImageDataGenerator(
@@ -26,19 +26,20 @@ class_list = list(class_indicies.keys())
 
 
 #Confution Matrix and Classification Report
-# Y_pred = model.predict_generator(validation_generator)
-# y_pred = np.argmax(Y_pred, axis=1)
-cnf_mat = np.load('cnf_mat.npy')
-# cnf_mat = confusion_matrix(validation_generator.classes, y_pred)
+Y_pred = model.predict_generator(validation_generator)
+y_pred = np.argmax(Y_pred, axis=1)
+cnf_mat = confusion_matrix(validation_generator.classes, y_pred)
+
 confusion_matrix_values = []
 for i in range(cnf_mat.shape[0]):
     confusion_matrix_values.append(cnf_mat[i])
 
-# print('Classification Report')
-# target_names = list(validation_generator.class_indices.keys())
+print('Classification Report')
+target_names = list(validation_generator.class_indices.keys())
 # print(classification_report(validation_generator.classes, y_pred, target_names=target_names))
-print(class_list)
-print(cnf_mat)
+# print(class_list)
+# print(cnf_mat)
+
 # List of dictionaries
 dict_list = []
 for j in range(cnf_mat.shape[0]):
@@ -53,40 +54,42 @@ for j in range(cnf_mat.shape[0]):
 
         dict_list.append(dict_)
 
+# Save
+
 # Show the training
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 # Load in historical data
-n = 0
-train_acc = np.load('history_data/train_acc_{0}.npy'.format(n))
-val_acc = np.load('history_data/val_acc_{0}.npy'.format(n))
+# n = 0
+# train_acc = np.load('history_data/train_acc_{0}.npy'.format(n))
+# val_acc = np.load('history_data/val_acc_{0}.npy'.format(n))
 
-train_loss = np.load('history_data/train_loss_{0}.npy'.format(n))
-val_loss = np.load('history_data/val_loss_{0}.npy'.format(n))
+# train_loss = np.load('history_data/train_loss_{0}.npy'.format(n))
+# val_loss = np.load('history_data/val_loss_{0}.npy'.format(n))
 
-# Plot Accuracy
-num_iters = np.arange(len(train_acc))
-plt.figure()
-plt.plot(num_iters, train_acc, 'g', label='Training')
-plt.plot(num_iters, val_acc, 'b', label='Validation')
-plt.xlabel('Number of Iterations')
-plt.ylabel('Accuracy (%)')
-plt.title('Training set vs Validation')
-plt.grid()
-plt.legend()
+# # Plot Accuracy
+# num_iters = np.arange(len(train_acc))
+# plt.figure()
+# plt.plot(num_iters, train_acc, 'g', label='Training')
+# plt.plot(num_iters, val_acc, 'b', label='Validation')
+# plt.xlabel('Number of Iterations')
+# plt.ylabel('Accuracy (%)')
+# plt.title('Training set vs Validation')
+# plt.grid()
+# plt.legend()
+# # plt.show()
+
+# # Plot Loss
+# num_iters = np.arange(len(train_loss))
+# plt.figure()
+# plt.plot(num_iters, train_loss, 'g', label='Training')
+# plt.plot(num_iters, val_loss, 'b', label='Validation')
+# plt.xlabel('Number of Iterations')
+# plt.ylabel('Loss')
+# plt.title('Training set vs Validation')
+# plt.grid()
+# plt.legend()
 # plt.show()
-
-# Plot Loss
-num_iters = np.arange(len(train_loss))
-plt.figure()
-plt.plot(num_iters, train_loss, 'g', label='Training')
-plt.plot(num_iters, val_loss, 'b', label='Validation')
-plt.xlabel('Number of Iterations')
-plt.ylabel('Loss')
-plt.title('Training set vs Validation')
-plt.grid()
-plt.legend()
-plt.show()
 
 
 # Prettier confusion matrix
