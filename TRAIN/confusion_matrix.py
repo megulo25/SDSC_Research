@@ -57,8 +57,10 @@ trace = {
 
 # Save Trace
 path_to_data_folder_in_webapp = os.getcwd()
-path_to_data_folder_in_webapp = path_to_data_folder_in_webapp.split('/')[:-1]
+path_to_data_folder_in_webapp = path_to_data_folder_in_webapp.split('/')[1:-1]
+path_to_data_folder_in_webapp = "/".join(path_to_data_folder_in_webapp)
 path_to_data_folder_in_webapp = os.path.join(path_to_data_folder_in_webapp, 'web_app', 'static', 'data')
+
 import json
 trace_full_path = os.path.join(path_to_data_folder_in_webapp, 'trace.json')
 with open(trace_full_path, 'w') as trace_writer:
