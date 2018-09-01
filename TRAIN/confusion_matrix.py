@@ -28,9 +28,6 @@ class_list = list(class_indicies.keys())
 Y_pred = model.predict_generator(validation_generator)
 y_pred = np.argmax(Y_pred, axis=1)
 cnf_mat = confusion_matrix(validation_generator.classes, y_pred)
-confusion_matrix_values = []
-for i in range(cnf_mat.shape[0]):
-    confusion_matrix_values.append(cnf_mat[i])
 
 # List of dictionaries for plotly
 dict_list = []
@@ -46,10 +43,11 @@ for j in range(cnf_mat.shape[0]):
 
         dict_list.append(dict_)
 
+cnf_mat_jsonified = cnf_mat.tolist()
 trace = {
     "x":class_list,
     "y":class_list,
-    "z":confusion_matrix_values,
+    "z":cnf_mat_jsonified,
     "colorscale": "RdYlBu",
     "showscale": True,
     "type": "heatmap"
@@ -57,7 +55,7 @@ trace = {
 
 # Save Trace
 path_to_data_folder_in_webapp = os.getcwd()
-path_to_data_folder_in_webapp = path_to_data_folder_in_webapp.split('/')[1:-1]
+path_to_data_folder_in_webapp = path_to_data_folder_in_webapp.split('/')[:-1]
 path_to_data_folder_in_webapp = "/".join(path_to_data_folder_in_webapp)
 path_to_data_folder_in_webapp = os.path.join(path_to_data_folder_in_webapp, 'web_app', 'static', 'data')
 
