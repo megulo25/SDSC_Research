@@ -4,6 +4,7 @@ from keras.preprocessing.image import ImageDataGenerator
 import cv2
 import os
 import numpy as np
+import json
 
 validation_dir = os.path.join(os.getcwd(), 'data', 'nabirds_9', 'test')
 
@@ -59,13 +60,22 @@ path_to_data_folder_in_webapp = path_to_data_folder_in_webapp.split('/')[:-1]
 path_to_data_folder_in_webapp = "/".join(path_to_data_folder_in_webapp)
 path_to_data_folder_in_webapp = os.path.join(path_to_data_folder_in_webapp, 'web_app', 'static', 'data')
 
-import json
+# Bring in training process
+train_acc = np.load('history_data/train_acc_0.npy')
+val_acc = np.load('history_data/val_acc_0.npy')
+train_loss = np.load('history_data/train_loss_0.npy')
+val_loss = np.load('history_data/val_loss_0.npy')
 
 # Save data
 dict_ = {
     'trace':trace,
-    'data_list':dict_list
+    'data_list':dict_list,
+    'train_acc':train_acc,
+    'train_loss':train_loss,
+    'val_acc':val_acc,
+    'val_loss':val_loss
 }
 
-with open(path_to_data_folder_in_webapp, 'w') as file_writer:
+filename = os.path.join(path_to_data_folder_in_webapp, 'data.json')
+with open(filename, 'w') as file_writer:
     json.dump(dict_, file_writer)
