@@ -60,11 +60,12 @@ path_to_data_folder_in_webapp = "/".join(path_to_data_folder_in_webapp)
 path_to_data_folder_in_webapp = os.path.join(path_to_data_folder_in_webapp, 'web_app', 'static', 'data')
 
 import json
-trace_full_path = os.path.join(path_to_data_folder_in_webapp, 'trace.json')
-with open(trace_full_path, 'w') as trace_writer:
-    json.dump(trace, trace_writer)
 
-# Save data_list
-data_list_full_path = os.path.join(path_to_data_folder_in_webapp, 'data_list.json')
-with open(data_list_full_path, 'w') as data_writer:
-    json.dump(dict_list, data_writer)
+# Save data
+dict_ = {
+    'trace':trace,
+    'data_list':dict_list
+}
+
+with open(path_to_data_folder_in_webapp, 'w') as file_writer:
+    json.dump(dict_, file_writer)

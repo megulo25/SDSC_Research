@@ -1,4 +1,4 @@
-- Try out the saving mechanism of the confusion mat file. It should save the trace and data_list objects in the data folder of the web app.
+- Set up plotly to post graphs on web app.
 
 Each of the child class has multiple levels of parent classes that always has birds at the top.
 For instance, 
