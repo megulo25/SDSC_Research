@@ -45,13 +45,20 @@ for j in range(cnf_mat.shape[0]):
         dict_list.append(dict_)
 
 cnf_mat_jsonified = cnf_mat.tolist()
-trace = {
+trace_data = {
     "x":class_list,
     "y":class_list,
     "z":cnf_mat_jsonified,
     "colorscale": "RdYlBu",
     "showscale": True,
     "type": "heatmap"
+}
+
+trace_layout = {
+    "annotations":dict_list,
+    "yaxis":{
+        'showticklabels':True
+    }
 }
 
 # Save Trace
@@ -61,15 +68,16 @@ path_to_data_folder_in_webapp = "/".join(path_to_data_folder_in_webapp)
 path_to_data_folder_in_webapp = os.path.join(path_to_data_folder_in_webapp, 'web_app', 'static', 'data')
 
 # Bring in training process
-train_acc = np.load('history_data/train_acc_0.npy')
-val_acc = np.load('history_data/val_acc_0.npy')
-train_loss = np.load('history_data/train_loss_0.npy')
-val_loss = np.load('history_data/val_loss_0.npy')
+train_acc = np.load('history_data/train_acc_0.npy').tolist()
+val_acc = np.load('history_data/val_acc_0.npy').tolist()
+train_loss = np.load('history_data/train_loss_0.npy').tolist()
+val_loss = np.load('history_data/val_loss_0.npy').tolist()
+
 
 # Save data
 dict_ = {
-    'trace':trace,
-    'data_list':dict_list,
+    'trace_data':trace_data,
+    'trace_layout':trace_layout,
     'train_acc':train_acc,
     'train_loss':train_loss,
     'val_acc':val_acc,

@@ -4,8 +4,8 @@ function plot_confusion_matrix() {
         username = 'meguloabebe'
         api_key = 'HpYqtIl2jc639TTDnq7y'
         if (error) return console.log(error);
-        var trace = response['trace']
-        var data = response['data_list']
+        var trace_data = response['trace_data']
+        var trace_layout = response['trace_layout']
         var train_acc = response['train_acc']
         var val_acc = response['val_acc']
 
@@ -28,25 +28,26 @@ function plot_confusion_matrix() {
 
         var train_val_acc_data = [train_acc_trace, val_acc_trace];
         var train_val_acc_layout = {
-            title: 'Accuracy: Training & Validation',
             xaxis: {
                 title:'Num. of Epochs',
-                autorange: true
+                autorange: true,
             },
             yaxis: {
                 title:'Accuracy (%)',
-                autorange: true
+                autorange: true,
             }
         }
 
         // Plot Confusion Matrix
-        var confusion_matrix_trace = [trace]
-        var confusion_matrix_data = {
-            annotations: [data]
+        margin = {
+            "margin": {
+                "l":150
+            }
         }
-
-        console.log(data)
-        Plotly.plot('confusion_matrix', {data:confusion_matrix_trace, layout:confusion_matrix_data})
+        console.log(trace_layout)
+        trace_layout = Object.assign({}, trace_layout, margin)
+        console.log(trace_layout)
+        Plotly.plot('confusion_matrix', {data: [trace_data], layout:trace_layout})
         Plotly.plot('training_validation_accuracy', {data: train_val_acc_data, layout:train_val_acc_layout})
     })
 }

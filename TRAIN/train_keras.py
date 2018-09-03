@@ -82,6 +82,7 @@ print('Loading in model...')
 from keras.applications.inception_resnet_v2 import InceptionResNetV2
 from keras.layers import Flatten, Dense, Dropout
 from keras.models import Model
+# model = InceptionResNetV2(weights=None, include_top=True, input_shape=(299, 299, 3), classes=class_count)
 model = InceptionResNetV2(weights='imagenet', include_top=False, input_shape=(299, 299, 3), classes=class_count)
 x = model.output
 x = Flatten()(x)

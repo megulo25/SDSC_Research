@@ -13,14 +13,10 @@
     background-color: white
 }
 
-.main_border_margin {
-    margin-left: 2%;
-    margin-top: 2%
-}
-
 .side_border_margin {
-    margin-right: 5%;
-    margin-top: 2%
+    margin-right: 2%;
+    margin-top: 2%;
+    margin-left: 2%;
 }
 
 .viz_img_margin_right {
