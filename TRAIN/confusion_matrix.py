@@ -9,11 +9,11 @@ import json
 validation_dir = os.path.join(os.getcwd(), 'data', 'nabirds_9', 'test')
 
 # Import model
-model = load_model('model_best.hdf5')
+model = load_model('model_best_0.hdf5')
 
 # Validation Generator
 test_datagen = ImageDataGenerator(
-    rescale=1./255
+    rescale=1
 )
 
 validation_generator = test_datagen.flow_from_directory(
@@ -29,6 +29,8 @@ class_list = list(class_indicies.keys())
 Y_pred = model.predict_generator(validation_generator)
 y_pred = np.argmax(Y_pred, axis=1)
 cnf_mat = confusion_matrix(validation_generator.classes, y_pred)
+print("Confusion Matrix:")
+print(cnf_mat)
 
 # List of dictionaries for plotly
 dict_list = []
