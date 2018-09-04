@@ -9,11 +9,11 @@ import json
 validation_dir = os.path.join(os.getcwd(), 'data', 'nabirds_9', 'test')
 
 # Import model
-model = load_model('model_best_0.hdf5')
+model = load_model('model_best_1.hdf5')
 
 # Validation Generator
 test_datagen = ImageDataGenerator(
-    rescale=1
+    rescale=1./255
 )
 
 validation_generator = test_datagen.flow_from_directory(
@@ -26,10 +26,23 @@ class_indicies = validation_generator.class_indices
 class_list = list(class_indicies.keys())
 
 #Confusion Matrix
-Y_pred = model.predict_generator(validation_generator)
-y_pred = np.argmax(Y_pred, axis=1)
-cnf_mat = confusion_matrix(validation_generator.classes, y_pred)
-print("Confusion Matrix:")
+true_class = validation_generator.classes
+y_pred = model.predict_generator(validation_generator)
+for i in range(y_pred.shape[0]):
+    y_pred[i] = y_pred[i].round()
+
+def conf_matrix(true_class, y_pred):
+    cnf_mat = np.zeros((y_pred.shape[1], y_pred.shape[1]))
+    for i in range(y_pred.shape[0]):
+        y_pred_ex = y_pred[i].argmax()
+        cnf_mat[y_pred_ex, true_class[i]]+=1
+        print("--------------------------------------------")
+        print("True class: {0}".format(true_class[i]))
+        print("Pred class: {0}".format(y_pred_ex))
+        print("--------------------------------------------")
+    return cnf_mat
+
+cnf_mat = conf_matrix(true_class, y_pred)
 print(cnf_mat)
 
 # List of dictionaries for plotly
