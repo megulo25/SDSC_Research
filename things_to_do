@@ -1,4 +1,5 @@
-Just use predict instead of predict generator
+Add the cropped images and train model again. Go through email to find new dropbox file. 
+At the same time train the 400 class dataset.
 
 Each of the child class has multiple levels of parent classes that always has birds at the top.
 For instance, 

@@ -18,17 +18,19 @@ if not os.path.isdir('data'):
 
 os.chdir('data')
 if message == 0:
-    message = 'nabirds_9'
-    if not os.path.isdir('nabirds_9'):
-        os.mkdir('nabirds_9')
+    message = 'nabirds_10'
+    if not os.path.isdir('nabirds_10'):
+        os.mkdir('nabirds_10')
 
-    if len(os.listdir('nabirds_9')) == 0:
-        os.chdir('nabirds_9')
-        os.system('wget https://www.dropbox.com/sh/g6aatnar4n5s63g/AABBixZUh5SiPvFS7eVVVxlHa')
-        os.system('unzip AABBixZUh5SiPvFS7eVVVxlHa')
-        os.remove('AABBixZUh5SiPvFS7eVVVxlHa')
+    if len(os.listdir('nabirds_10')) == 0:
+        os.chdir('nabirds_10')
+        os.system('wget https://www.dropbox.com/sh/g6aatnar4n5s63g/AABBixZUh5SiPvFS7eVVVxlHa?dl=0')
+        os.system('unzip AABBixZUh5SiPvFS7eVVVxlHa?dl=0')
+        os.remove('AABBixZUh5SiPvFS7eVVVxlHa?dl=0')
         # Ignore UncroppedCommonGoldeneye
-        shutil.rmtree('UncroppedCommonGoldeneye')
+        shutil.rmtree('CommonGoldeneye')
+        shutil.rmtree('SpottedTowheee')
+        shutil.rmtree('Western Grebe')
         os.chdir('../..')
     else:
         os.chdir('..')
@@ -73,7 +75,7 @@ if (len(os.listdir(training_dir)) == 0) and (len(os.listdir(validation_dir)) == 
 print('Dataset split!\n')
 #-----------------------------------------------------------------------------------------------#
 # Import Model
-class_count = 9
+class_count = 10
 
 # Import InceptionNet
 print('Loading in model...')
