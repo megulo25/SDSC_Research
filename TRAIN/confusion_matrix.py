@@ -1,5 +1,4 @@
 from keras.models import load_model
-from sklearn.metrics import confusion_matrix
 from keras.preprocessing.image import ImageDataGenerator
 import matplotlib.image as mpimg
 import os
@@ -30,7 +29,7 @@ class_list = list(class_indicies.keys())
 true_class = validation_generator.classes
 
 # Get a list of the images
-y_pred_array = np.zeros(9)
+y_pred_array = np.zeros((1,9))
 base_validation_path = os.path.join(os.getcwd(), 'data', 'nabirds_9', 'test')
 for n in range(len(validation_generator.filenames)):
     img_path = os.path.join(base_validation_path, validation_generator.filenames[n])
@@ -38,10 +37,18 @@ for n in range(len(validation_generator.filenames)):
     img = cv2.resize(img, (299, 299))
     img = np.reshape(img, (1,299,299,3))
     y_pred_ex = model.predict(img)
+    y_pred_ex = y_pred_ex.round()
     y_pred_array = np.concatenate([y_pred_array, y_pred_ex])
 
 y_pred_array = y_pred_array[1:]
-cnf_mat = confusion_matrix(true_class, y_pred_array)
+
+def confusion_matrx(true_class, y_pred):
+    cnf_mat = np.zeros((y_pred.shape[1], y_pred.shape[1]))
+    for i in range(y_pred.shape[0]):
+        cnf_mat[true_class[i], y_pred[i].argmax()] += 1
+    return cnf_mat
+
+cnf_mat = confusion_matrx(true_class, y_pred_array)
 
 # List of dictionaries for plotly
 dict_list = []
@@ -81,10 +88,10 @@ path_to_data_folder_in_webapp = "/".join(path_to_data_folder_in_webapp)
 path_to_data_folder_in_webapp = os.path.join(path_to_data_folder_in_webapp, 'web_app', 'static', 'data')
 
 # Bring in training process
-train_acc = np.load('history_data/train_acc_0.npy').tolist()
-val_acc = np.load('history_data/val_acc_0.npy').tolist()
-train_loss = np.load('history_data/train_loss_0.npy').tolist()
-val_loss = np.load('history_data/val_loss_0.npy').tolist()
+train_acc = np.load('history_data/train_acc.npy').tolist()
+val_acc = np.load('history_data/val_acc.npy').tolist()
+train_loss = np.load('history_data/train_loss.npy').tolist()
+val_loss = np.load('history_data/val_loss.npy').tolist()
 
 
 # Save data
