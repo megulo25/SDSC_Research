@@ -3,9 +3,13 @@ import numpy as np
 import os
 import sys
 import shutil
+import argparse
 
-gpu_number = sys.argv[1]
-os.environ["CUDA_VISIBLE_DEVICES"]="{0}".format(gpu_number)
+parser = argparse.ArgumentParser(description='Arguments for bird training')
+parser.add_argument('-gpu_id', '--GPU_IDs', type=list, help='The ids of the gpus being used as a string. \nEx: For gpus 0, 1, 2\n\tpython train_keras.py -gpu_id 012')
+args = parser.parse_args()
+
+os.environ["CUDA_VISIBLE_DEVICES"]="{0}".format(args.GPU_IDs)
 #-----------------------------------------------------------------------------------------------#
 # Split to training and testing set
 message = input('Which nabirds dataset are you working on? (Enter 0 for 10_class or 1 for 555_class): ')
@@ -167,7 +171,7 @@ print('Training complete!\n')
 #-----------------------------------------------------------------------------------------------#
 # Save the weights
 print('Saving weights and architecture...')
-model.save_weights('model_weights.h5'.format(gpu_number))
+model.save_weights('model_weights.h5')
 #-----------------------------------------------------------------------------------------------#
 # Save training accuracy and testing accuracy:
 print('Saving history...')
@@ -190,6 +194,6 @@ print('History saved!\n')
 #-----------------------------------------------------------------------------------------------#
 # Save the model architecture
 model_json = model.to_json()
-with open('model_architecture.json'.format(gpu_number), 'w') as json_file:
+with open('model_architecture.json', 'w') as json_file:
     json_file.write(model_json)
 print('Everything saved!')
