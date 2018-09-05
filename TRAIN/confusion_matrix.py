@@ -1,9 +1,11 @@
 from keras.models import load_model
 from sklearn.metrics import confusion_matrix
 from keras.preprocessing.image import ImageDataGenerator
+import matplotlib.image as mpimg
 import os
 import numpy as np
 import json
+import cv2
 
 validation_dir = os.path.join(os.getcwd(), 'data', 'nabirds_9', 'test')
 
@@ -12,7 +14,7 @@ model = load_model('model_best.hdf5')
 
 # Validation Generator
 test_datagen = ImageDataGenerator(
-    rescale=1./255
+    rescale=1
 )
 
 validation_generator = test_datagen.flow_from_directory(
@@ -26,13 +28,20 @@ class_list = list(class_indicies.keys())
 
 #Confusion Matrix
 true_class = validation_generator.classes
-y_pred = model.predict_generator(validation_generator)
-for i in range(y_pred.shape[0]):
-    y_pred[i] = y_pred[i].round()
 
-import time
-print("Still need to construct the confusion matrix:")
-time.sleep(12345)
+# Get a list of the images
+y_pred_array = np.zeros(9)
+base_validation_path = os.path.join(os.getcwd(), 'data', 'nabirds_9', 'test')
+for n in range(len(validation_generator.filenames)):
+    img_path = os.path.join(base_validation_path, validation_generator.filenames[n])
+    img = mpimg.imread(img_path)
+    img = cv2.resize(img, (299, 299))
+    img = np.reshape(img, (1,299,299,3))
+    y_pred_ex = model.predict(img)
+    y_pred_array = np.concatenate([y_pred_array, y_pred_ex])
+
+y_pred_array = y_pred_array[1:]
+cnf_mat = confusion_matrix(true_class, y_pred_array)
 
 # List of dictionaries for plotly
 dict_list = []

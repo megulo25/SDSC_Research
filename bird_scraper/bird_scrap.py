@@ -153,7 +153,7 @@ if __name__ == "__main__":
     cleaned_list = cleaned_list[1:]
 
     # Temp
-    cleaned_list = cleaned_list[749:]
+    cleaned_list = cleaned_list[755:]
 
     # Open up the chrome browser
     url = 'https://www.allaboutbirds.org/search/'

@@ -1,6 +1,4 @@
-Things to try to solve bad predictions:
-    - Use SGD instead of Adam.
-    - Remove rescale
+Just use predict instead of predict generator
 
 Each of the child class has multiple levels of parent classes that always has birds at the top.
 For instance, 
