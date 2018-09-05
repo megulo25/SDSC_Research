@@ -6,7 +6,8 @@ import numpy as np
 import json
 import cv2
 
-validation_dir = os.path.join(os.getcwd(), 'data', 'nabirds_9', 'test')
+dir_name = 'nabirds_10'
+validation_dir = os.path.join(os.getcwd(), 'data', dir_name, 'test')
 
 # Import model
 model = load_model('model_best.hdf5')
@@ -30,7 +31,7 @@ true_class = validation_generator.classes
 
 # Get a list of the images
 y_pred_array = np.zeros((1,9))
-base_validation_path = os.path.join(os.getcwd(), 'data', 'nabirds_9', 'test')
+base_validation_path = os.path.join(os.getcwd(), 'data', dir_name, 'test')
 for n in range(len(validation_generator.filenames)):
     img_path = os.path.join(base_validation_path, validation_generator.filenames[n])
     img = mpimg.imread(img_path)

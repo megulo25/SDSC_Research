@@ -8,7 +8,7 @@ gpu_number = sys.argv[1]
 os.environ["CUDA_VISIBLE_DEVICES"]="{0}".format(gpu_number)
 #-----------------------------------------------------------------------------------------------#
 # Split to training and testing set
-message = input('Which nabirds dataset are you working on? (Enter 0 for 9_class or 1 for 555_class): ')
+message = input('Which nabirds dataset are you working on? (Enter 0 for 10_class or 1 for 555_class): ')
 message = int(message)
 
 # Import Training Data
@@ -19,6 +19,7 @@ if not os.path.isdir('data'):
 os.chdir('data')
 if message == 0:
     message = 'nabirds_10'
+    class_count = 10
     if not os.path.isdir('nabirds_10'):
         os.mkdir('nabirds_10')
 
@@ -31,12 +32,18 @@ if message == 0:
         shutil.rmtree('CommonGoldeneye')
         shutil.rmtree('SpottedTowheee')
         shutil.rmtree('Western Grebe')
+        full_path_to_data = os.path.join(os.getcwd(), 'data', message)
+        training_dir = os.path.join(full_path_to_data, 'train')
+        validation_dir = os.path.join(full_path_to_data, 'test')
         os.chdir('../..')
     else:
+        full_path_to_data = os.path.join(os.getcwd(), 'data', message)
+        training_dir = os.path.join(full_path_to_data, 'train')
+        validation_dir = os.path.join(full_path_to_data, 'test')
         os.chdir('..')
+    
 elif message == 1:
-    message = 'nabirds_555'
-
+    class_count = 555
     if not os.path.isdir('nabirds_555'):
         os.mkdir('nabirds_555')
 
@@ -44,8 +51,15 @@ elif message == 1:
         os.chdir('nabirds_555')
         os.system('wget https://www.dropbox.com/s/nf78cbxq6bxpcfc/nabirds.tar.gz')
         os.system('tar xvzf nabirds.tar.gz')
+        os.remove('nabirds.tar.gz')
+        full_path_to_data = os.path.join(os.getcwd(), 'nabirds', 'images')
+        training_dir = os.path.join(full_path_to_data, 'train')
+        validation_dir = os.path.join(full_path_to_data, 'test')
         os.chdir('../..')
     else:
+        full_path_to_data = os.path.join(os.getcwd(), 'nabirds_555','nabirds', 'images')
+        training_dir = os.path.join(full_path_to_data, 'train')
+        validation_dir = os.path.join(full_path_to_data, 'test')
         os.chdir('..')
 else:
     raise NameError('You need to enter either 0 or 1!')
@@ -53,12 +67,7 @@ else:
 print('Dataset loaded!\n')
 
 print('Splitting dataset...')
-
-full_path_to_data = os.path.join(os.getcwd(), 'data', message)
-training_dir = os.path.join(full_path_to_data, 'train')
-validation_dir = os.path.join(full_path_to_data, 'test')
 training_percentage = 0.7
-
 # Create Training and Validation folders if they don't exist.
 if not os.path.isdir(training_dir):
     os.mkdir(training_dir)
@@ -75,7 +84,6 @@ if (len(os.listdir(training_dir)) == 0) and (len(os.listdir(validation_dir)) == 
 print('Dataset split!\n')
 #-----------------------------------------------------------------------------------------------#
 # Import Model
-class_count = 10
 
 # Import InceptionNet
 print('Loading in model...')
