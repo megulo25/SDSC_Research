@@ -1,4 +1,5 @@
 from helper_functions import split_train_test_dir
+from keras.utils import multi_gpu_model
 import numpy as np
 import os
 import sys
@@ -6,7 +7,7 @@ import shutil
 import argparse
 
 parser = argparse.ArgumentParser(description='Arguments for bird training')
-parser.add_argument('-gpu_id', '--GPU_IDs', type=list, help='The ids of the gpus being used as a string. \nEx: For gpus 0, 1, 2\n\tpython train_keras.py -gpu_id 012')
+parser.add_argument('-gpu_id', '--GPU_IDs', type=list, required=True,help='The ids of the gpus being used as a string. \nEx: For gpus 0, 1, 2\n\tpython train_keras.py -gpu_id 012')
 args = parser.parse_args()
 
 os.environ["CUDA_VISIBLE_DEVICES"]= ','.join(args.GPU_IDs)
@@ -100,6 +101,9 @@ x = Flatten()(x)
 output_layer = Dense(class_count, activation='softmax')(x)
 model = Model(inputs=model.input, outputs=output_layer)
 print('Model loaded!\n')
+
+# Multi-gpu functionality
+model = multi_gpu_model(model)
 
 # Output Model Summary
 model.summary()
