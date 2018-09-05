@@ -159,7 +159,7 @@ print('Beginning training...')
 history = model.fit_generator(
     train_generator,
     validation_data=validation_generator,
-    epochs=95,
+    epochs=150,
     verbose=2,
     callbacks=callback_list
 )
@@ -167,7 +167,7 @@ print('Training complete!\n')
 #-----------------------------------------------------------------------------------------------#
 # Save the weights
 print('Saving weights and architecture...')
-model.save_weights('model_weights_{0}.h5'.format(gpu_number))
+model.save_weights('model_weights.h5'.format(gpu_number))
 #-----------------------------------------------------------------------------------------------#
 # Save training accuracy and testing accuracy:
 print('Saving history...')
@@ -177,19 +177,19 @@ if not os.path.isdir('history_data'):
     os.mkdir('history_data')
 train_acc = history.history['acc']
 train_loss = history.history['loss']
-np.save('./history_data/train_acc_{0}.npy'.format(gpu_number), train_acc)
-np.save('./history_data/train_loss_{0}.npy'.format(gpu_number), train_loss)
+np.save('./history_data/train_acc.npy')
+np.save('./history_data/train_loss.npy')
 
 # Validation Accuracy and Loss
 val_acc = history.history['val_acc']
 val_loss = history.history['val_loss']
-np.save('./history_data/val_acc_{0}.npy'.format(gpu_number), val_acc)
-np.save('./history_data/val_loss_{0}.npy'.format(gpu_number), val_loss)
+np.save('./history_data/val_acc.npy')
+np.save('./history_data/val_loss.npy')
 
 print('History saved!\n')
 #-----------------------------------------------------------------------------------------------#
 # Save the model architecture
 model_json = model.to_json()
-with open('model_architecture_{0}.json'.format(gpu_number), 'w') as json_file:
+with open('model_architecture.json'.format(gpu_number), 'w') as json_file:
     json_file.write(model_json)
 print('Everything saved!')

@@ -30,7 +30,8 @@ class_list = list(class_indicies.keys())
 true_class = validation_generator.classes
 
 # Get a list of the images
-y_pred_array = np.zeros((1,9))
+num_classes = len(class_indicies)
+y_pred_array = np.zeros((1,num_classes))
 base_validation_path = os.path.join(os.getcwd(), 'data', dir_name, 'test')
 for n in range(len(validation_generator.filenames)):
     img_path = os.path.join(base_validation_path, validation_generator.filenames[n])
@@ -87,6 +88,10 @@ path_to_data_folder_in_webapp = os.getcwd()
 path_to_data_folder_in_webapp = path_to_data_folder_in_webapp.split('/')[:-1]
 path_to_data_folder_in_webapp = "/".join(path_to_data_folder_in_webapp)
 path_to_data_folder_in_webapp = os.path.join(path_to_data_folder_in_webapp, 'web_app', 'static', 'data')
+
+# Create data folder, if does not exist
+if not os.path.isdir(path_to_data_folder_in_webapp):
+    os.mkdir(path_to_data_folder_in_webapp)
 
 # Bring in training process
 train_acc = np.load('history_data/train_acc.npy').tolist()
