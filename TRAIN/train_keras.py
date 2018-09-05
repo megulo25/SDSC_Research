@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser(description='Arguments for bird training')
 parser.add_argument('-gpu_id', '--GPU_IDs', type=list, help='The ids of the gpus being used as a string. \nEx: For gpus 0, 1, 2\n\tpython train_keras.py -gpu_id 012')
 args = parser.parse_args()
 
-os.environ["CUDA_VISIBLE_DEVICES"]="{0}".format(args.GPU_IDs)
+os.environ["CUDA_VISIBLE_DEVICES"]= ','.join(args.GPU_IDs)
 #-----------------------------------------------------------------------------------------------#
 # Split to training and testing set
 message = input('Which nabirds dataset are you working on? (Enter 0 for 10_class or 1 for 555_class): ')
