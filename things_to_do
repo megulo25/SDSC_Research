@@ -1,4 +1,6 @@
-- Set up plotly to post graphs on web app.
+Things to try to solve bad predictions:
+    - Use SGD instead of Adam.
+    - Remove rescale
 
 Each of the child class has multiple levels of parent classes that always has birds at the top.
 For instance, 

@@ -16,7 +16,6 @@ print('Loading dataset...')
 if not os.path.isdir('data'):
     os.mkdir('data')
 
-
 os.chdir('data')
 if message == 0:
     message = 'nabirds_9'
@@ -72,7 +71,6 @@ if (len(os.listdir(training_dir)) == 0) and (len(os.listdir(validation_dir)) == 
         train_percentage=training_percentage
     )
 print('Dataset split!\n')
-
 #-----------------------------------------------------------------------------------------------#
 # Import Model
 class_count = 9
@@ -100,7 +98,6 @@ train_datagen = ImageDataGenerator(width_shift_range=0.1,
                                     height_shift_range=0.1,
                                     horizontal_flip=True,
                                     vertical_flip=True,
-                                    rescale=1./255,
                                     featurewise_center=True,
                                     featurewise_std_normalization=True,
                                     rotation_range=20,
@@ -119,7 +116,7 @@ class_indicies = train_generator.class_indices
 np.save('class_indicies.npy', class_indicies)
 # Validation Generator
 test_datagen = ImageDataGenerator(
-    rescale=1./255
+    rescale=1
 )
 
 validation_generator = test_datagen.flow_from_directory(
@@ -131,13 +128,14 @@ validation_generator = test_datagen.flow_from_directory(
 #-----------------------------------------------------------------------------------------------#
 # Optimizer
 from keras import optimizers
-adam = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+SGD = optimizers.SGD(lr=0.01, momentum=0.0, decay=0.0, nesterov=True)
+# adam = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
 #-----------------------------------------------------------------------------------------------#
 # Compile
 from keras import metrics
 model.compile(
     loss='mean_squared_error',
-    optimizer=adam,
+    optimizer=SGD,
     metrics=['accuracy']
 )
 

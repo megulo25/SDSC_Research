@@ -1,7 +1,6 @@
 from keras.models import load_model
 from sklearn.metrics import confusion_matrix
 from keras.preprocessing.image import ImageDataGenerator
-import cv2
 import os
 import numpy as np
 import json
@@ -31,20 +30,9 @@ y_pred = model.predict_generator(validation_generator)
 for i in range(y_pred.shape[0]):
     y_pred[i] = y_pred[i].round()
 
-
-# def conf_matrix(true_class, y_pred):
-#     cnf_mat = np.zeros((y_pred.shape[1], y_pred.shape[1]))
-#     for i in range(y_pred.shape[0]):
-#         y_pred_ex = y_pred[i].argmax()
-#         cnf_mat[y_pred_ex, true_class[i]]+=1
-#         print("--------------------------------------------")
-#         print("True class: {0}".format(true_class[i]))
-#         print("Pred class: {0}".format(y_pred_ex))
-#         print("--------------------------------------------")
-#     return cnf_mat
-
-# cnf_mat = conf_matrix(true_class, y_pred)
-print(cnf_mat)
+import time
+print("Still need to construct the confusion matrix:")
+time.sleep(12345)
 
 # List of dictionaries for plotly
 dict_list = []
