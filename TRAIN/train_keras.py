@@ -32,7 +32,6 @@ if message == 0:
         os.system('wget https://www.dropbox.com/sh/g6aatnar4n5s63g/AABBixZUh5SiPvFS7eVVVxlHa?dl=0')
         os.system('unzip AABBixZUh5SiPvFS7eVVVxlHa?dl=0')
         os.remove('AABBixZUh5SiPvFS7eVVVxlHa?dl=0')
-        # Ignore UncroppedCommonGoldeneye
         shutil.rmtree('CommonGoldeneye')
         shutil.rmtree('SpottedTowheee')
         shutil.rmtree('Western Grebe')
@@ -101,6 +100,10 @@ output_layer = Dense(class_count, activation='softmax')(x)
 model = Model(inputs=model.input, outputs=output_layer)
 print('Model loaded!\n')
 
+# Multi-gpu
+from keras.utils import multi_gpu_model
+model = multi_gpu_model(model)
+
 # Output Model Summary
 model.summary()
 #-----------------------------------------------------------------------------------------------#
@@ -108,17 +111,20 @@ model.summary()
 from keras.preprocessing.image import ImageDataGenerator
 
 # Training Generator
-train_datagen = ImageDataGenerator(width_shift_range=0.1,
-                                    height_shift_range=0.1,
-                                    horizontal_flip=True,
-                                    vertical_flip=True,
-                                    featurewise_center=True,
-                                    featurewise_std_normalization=True,
-                                    rotation_range=20,
-                                    shear_range=0.2,
-                                    zoom_range=0.2,
-                                    zca_epsilon=1e-6,
-                                    fill_mode="nearest")
+# train_datagen = ImageDataGenerator(width_shift_range=0.1,
+#                                     height_shift_range=0.1,
+#                                     horizontal_flip=True,
+#                                     vertical_flip=True,
+#                                     featurewise_center=True,
+#                                     featurewise_std_normalization=True,
+#                                     rotation_range=20,
+#                                     shear_range=0.2,
+#                                     zoom_range=0.2,
+#                                     zca_epsilon=1e-6,
+#                                     fill_mode="nearest")
+
+train_datagen = ImageDataGenerator(width_shift_range=0.1)
+
 
 train_generator = train_datagen.flow_from_directory(
     directory=training_dir,

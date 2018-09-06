@@ -1,5 +1,9 @@
-argument parser
-multi task learning
+- Try to get multi gpu scaling to work:
+- Sources of low gpu utilization (slow-down of training)
+    * all of the image preprocessing done is expensive on the cpu. Thus the cpu can't feed data as fast as the gpu is processing them.
+    * synchronization across all the gpus is also to blame here. Bringing in the weights together it expensive.
+
+- Try experimenting with reducing the number of image preprocessing steps so that it isn't too much on the cpu.
 
 Each of the child class has multiple levels of parent classes that always has birds at the top.
 For instance, 
