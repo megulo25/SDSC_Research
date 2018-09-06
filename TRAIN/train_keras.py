@@ -1,5 +1,4 @@
 from helper_functions import split_train_test_dir
-from keras.utils import multi_gpu_model
 import numpy as np
 import os
 import sys
@@ -101,9 +100,6 @@ x = Flatten()(x)
 output_layer = Dense(class_count, activation='softmax')(x)
 model = Model(inputs=model.input, outputs=output_layer)
 print('Model loaded!\n')
-
-# Multi-gpu functionality
-model = multi_gpu_model(model)
 
 # Output Model Summary
 model.summary()
