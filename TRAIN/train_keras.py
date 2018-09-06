@@ -146,14 +146,14 @@ validation_generator = test_datagen.flow_from_directory(
 #-----------------------------------------------------------------------------------------------#
 # Optimizer
 from keras import optimizers
-SGD = optimizers.SGD(lr=0.01, momentum=0.0, decay=0.0, nesterov=True)
-# adam = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+# optimizer = optimizers.SGD(lr=0.01, momentum=0.0, decay=0.0, nesterov=True)
+optimizer = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
 #-----------------------------------------------------------------------------------------------#
 # Compile
 from keras import metrics
 model.compile(
     loss='mean_squared_error',
-    optimizer=SGD,
+    optimizer=optimizer,
     metrics=['accuracy']
 )
 
