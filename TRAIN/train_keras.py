@@ -46,6 +46,7 @@ if message == 0:
         os.chdir('..')
     
 elif message == 1:
+    message = 'nabirds_555'
     class_count = 555
     if not os.path.isdir('nabirds_555'):
         os.mkdir('nabirds_555')
@@ -101,8 +102,8 @@ model = Model(inputs=model.input, outputs=output_layer)
 print('Model loaded!\n')
 
 # Multi-gpu
-from keras.utils import multi_gpu_model
-model = multi_gpu_model(model)
+# from keras.utils import multi_gpu_model
+# model = multi_gpu_model(model)
 
 # Output Model Summary
 model.summary()
@@ -111,19 +112,19 @@ model.summary()
 from keras.preprocessing.image import ImageDataGenerator
 
 # Training Generator
-# train_datagen = ImageDataGenerator(width_shift_range=0.1,
-#                                     height_shift_range=0.1,
-#                                     horizontal_flip=True,
-#                                     vertical_flip=True,
-#                                     featurewise_center=True,
-#                                     featurewise_std_normalization=True,
-#                                     rotation_range=20,
-#                                     shear_range=0.2,
-#                                     zoom_range=0.2,
-#                                     zca_epsilon=1e-6,
-#                                     fill_mode="nearest")
+train_datagen = ImageDataGenerator(width_shift_range=0.1,
+                                    height_shift_range=0.1,
+                                    horizontal_flip=True,
+                                    vertical_flip=True,
+                                    featurewise_center=True,
+                                    featurewise_std_normalization=True,
+                                    rotation_range=20,
+                                    shear_range=0.2,
+                                    zoom_range=0.2,
+                                    zca_epsilon=1e-6,
+                                    fill_mode="nearest")
 
-train_datagen = ImageDataGenerator(width_shift_range=0.1)
+# train_datagen = ImageDataGenerator(width_shift_range=0.1)
 
 
 train_generator = train_datagen.flow_from_directory(
