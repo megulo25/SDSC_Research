@@ -35,12 +35,12 @@ if message == 0:
         shutil.rmtree('CommonGoldeneye')
         shutil.rmtree('SpottedTowheee')
         shutil.rmtree('Western Grebe')
-        full_path_to_data = os.path.join(os.getcwd(), 'data', message)
+        full_path_to_data = os.path.join(os.getcwd())
         training_dir = os.path.join(full_path_to_data, 'train')
         validation_dir = os.path.join(full_path_to_data, 'test')
         os.chdir('../..')
     else:
-        full_path_to_data = os.path.join(os.getcwd(), 'data', message)
+        full_path_to_data = os.path.join(os.getcwd(), message)
         training_dir = os.path.join(full_path_to_data, 'train')
         validation_dir = os.path.join(full_path_to_data, 'test')
         os.chdir('..')
@@ -129,7 +129,7 @@ train_datagen = ImageDataGenerator(width_shift_range=0.1)
 train_generator = train_datagen.flow_from_directory(
     directory=training_dir,
     target_size=(299,299),
-    batch_size=16,
+    batch_size=256,
     class_mode='categorical'
 )
 class_indicies = train_generator.class_indices
