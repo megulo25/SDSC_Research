@@ -1,4 +1,3 @@
-from keras.models import load_model
 from keras.preprocessing.image import ImageDataGenerator
 import matplotlib.image as mpimg
 import os
@@ -10,7 +9,16 @@ dir_name = 'nabirds_10'
 validation_dir = os.path.join(os.getcwd(), 'data', dir_name, 'test')
 
 # Import model
-model = load_model('model_best.hdf5')
+# from keras.models import load_model
+# model = load_model('model_best.hdf5')
+
+from keras.models import model_from_json
+# Model reconstruction from JSON file
+with open('model_architecture.json', 'r') as f:
+    model = model_from_json(f.read())
+
+# Load weights into the new model
+model.load_weights('model_best_weights.hdf5')
 
 # Validation Generator
 test_datagen = ImageDataGenerator(

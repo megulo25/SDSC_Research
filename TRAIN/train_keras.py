@@ -103,7 +103,7 @@ print('Model loaded!\n')
 
 # Save the model architecture
 model_json = model.to_json()
-with open('model_architecture.json', 'w') as json_file:
+with open('model_architecture_{0}.json'.format(message), 'w') as json_file:
     json_file.write(model_json)
 
 # Multi-gpu
@@ -129,17 +129,15 @@ train_datagen = ImageDataGenerator(width_shift_range=0.1,
                                     zca_epsilon=1e-6,
                                     fill_mode="nearest")
 
-# train_datagen = ImageDataGenerator(width_shift_range=0.1)
-
-
 train_generator = train_datagen.flow_from_directory(
     directory=training_dir,
     target_size=(299,299),
-    batch_size=256,
+    batch_size=64,
     class_mode='categorical'
 )
 class_indicies = train_generator.class_indices
 np.save('class_indicies.npy', class_indicies)
+
 # Validation Generator
 test_datagen = ImageDataGenerator(
     rescale=1
@@ -167,7 +165,7 @@ model.compile(
 
 # Callback function (save best model only)
 from keras.callbacks import ModelCheckpoint
-checkpoint = ModelCheckpoint('./model_best_weights.hdf5', monitor='val_acc', verbose=1, save_best_only=True, save_weights_only=True, mode='max')
+checkpoint = ModelCheckpoint('./model_best_weights_{0}.hdf5'.format(message), monitor='val_acc', verbose=1, save_best_only=True, save_weights_only=False, mode='max')
 callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Train
@@ -183,7 +181,7 @@ print('Training complete!\n')
 #-----------------------------------------------------------------------------------------------#
 # Save the weights
 print('Saving weights and architecture...')
-model.save_weights('model_weights.h5')
+model.save_weights('model_weights_{0}.h5'.format(message))
 #-----------------------------------------------------------------------------------------------#
 # Save training accuracy and testing accuracy:
 print('Saving history...')
@@ -193,14 +191,14 @@ if not os.path.isdir('history_data'):
     os.mkdir('history_data')
 train_acc = history.history['acc']
 train_loss = history.history['loss']
-np.save('./history_data/train_acc.npy')
-np.save('./history_data/train_loss.npy')
+np.save('./history_data/train_acc_{0}.npy'.format(message))
+np.save('./history_data/train_loss_{0}.npy'.format(message))
 
 # Validation Accuracy and Loss
 val_acc = history.history['val_acc']
 val_loss = history.history['val_loss']
-np.save('./history_data/val_acc.npy')
-np.save('./history_data/val_loss.npy')
+np.save('./history_data/val_acc_{0}.npy'.format(message))
+np.save('./history_data/val_loss_{0}.npy'.format(message))
 
 print('History saved!\n')
 #-----------------------------------------------------------------------------------------------#
