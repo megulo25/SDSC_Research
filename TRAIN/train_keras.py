@@ -101,6 +101,11 @@ output_layer = Dense(class_count, activation='softmax')(x)
 model = Model(inputs=model.input, outputs=output_layer)
 print('Model loaded!\n')
 
+# Save the model architecture
+model_json = model.to_json()
+with open('model_architecture.json', 'w') as json_file:
+    json_file.write(model_json)
+
 # Multi-gpu
 from keras.utils import multi_gpu_model
 model = multi_gpu_model(model)
@@ -162,7 +167,7 @@ model.compile(
 
 # Callback function (save best model only)
 from keras.callbacks import ModelCheckpoint
-checkpoint = ModelCheckpoint('./model_best.hdf5', monitor='val_acc', verbose=1, save_best_only=True, save_weights_only=True, mode='max')
+checkpoint = ModelCheckpoint('./model_best_weights.hdf5', monitor='val_acc', verbose=1, save_best_only=True, save_weights_only=True, mode='max')
 callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Train
@@ -199,8 +204,3 @@ np.save('./history_data/val_loss.npy')
 
 print('History saved!\n')
 #-----------------------------------------------------------------------------------------------#
-# Save the model architecture
-model_json = model.to_json()
-with open('model_architecture.json', 'w') as json_file:
-    json_file.write(model_json)
-print('Everything saved!')
