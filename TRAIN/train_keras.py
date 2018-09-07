@@ -168,7 +168,7 @@ print('Beginning training...')
 history = model.fit_generator(
     train_generator,
     validation_data=validation_generator,
-    epochs=500,
+    epochs=200,
     verbose=2,
     callbacks=callback_list
 )
@@ -191,14 +191,14 @@ if not os.path.isdir('history_data'):
     os.mkdir('history_data')
 train_acc = history.history['acc']
 train_loss = history.history['loss']
-np.save('./history_data/train_acc_{0}.npy'.format(message))
-np.save('./history_data/train_loss_{0}.npy'.format(message))
+np.save('./history_data/train_acc_{0}.npy'.format(message), train_acc)
+np.save('./history_data/train_loss_{0}.npy'.format(message), train_loss)
 
 # Validation Accuracy and Loss
 val_acc = history.history['val_acc']
 val_loss = history.history['val_loss']
-np.save('./history_data/val_acc_{0}.npy'.format(message))
-np.save('./history_data/val_loss_{0}.npy'.format(message))
+np.save('./history_data/val_acc_{0}.npy'.format(message), val_acc)
+np.save('./history_data/val_loss_{0}.npy'.format(message), val_loss)
 
 print('History saved!\n')
 #-----------------------------------------------------------------------------------------------#
