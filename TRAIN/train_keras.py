@@ -101,11 +101,6 @@ output_layer = Dense(class_count, activation='softmax')(x)
 model = Model(inputs=model.input, outputs=output_layer)
 print('Model loaded!\n')
 
-# Save the model architecture
-model_json = model.to_json()
-with open('model_architecture_{0}.json'.format(message), 'w') as json_file:
-    json_file.write(model_json)
-
 # Multi-gpu
 from keras.utils import multi_gpu_model
 model = multi_gpu_model(model)
@@ -165,7 +160,7 @@ model.compile(
 
 # Callback function (save best model only)
 from keras.callbacks import ModelCheckpoint
-checkpoint = ModelCheckpoint('./model_best_weights_{0}.hdf5'.format(message), monitor='val_acc', verbose=1, save_best_only=True, save_weights_only=False, mode='max')
+checkpoint = ModelCheckpoint('./model_best_{0}.hdf5'.format(message), monitor='val_acc', verbose=1, save_best_only=True, save_weights_only=False, mode='max')
 callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Train
@@ -180,8 +175,13 @@ history = model.fit_generator(
 print('Training complete!\n')
 #-----------------------------------------------------------------------------------------------#
 # Save the weights
-print('Saving weights and architecture...')
-model.save_weights('model_weights_{0}.h5'.format(message))
+# print('Saving weights and architecture...')
+# model.save_weights('model_weights_{0}.h5'.format(message))
+
+# Save the model architecture
+# model_json = model.to_json()
+# with open('model_architecture_{0}.json'.format(message), 'w') as json_file:
+#     json_file.write(model_json)
 #-----------------------------------------------------------------------------------------------#
 # Save training accuracy and testing accuracy:
 print('Saving history...')

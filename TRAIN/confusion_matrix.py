@@ -6,19 +6,7 @@ import json
 import cv2
 
 dir_name = 'nabirds_10'
-validation_dir = os.path.join(os.getcwd(), 'data', dir_name, 'test')
-
-# Import model
-# from keras.models import load_model
-# model = load_model('model_best.hdf5')
-
-from keras.models import model_from_json
-# Model reconstruction from JSON file
-with open('model_architecture.json', 'r') as f:
-    model = model_from_json(f.read())
-
-# Load weights into the new model
-model.load_weights('model_best_weights.hdf5')
+validation_dir = os.path.join(os.getcwd(), 'data', dir_name, 'test', 'test')
 
 # Validation Generator
 test_datagen = ImageDataGenerator(
@@ -36,6 +24,10 @@ class_list = list(class_indicies.keys())
 
 #Confusion Matrix
 true_class = validation_generator.classes
+
+# Import model
+from keras.models import load_model
+model = load_model('model_best_{0}.hdf5'.format(dir_name))
 
 # Get a list of the images
 num_classes = len(class_indicies)
@@ -102,10 +94,10 @@ if not os.path.isdir(path_to_data_folder_in_webapp):
     os.mkdir(path_to_data_folder_in_webapp)
 
 # Bring in training process
-train_acc = np.load('history_data/train_acc.npy').tolist()
-val_acc = np.load('history_data/val_acc.npy').tolist()
-train_loss = np.load('history_data/train_loss.npy').tolist()
-val_loss = np.load('history_data/val_loss.npy').tolist()
+train_acc = np.load('history_data/train_acc_{0}.npy'.format(dir_name)).tolist()
+val_acc = np.load('history_data/val_acc_{0}.npy'.format(dir_name)).tolist()
+train_loss = np.load('history_data/train_loss_{0}.npy'.format(dir_name)).tolist()
+val_loss = np.load('history_data/val_loss_{0}.npy'.format(dir_name)).tolist()
 
 
 # Save data
