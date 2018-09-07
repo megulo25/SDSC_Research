@@ -102,8 +102,8 @@ model = Model(inputs=model.input, outputs=output_layer)
 print('Model loaded!\n')
 
 # Multi-gpu
-# from keras.utils import multi_gpu_model
-# model = multi_gpu_model(model)
+from keras.utils import multi_gpu_model
+model = multi_gpu_model(model)
 
 # Output Model Summary
 model.summary()
@@ -162,7 +162,7 @@ model.compile(
 
 # Callback function (save best model only)
 from keras.callbacks import ModelCheckpoint
-checkpoint = ModelCheckpoint('./model_best.hdf5', monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+checkpoint = ModelCheckpoint('./model_best.hdf5', monitor='val_acc', verbose=1, save_best_only=True, save_weights_only=True, mode='max')
 callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Train
