@@ -4,10 +4,12 @@ from random import sample
 from math import floor
 import numpy as np
 import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 import itertools
 import cv2
 from keras import backend as K
+import h5py
 
 def load_data(message):
     if not os.path.isdir('data'):
@@ -217,10 +219,10 @@ def build_X_y(data_directory):
         # Loop through each image
         for img_name in list_of_images:
             img_full_path = os.path.join(dir_, img_name)
-            img = mpimg.imread(img_full_path)
+            img_old = mpimg.imread(img_full_path)
             
             # Resize the image
-            img = cv2.resize(img, (299, 299))
+            img = cv2.resize(img_old, (299, 299))
             img = np.reshape(img, (1,299,299,3))
 
             # Add to X
@@ -264,6 +266,7 @@ def build_X_y(data_directory):
 
     X = X[1:]
     y = y[1:]
-    np.save('X_10.npy', X)
-    np.save('y_10.npy', y)
-    return X, y
+    h5f = h5py.File('data_10.h5', 'w')
+    h5f.create_dataset('X', data=X)
+    h5f.create_dataset('y', data=y)
+    h5f.close()
