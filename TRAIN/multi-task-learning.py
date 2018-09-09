@@ -6,7 +6,7 @@ import os
 #-----------------------------------------------------------------------------------------------#
 # Load in data
 
-filename = 'data.h5'
+filename = 'data_10.h5'
 f = h5py.File(filename, 'r')
 X = np.array(f['X'])
 y = np.array(f['y'])
@@ -14,8 +14,11 @@ y = np.array(f['y'])
 # Split dataset
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random_state=42)
+del X
+del y
 #-----------------------------------------------------------------------------------------------#
 # Import Model
+class_count = y_train.shape[1]
 
 # Import InceptionNet
 print('Loading in model...')
@@ -89,6 +92,7 @@ callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Train Model
 print('Beginning training...')
+
 history = model.fit_generator(
     train_generator,
     validation_data = validation_generator,
