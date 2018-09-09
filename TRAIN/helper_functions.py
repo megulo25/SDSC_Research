@@ -4,7 +4,7 @@ from random import sample
 from math import floor
 import numpy as np
 import matplotlib.image as mpimg
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 import itertools
 import cv2
@@ -154,9 +154,7 @@ def move_files(list_, base_dir, flag):
         copyfile(input_full_path, output_full_path)
 
 def multitask_loss(y_true, y_pred):
-    # Avoid divide by 0
     y_pred = K.clip(y_pred, K.epsilon(), 1 - K.epsilon())
-    # Multi-task loss
     return K.mean(K.sum(- y_true * K.log(y_pred) - (1 - y_true) * K.log(1 - y_pred), axis=1))
 
 def build_X_y(data_directory):
