@@ -3,7 +3,21 @@
     * all of the image preprocessing done is expensive on the cpu. Thus the cpu can't feed data as fast as the gpu is processing them.
     * synchronization across all the gpus is also to blame here. Bringing in the weights together it expensive.
 
-- Try experimenting with reducing the number of image preprocessing steps so that it isn't too much on the cpu.
+Groups:
+- Barrows Goldeneye, Common Goldeneye: Goldeneye
+- Blue grosbeak, indigo bunting: Grosbeak_Bunting
+- Eastern towhee, Spotted Towheee: Towhee
+- Clarks Grebe, Western Grebe: Grebe
+- Lesser scaup, ring necked duck: Duck
+
+Build Output vector:
+[
+    0   <- Goldeneye
+    0   <- Grosbeak_Bunting
+    0   <- Towhee
+    0   <- Grebe
+    0   <- Duck
+]
 
 Each of the child class has multiple levels of parent classes that always has birds at the top.
 For instance, 

@@ -1,4 +1,4 @@
-from helper_functions import split_train_test_dir
+from helper_functions import split_train_test_dir, load_data
 import numpy as np
 import os
 import sys
@@ -17,57 +17,7 @@ message = int(message)
 
 # Import Training Data
 print('Loading dataset...')
-if not os.path.isdir('data'):
-    os.mkdir('data')
-
-os.chdir('data')
-if message == 0:
-    message = 'nabirds_10'
-    class_count = 10
-    if not os.path.isdir('nabirds_10'):
-        os.mkdir('nabirds_10')
-
-    if len(os.listdir('nabirds_10')) == 0:
-        os.chdir('nabirds_10')
-        os.system('wget https://www.dropbox.com/sh/g6aatnar4n5s63g/AABBixZUh5SiPvFS7eVVVxlHa?dl=0')
-        os.system('unzip AABBixZUh5SiPvFS7eVVVxlHa?dl=0')
-        os.remove('AABBixZUh5SiPvFS7eVVVxlHa?dl=0')
-        shutil.rmtree('CommonGoldeneye')
-        shutil.rmtree('SpottedTowheee')
-        shutil.rmtree('Western Grebe')
-        full_path_to_data = os.path.join(os.getcwd())
-        training_dir = os.path.join(full_path_to_data, 'train')
-        validation_dir = os.path.join(full_path_to_data, 'test')
-        os.chdir('../..')
-    else:
-        full_path_to_data = os.path.join(os.getcwd(), message)
-        training_dir = os.path.join(full_path_to_data, 'train')
-        validation_dir = os.path.join(full_path_to_data, 'test')
-        os.chdir('..')
-    
-elif message == 1:
-    message = 'nabirds_555'
-    class_count = 555
-    if not os.path.isdir('nabirds_555'):
-        os.mkdir('nabirds_555')
-
-    if len(os.listdir('nabirds_555')) == 0:
-        os.chdir('nabirds_555')
-        os.system('wget https://www.dropbox.com/s/nf78cbxq6bxpcfc/nabirds.tar.gz')
-        os.system('tar xvzf nabirds.tar.gz')
-        os.remove('nabirds.tar.gz')
-        full_path_to_data = os.path.join(os.getcwd(), 'nabirds', 'images')
-        training_dir = os.path.join(full_path_to_data, 'train')
-        validation_dir = os.path.join(full_path_to_data, 'test')
-        os.chdir('../..')
-    else:
-        full_path_to_data = os.path.join(os.getcwd(), 'nabirds_555','nabirds', 'images')
-        training_dir = os.path.join(full_path_to_data, 'train')
-        validation_dir = os.path.join(full_path_to_data, 'test')
-        os.chdir('..')
-else:
-    raise NameError('You need to enter either 0 or 1!')
-
+training_dir, validation_dir = load_data(message)
 print('Dataset loaded!\n')
 
 print('Splitting dataset...')

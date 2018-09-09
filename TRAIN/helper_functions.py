@@ -9,7 +9,60 @@ import itertools
 import cv2
 from keras import backend as K
 
-def split_train_test_dir(dir_of_data, train_dir, test_dir,train_percentage):
+def load_data(message):
+    if not os.path.isdir('data'):
+        os.mkdir('data')
+    os.chdir('data')
+    if message == 0:
+        message = 'nabirds_10'
+        class_count = 10
+        if not os.path.isdir('nabirds_10'):
+            os.mkdir('nabirds_10')
+
+        if len(os.listdir('nabirds_10')) == 0:
+            os.chdir('nabirds_10')
+            os.system('wget https://www.dropbox.com/sh/g6aatnar4n5s63g/AABBixZUh5SiPvFS7eVVVxlHa?dl=0')
+            os.system('unzip AABBixZUh5SiPvFS7eVVVxlHa?dl=0')
+            os.remove('AABBixZUh5SiPvFS7eVVVxlHa?dl=0')
+            shutil.rmtree('CommonGoldeneye')
+            shutil.rmtree('SpottedTowheee')
+            shutil.rmtree('Western Grebe')
+            full_path_to_data = os.path.join(os.getcwd())
+            training_dir = os.path.join(full_path_to_data, 'train')
+            validation_dir = os.path.join(full_path_to_data, 'test')
+            os.chdir('../..')
+        else:
+            full_path_to_data = os.path.join(os.getcwd(), message)
+            training_dir = os.path.join(full_path_to_data, 'train')
+            validation_dir = os.path.join(full_path_to_data, 'test')
+            os.chdir('..')
+    
+    elif message == 1:
+        message = 'nabirds_555'
+        class_count = 555
+        if not os.path.isdir('nabirds_555'):
+            os.mkdir('nabirds_555')
+
+        if len(os.listdir('nabirds_555')) == 0:
+            os.chdir('nabirds_555')
+            os.system('wget https://www.dropbox.com/s/nf78cbxq6bxpcfc/nabirds.tar.gz')
+            os.system('tar xvzf nabirds.tar.gz')
+            os.remove('nabirds.tar.gz')
+            full_path_to_data = os.path.join(os.getcwd(), 'nabirds', 'images')
+            training_dir = os.path.join(full_path_to_data, 'train')
+            validation_dir = os.path.join(full_path_to_data, 'test')
+            os.chdir('../..')
+        else:
+            full_path_to_data = os.path.join(os.getcwd(), 'nabirds_555','nabirds', 'images')
+            training_dir = os.path.join(full_path_to_data, 'train')
+            validation_dir = os.path.join(full_path_to_data, 'test')
+            os.chdir('..')
+    else:
+        raise NameError('You need to enter either 0 or 1!')
+    
+    return training_dir, validation_dir
+
+def split_train_test_dir(dir_of_data, train_dir, test_dir, train_percentage):
     """
     Split Create a training and testing directories for training keras model.
     Arguments:
@@ -104,9 +157,113 @@ def multitask_loss(y_true, y_pred):
     # Multi-task loss
     return K.mean(K.sum(- y_true * K.log(y_pred) - (1 - y_true) * K.log(1 - y_pred), axis=1))
 
-def y_one_hot_enc(dict_, class_):
-    'return one hot encoding'
-    arr = np.zeros((1011))
-    list_ = list(dict_[class_])
-    arr[list_] = 1
-    return arr
+def build_X_y(data_directory):
+    """
+    Here we will return an X and y for our multitask learning data.
+    The data will be forced to a size of (299,299,3) for our model.
+
+    X: (n, 299, 299, 3)
+    y: (n, 15) ==> 5 for each parent class, 10 for each child class
+
+    Ex:
+    y = [   
+            0,  <- Goldeneye
+            0,  <- Grosbeak_Bunting
+            0,  <- Towhee
+            0,  <- Grebe
+            0,  <- Duck
+            0,  <- Barrows_Goldeneye
+            0,  <- Blue_Grosbeak
+            0,  <- Clarks_Grebe
+            0,  <- Common_Goldeneye
+            0,  <- Eastern_Towhee
+            0,  <- Indigo_Bunting
+            0,  <- Lesser_Scaup
+            0,  <- Ring_Necked_Duck
+            0,  <- Spotted_Towhee 
+            0   <- Western_Grebe
+    ]
+    """
+    X = np.zeros((1, 299, 299, 3))
+    y = np.zeros((1,15))
+
+    parent_class_list = ['goldeneye', 'grosbeak_bunting', 'towhee', 'grebe', 'scaup_duck']
+
+    child_class_dict = {
+        'barrows_goldeneye': 5,
+        'blue_grosbeak': 6,
+        'clarks_grebe': 7,
+        'common_goldeneye': 8,
+        'eastern_towhee': 9,
+        'indigo_bunting': 10,
+        'lesser_scaup': 11,
+        'ring_necked_duck': 12,
+        'spotted_towhee': 13,
+        'western_grebe': 14
+    }
+
+    full_path_list = []
+
+    for (full, _, _) in os.walk(data_directory):
+        full_path_list.append(full)
+    
+    # Get rid of main dir from full_path_list
+    full_path_list = full_path_list[1:]
+
+    # Loop through each subdirectory and build X and y
+    for dir_ in full_path_list:
+        for (_, _, list_of_images) in os.walk(dir_):
+            pass
+        # Loop through each image
+        for img_name in list_of_images:
+            img_full_path = os.path.join(dir_, img_name)
+            img = mpimg.imread(img_full_path)
+            
+            # Resize the image
+            img = cv2.resize(img, (299, 299))
+            img = np.reshape(img, (1,299,299,3))
+
+            # Add to X
+            X = np.concatenate([X, img])
+
+            # Add to y
+            list_ = dir_.split('/')
+            relative_name = list_[-1].lower()
+            relative_name_list = relative_name.split('_')
+
+            for i in relative_name_list:
+                if i in 'goldeneye':
+                    p_idx = 0
+                    break
+                elif i in 'grosbeak':
+                    p_idx = 1
+                    break
+                elif i in 'bunting':
+                    p_idx = 1
+                    break
+                elif i in 'towhee':
+                    p_idx = 2
+                    break
+                elif i in 'grebe':
+                    p_idx = 3
+                    break
+                elif i in 'scaup':
+                    p_idx = 4
+                    break
+                elif i in 'duck':
+                    p_idx = 4
+                    break
+
+            y_i = np.zeros((1,15))
+            y_i[0, p_idx] = 1
+
+            c_idx = child_class_dict[relative_name]
+            y_i[0, c_idx] = 1
+
+            y = np.concatenate([y, y_i])
+
+    X = X[1:]
+    y = y[1:]
+    np.save('X_10.npy', X)
+    np.save('y_10.npy', y)
+    return X, y

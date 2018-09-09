@@ -6,7 +6,7 @@ import json
 import cv2
 
 dir_name = 'nabirds_10'
-validation_dir = os.path.join(os.getcwd(), 'data', dir_name, 'test', 'test')
+validation_dir = os.path.join(os.getcwd(), 'data', dir_name, 'test')
 
 # Validation Generator
 test_datagen = ImageDataGenerator(
