@@ -212,6 +212,8 @@ def build_X_y(data_directory):
     # Get rid of main dir from full_path_list
     full_path_list = full_path_list[1:]
 
+    n = len(full_path_list)
+    c = 0
     # Loop through each subdirectory and build X and y
     for dir_ in full_path_list:
         for (_, _, list_of_images) in os.walk(dir_):
@@ -263,6 +265,9 @@ def build_X_y(data_directory):
             y_i[0, c_idx] = 1
 
             y = np.concatenate([y, y_i])
+        
+        c+=1
+        print('Completed: {0}/{1}'.format(c, n))
 
     X = X[1:]
     y = y[1:]
