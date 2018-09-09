@@ -171,7 +171,7 @@ def build_X_y(data_directory):
             0,  <- Grosbeak_Bunting
             0,  <- Towhee
             0,  <- Grebe
-            0,  <- Duck
+            0,  <- Scaup_Duck
             0,  <- Barrows_Goldeneye
             0,  <- Blue_Grosbeak
             0,  <- Clarks_Grebe
@@ -273,3 +273,26 @@ def build_X_y(data_directory):
     h5f.create_dataset('X', data=X)
     h5f.create_dataset('y', data=y)
     h5f.close()
+
+def random_images(n, dir_):
+    full_path_list = []
+    list_ = []
+
+    for (f, _, _) in os.walk(dir_):
+        full_path_list.append(f)
+        
+
+    full_path_list = full_path_list[1:]
+
+    for item in full_path_list:
+        for (_,_,li) in os.walk(item):
+            pass
+        for l in li:
+            list_.append(os.path.join(item, l))
+
+    return sample(list_, n)
+
+def resize_and_reshape_image(img):
+    img = cv2.resize(img, (299, 299))
+    img = np.reshape(img, (1,299,299,3))
+    return img

@@ -96,7 +96,7 @@ print('Beginning training...')
 history = model.fit_generator(
     train_generator,
     validation_data = validation_generator,
-    epochs=200,
+    epochs=500,
     verbose=2,
     callbacks=callback_list
 )

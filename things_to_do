@@ -19,6 +19,9 @@ Build Output vector:
     0   <- Duck
 ]
 
+To load in custom loss model:
+model = load_model(model_name, custom_objects={'name':name})
+
 Each of the child class has multiple levels of parent classes that always has birds at the top.
 For instance, 
     295 -> 179 -> 1 -> 0
