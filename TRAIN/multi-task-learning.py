@@ -3,6 +3,8 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 import h5py
 import os
+
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 #-----------------------------------------------------------------------------------------------#
 # Load in data
 
@@ -33,8 +35,8 @@ model = Model(inputs=model.input, outputs=output_layer)
 print('Model loaded!\n')
 
 # Multi-gpu
-from keras.utils import multi_gpu_model
-model = multi_gpu_model(model)
+# from keras.utils import multi_gpu_model
+# model = multi_gpu_model(model)
 
 # Output Model Summary
 model.summary()
