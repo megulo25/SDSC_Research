@@ -81,15 +81,13 @@ validation_generator = validation_datagen.flow(
 )
 #-----------------------------------------------------------------------------------------------#
 # Loss
-import tensorflow.contrib.slim as slim
 from keras import losses
-sofmax_cross_entropy_loss = slim.losses.softmax_cross_entropy
 squared_hinge = losses.squared_hinge
 categorical_hinge = losses.categorical_hinge
 categorical_cross_entropy = losses.categorical_crossentropy
 
-loss_function = sofmax_cross_entropy_loss
-loss_name = 'softmax'
+loss_function = squared_hinge
+loss_name = 'square_hinge'
 # Compile
 from keras import metrics
 model.compile(
