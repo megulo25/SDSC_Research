@@ -85,6 +85,7 @@ from keras import losses
 squared_hinge = losses.squared_hinge
 categorical_hinge = losses.categorical_hinge
 categorical_cross_entropy = losses.categorical_crossentropy
+sparse_categorical_crossentropy = loses.sparse_categorical_crossentropy
 
 loss_function = squared_hinge
 loss_name = 'square_hinge'
