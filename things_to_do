@@ -1,3 +1,5 @@
+- Figure out how to test the model on server.
+
 - Try to get multi gpu scaling to work:
 - Sources of low gpu utilization (slow-down of training)
     * all of the image preprocessing done is expensive on the cpu. Thus the cpu can't feed data as fast as the gpu is processing them.

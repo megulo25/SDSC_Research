@@ -46,6 +46,7 @@ from keras.preprocessing.image import ImageDataGenerator
 train_datagen = ImageDataGenerator(width_shift_range=0.1,
                                     height_shift_range=0.1,
                                     horizontal_flip=True,
+                                    rescale=1./255,
                                     vertical_flip=True,
                                     featurewise_center=True,
                                     featurewise_std_normalization=True,
@@ -67,7 +68,7 @@ train_generator = train_datagen.flow(
 )
 
 validation_datagen = ImageDataGenerator(
-    rescale=1
+    rescale=1./255
 )
 
 validation_generator = validation_datagen.flow(
@@ -77,17 +78,27 @@ validation_generator = validation_datagen.flow(
     shuffle=True
 )
 #-----------------------------------------------------------------------------------------------#
+# Loss
+import tensorflow.contrib.slim as slim
+from keras import losses
+sofmax_cross_entropy_loss = slim.losses.softmax_cross_entropy
+squared_hinge = losses.squared_hinge
+categorical_hinge = losses.categorical_hinge
+categorical_cross_entropy = losses.categorical_crossentropy
+
+loss_function = sofmax_cross_entropy_loss
+loss_name = 'softmax'
 # Compile
 from keras import metrics
 model.compile(
-    loss=multitask_loss,
+    loss=loss_function,
     optimizer='SGD',
     metrics=['accuracy']
 )
 
 # Callback function (save best model only)
 from keras.callbacks import ModelCheckpoint
-checkpoint = ModelCheckpoint('./model_multi_task_best.hdf5', monitor='val_acc', verbose=1, save_best_only=True, save_weights_only=False, mode='max')
+checkpoint = ModelCheckpoint('./model_multi_task_best_{0}.hdf5'.format(loss_name), monitor='val_acc', verbose=1, save_best_only=True, save_weights_only=False, mode='max')
 callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Train Model
@@ -96,7 +107,7 @@ print('Beginning training...')
 history = model.fit_generator(
     train_generator,
     validation_data = validation_generator,
-    epochs=500,
+    epochs=1000,
     verbose=2,
     callbacks=callback_list
 )
@@ -110,13 +121,13 @@ if not os.path.isdir('history_data'):
 
 train_acc = history.history['acc']
 train_loss = history.history['loss']
-np.save('./history_data/train_acc.npy', train_acc)
-np.save('./history_data/train_loss.npy', train_loss)
+np.save('./history_data/train_acc_{0}.npy'.format(loss_name), train_acc)
+np.save('./history_data/train_loss_{0}.npy'.format(loss_name), train_loss)
 
 # Validation Accuracy and Loss
 val_acc = history.history['val_acc']
 val_loss = history.history['val_loss']
-np.save('./history_data/val_acc.npy', val_acc)
-np.save('./history_data/val_loss.npy', val_loss)
+np.save('./history_data/val_acc_{0}.npy'.format(loss_name), val_acc)
+np.save('./history_data/val_loss_{0}.npy'.format(loss_name), val_loss)
 
 print('History saved!\n')
