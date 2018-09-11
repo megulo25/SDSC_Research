@@ -8,7 +8,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 #-----------------------------------------------------------------------------------------------#
 # Load in data
 
-filename = 'data_10.h5'
+filename = 'data/data_10.h5'
 f = h5py.File(filename, 'r')
 X = np.array(f['X'])
 y = np.array(f['y'])
@@ -65,7 +65,7 @@ train_datagen.fit(X_train)
 train_generator = train_datagen.flow(
     x=X_train,
     y=y_train,
-    batch_size=64,
+    batch_size=16,
     shuffle=True
 )
 
@@ -81,14 +81,25 @@ validation_generator = validation_datagen.flow(
 )
 #-----------------------------------------------------------------------------------------------#
 # Loss
-from keras import losses
-squared_hinge = losses.squared_hinge
-categorical_hinge = losses.categorical_hinge
-categorical_cross_entropy = losses.categorical_crossentropy
-sparse_categorical_crossentropy = loses.sparse_categorical_crossentropy
+from keras import backend as K
+def logistic_loss(y_true, y_pred):
+    """
+    From Andrew Ng's course.
+    """
+    loss = 0
+    m = 2000
+    n = 15
+    print("m: {0}".format(m))
+    print("n: {0}".format(n))
+    for i in range(m):
+        l_temp = 0
+        for j in range(n):
+            l_temp += -y_true[i][j] * K.log(y_pred[i][j]) - (1-y_true[i][j]) * K.log(1 - y_pred[i][j])
+        loss += l_temp 
+    return (1/m)*loss
 
-loss_function = squared_hinge
-loss_name = 'square_hinge'
+loss_function = logistic_loss
+loss_name = 'logistic_loss'
 # Compile
 from keras import metrics
 model.compile(
