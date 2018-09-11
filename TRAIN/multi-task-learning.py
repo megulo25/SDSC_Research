@@ -4,7 +4,7 @@ import numpy as np
 import h5py
 import os
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 #-----------------------------------------------------------------------------------------------#
 # Load in data
 
@@ -45,61 +45,50 @@ model.summary()
 from keras.preprocessing.image import ImageDataGenerator
 
 # Training Generator
-train_datagen = ImageDataGenerator(width_shift_range=0.1,
-                                    height_shift_range=0.1,
-                                    horizontal_flip=True,
-                                    rescale=1./255,
-                                    vertical_flip=True,
-                                    featurewise_center=True,
-                                    featurewise_std_normalization=True,
-                                    rotation_range=20,
-                                    shear_range=0.2,
-                                    zoom_range=0.2,
-                                    zca_epsilon=1e-6,
-                                    fill_mode="nearest")
+# train_datagen = ImageDataGenerator(width_shift_range=0.1,
+#                                     height_shift_range=0.1,
+#                                     horizontal_flip=True,
+#                                     rescale=1./255,
+#                                     vertical_flip=True,
+#                                     featurewise_center=True,
+#                                     featurewise_std_normalization=True,
+#                                     rotation_range=20,
+#                                     shear_range=0.2,
+#                                     zoom_range=0.2,
+#                                     zca_epsilon=1e-6,
+#                                     fill_mode="nearest")
 
 # compute quantities required for featurewise normalization
 # (std, mean, and principal components if ZCA whitening is applied)
-train_datagen.fit(X_train)
+# train_datagen.fit(X_train)
 
-train_generator = train_datagen.flow(
-    x=X_train,
-    y=y_train,
-    batch_size=16,
-    shuffle=True
-)
+# train_generator = train_datagen.flow(
+#     x=X_train,
+#     y=y_train,
+#     batch_size=16,
+#     shuffle=True
+# )
 
-validation_datagen = ImageDataGenerator(
-    rescale=1./255
-)
+# validation_datagen = ImageDataGenerator(
+#     rescale=1./255
+# )
 
-validation_generator = validation_datagen.flow(
-    x=X_test,
-    y=y_test,
-    batch_size=1,
-    shuffle=True
-)
+# validation_generator = validation_datagen.flow(
+#     x=X_test,
+#     y=y_test,
+#     batch_size=1,
+#     shuffle=True
+# )
 #-----------------------------------------------------------------------------------------------#
 # Loss
-from keras import backend as K
-def logistic_loss(y_true, y_pred):
-    """
-    From Andrew Ng's course.
-    """
-    loss = 0
-    m = 2000
-    n = 15
-    print("m: {0}".format(m))
-    print("n: {0}".format(n))
-    for i in range(m):
-        l_temp = 0
-        for j in range(n):
-            l_temp += -y_true[i][j] * K.log(y_pred[i][j]) - (1-y_true[i][j]) * K.log(1 - y_pred[i][j])
-        loss += l_temp 
-    return (1/m)*loss
+from keras import losses
+squared_hinge = losses.squared_hinge
+categorical_hinge = losses.categorical_hinge
+categorical_cross_entropy = losses.categorical_crossentropy
+sparse_categorical_crossentropy = losses.sparse_categorical_crossentropy
 
-loss_function = logistic_loss
-loss_name = 'logistic_loss'
+loss_function = multitask_loss
+loss_name = 'multitask_loss'
 # Compile
 from keras import metrics
 model.compile(
@@ -116,11 +105,21 @@ callback_list = [checkpoint]
 # Train Model
 print('Beginning training...')
 
-history = model.fit_generator(
-    train_generator,
-    validation_data = validation_generator,
-    epochs=1000,
+# history = model.fit_generator(
+#     train_generator,
+#     validation_data = validation_generator,
+#     epochs=1000,
+#     verbose=2,
+#     callbacks=callback_list
+# )
+
+history = model.fit(
+    x=X_train,
+    y=y_train,
+    batch_size=16,
+    epochs=200,
     verbose=2,
+    validation_data=(X_test, y_test),
     callbacks=callback_list
 )
 print('Training complete!\n')
