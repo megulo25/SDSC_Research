@@ -10,6 +10,7 @@ import itertools
 import cv2
 from keras import backend as K
 import h5py
+import pandas as pd
 
 def load_data(message):
     if not os.path.isdir('data'):
@@ -272,6 +273,7 @@ def build_X_y_10(data_directory):
     h5f.create_dataset('y', data=y)
     h5f.close()
 
+import time
 def build_X_y_555(data_directory):
     """
     Building for 555 classes. Not for MTL.
@@ -282,13 +284,28 @@ def build_X_y_555(data_directory):
 
     full_path_list = []
 
+    # One hot encode each subdirectory
+    for (_, dir_names, _) in os.walk(data_directory):
+        1
+        break
+    dir_names.sort()
+    s = pd.Series(dir_names)
+    one_hot = pd.get_dummies(s)
+    columns = list(one_hot.columns)
+
+    # Create a dictionary
+    dict_ = {}
+    for i in columns:
+        dict_[int(i)] = one_hot[i]
+
+
     for (full, _, _) in os.walk(data_directory):
         full_path_list.append(full)
 
     # Get rid of main dir from full_path_list
     full_path_list = full_path_list[1:]
 
-    n = len(full_path_list)
+    n = 49117
     c = 0
 
     # Loop through each subdirectory and build X and y
@@ -309,11 +326,12 @@ def build_X_y_555(data_directory):
 
             # Add to y
             list_ = dir_.split('/')
-            relative_name = int(list_[-1]) - 295
-            y[0, relative_name] = 1
+            relative_name = int(list_[-1])
+            idx = dict_[int(relative_name)]
+            y[0, idx] = 1
 
             c+=1
-            if c % 1000 == 0:
+            if c % 100 == 0:
                 print('Completed: {0}/{1}'.format(c, n))
 
     # Save X and y

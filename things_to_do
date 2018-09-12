@@ -1,4 +1,8 @@
-- Figure out how to test the model on server.
+- Continue working on building X and y for 555, you need to figure out how to map the dir names to a one hot encoder. Heres a way to do it.
+    a = [100, 102, 103, 106, 111, 112, 120]
+    s = pd.Series(a)
+    pd.getdummies(s)
+- Cont. working on MTL. Try different loss functions, logistic loss might be helpful.
 
 - Try to get multi gpu scaling to work:
 - Sources of low gpu utilization (slow-down of training)
