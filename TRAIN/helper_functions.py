@@ -312,6 +312,10 @@ def build_X_y_555(data_directory):
             relative_name = int(list_[-1]) - 295
             y[0, relative_name] = 1
 
+            c+=1
+            if c % 1000 == 0:
+                print('Completed: {0}/{1}'.format(c, n))
+
     # Save X and y
     X = X[1:]
     y = y[1:]
