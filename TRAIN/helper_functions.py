@@ -157,7 +157,7 @@ def multitask_loss(y_true, y_pred):
     y_pred = K.clip(y_pred, K.epsilon(), 1 - K.epsilon())
     return K.mean(K.sum(- y_true * K.log(y_pred) - (1 - y_true) * K.log(1 - y_pred), axis=1))
 
-def build_X_y(data_directory):
+def build_X_y_10(data_directory):
     """
     Here we will return an X and y for our multitask learning data.
     The data will be forced to a size of (299,299,3) for our model.
@@ -186,8 +186,6 @@ def build_X_y(data_directory):
     """
     X = np.zeros((1, 299, 299, 3))
     y = np.zeros((1,15))
-
-    parent_class_list = ['goldeneye', 'grosbeak_bunting', 'towhee', 'grebe', 'scaup_duck']
 
     child_class_dict = {
         'barrows_goldeneye': 5,
@@ -274,6 +272,55 @@ def build_X_y(data_directory):
     h5f.create_dataset('y', data=y)
     h5f.close()
 
+def build_X_y_555(data_directory):
+    """
+    Building for 555 classes. Not for MTL.
+    """
+
+    X = np.zeros((1, 299, 299, 3))
+    y = np.zeros((1, 555))
+
+    full_path_list = []
+
+    for (full, _, _) in os.walk(data_directory):
+        full_path_list.append(full)
+
+    # Get rid of main dir from full_path_list
+    full_path_list = full_path_list[1:]
+
+    n = len(full_path_list)
+    c = 0
+
+    # Loop through each subdirectory and build X and y
+    for dir_ in full_path_list:
+        for (_, _, list_of_images) in os.walk(dir_):
+            pass
+
+        # Loop through each image
+        for img_name in list_of_images:
+            img_full_path = os.path.join(dir_, img_name)
+            img_old = mpimg.imread(img_full_path)
+
+            # Resize and reshape img
+            img = resize_and_reshape_image(img_old)
+
+            # Add to X
+            X = np.concatenate([X, img])
+
+            # Add to y
+            list_ = dir_.split('/')
+            relative_name = int(list_[-1]) - 295
+            y[0, relative_name] = 1
+
+    # Save X and y
+    X = X[1:]
+    y = y[1:]
+
+    h5f = h5py.File('data_555.h5', 'w')
+    h5f.create_dataset('X', data=X)
+    h5f.create_dataset('y', data=y)
+    h5f.close()
+            
 def random_images(n, dir_):
     full_path_list = []
     list_ = []
@@ -296,3 +343,25 @@ def resize_and_reshape_image(img):
     img = cv2.resize(img, (299, 299))
     img = np.reshape(img, (1,299,299,3))
     return img
+
+def classes_to_dict(path_to_file):
+    """
+    The purpose of this function is to take the classes.txt file 
+    for the 500+ class dataset and turn it into a dictionary for 
+    the one hot encoding.
+    """
+
+    with open(path_to_file, 'r') as file_reader:
+        list_ = file_reader.readlines()
+
+    new_list = []
+    dict_ = {}
+    for item in list_:
+        split = item.split()
+        index = int(split[0])
+        label = '_'.join(split[1:])
+        label = label.replace(',', '')
+        dict_[index] = label
+
+    # Save dict
+    np.save('class_dict_555.npy', dict_)

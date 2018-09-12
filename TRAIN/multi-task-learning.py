@@ -93,7 +93,7 @@ loss_name = 'multitask_loss'
 from keras import metrics
 model.compile(
     loss=loss_function,
-    optimizer='SGD',
+    optimizer='adam',
     metrics=['accuracy']
 )
 
@@ -117,7 +117,7 @@ history = model.fit(
     x=X_train,
     y=y_train,
     batch_size=16,
-    epochs=200,
+    epochs=300,
     verbose=2,
     validation_data=(X_test, y_test),
     callbacks=callback_list

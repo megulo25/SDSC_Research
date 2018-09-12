@@ -6,7 +6,7 @@ from keras.models import load_model
 import os
 
 # Load Model
-model = load_model('model_multi_task_best.hdf5', custom_objects={'multitask_loss':multitask_loss})
+model = load_model('model/model_multi_task_best_categorical_hinge.hdf5', custom_objects={'multitask_loss':multitask_loss})
 
 # Get a list of images to test against
 n = 10
@@ -57,5 +57,8 @@ for img_name in list_:
     # Display result
     plt.figure()
     plt.imshow(img_old)
-    plt.title('True Class: {0}, Parent Class: {1}, Child Class: {2}'.format(y_true, parent, child))
-    plt.savefig('multi-task-test/{0}_{1}.jpg'.format(y_true, randint(1, 1e9)))
+    plt.title('True Class: {0}'.format(y_true))
+    plt.xlabel('Child Class: {0}'.format(child))
+    plt.ylabel('Parent Class: {0}'.format(parent))
+    plt.show()
+    # plt.savefig('multi-task-test/{0}_{1}.jpg'.format(y_true, randint(1, 1e9)))
