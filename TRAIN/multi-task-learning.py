@@ -4,7 +4,7 @@ import numpy as np
 import h5py
 import os
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '3'
 #-----------------------------------------------------------------------------------------------#
 # Load in data
 
@@ -87,8 +87,8 @@ categorical_hinge = losses.categorical_hinge
 categorical_cross_entropy = losses.categorical_crossentropy
 sparse_categorical_crossentropy = losses.sparse_categorical_crossentropy
 
-loss_function = multitask_loss
-loss_name = 'multitask_loss'
+loss_function = squared_hinge
+loss_name = 'squared_hinge'
 # Compile
 from keras import metrics
 model.compile(
