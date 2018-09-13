@@ -31,11 +31,15 @@ from keras.applications.inception_v3 import InceptionV3
 from keras.layers import Flatten, Dense, Dropout
 from keras.models import Model
 
-model = VGG16(weights='imagenet', input_shape=(299,299,3), classes=class_count)
-model = VGG19(weights='imagenet', input_shape=(299,299,3), classes=class_count)
-model = ResNet50(weights='imagenet', input_shape=(299,299,3), classes=class_count)
-model = InceptionV3(weights='imagenet', input_shape=(299,299,3), classes=class_count)
+model = VGG16(weights='imagenet', include_top=False, input_shape=(299,299,3), classes=class_count)
+# model = VGG19(weights='imagenet', include_top=False,input_shape=(299,299,3), classes=class_count)
+# model = ResNet50(weights='imagenet', include_top=False,input_shape=(299,299,3), classes=class_count)
+# model = InceptionV3(weights='imagenet', include_top=False,input_shape=(299,299,3), classes=class_count)
 
+x = model.output
+x = Flatten()(x)
+output_layer = Dense(class_count, activation='softmax')(x)
+model = Model(inputs=model.input, outputs=output_layer)
 model_name = 'vgg16'
 print('Model loaded!\n')
 
@@ -87,13 +91,13 @@ if not os.path.isdir('history_data'):
 
 train_acc = history.history['acc']
 train_loss = history.history['loss']
-np.save('./history_data/train_acc_{0}.npy'.format(loss_name), train_acc)
-np.save('./history_data/train_loss_{0}.npy'.format(loss_name), train_loss)
+np.save('./history_data/train_acc_{0}_{1}.npy'.format(model_name, loss_name), train_acc)
+np.save('./history_data/train_loss_{0}_{1}.npy'.format(model_name, loss_name), train_loss)
 
 # Validation Accuracy and Loss
 val_acc = history.history['val_acc']
 val_loss = history.history['val_loss']
-np.save('./history_data/val_acc_{0}.npy'.format(loss_name), val_acc)
-np.save('./history_data/val_loss_{0}.npy'.format(loss_name), val_loss)
+np.save('./history_data/val_acc_{0}_{1}.npy'.format(model_name, loss_name), val_acc)
+np.save('./history_data/val_loss_{0}_{1}.npy'.format(model_name, loss_name), val_loss)
 
 print('History saved!\n')
