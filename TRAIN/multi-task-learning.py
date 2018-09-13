@@ -25,13 +25,22 @@ class_count = y_train.shape[1]
 # Import InceptionNet
 print('Loading in model...')
 from keras.applications.inception_resnet_v2 import InceptionResNetV2
+from keras.applications.vgg16 import VGG16
+from keras.applications.vgg19 import VGG19
+from keras.applications.resnet50 import ResNet50
+from keras.applications.inception_v3 import InceptionV3
 from keras.layers import Flatten, Dense, Dropout
 from keras.models import Model
 model = InceptionResNetV2(weights='imagenet', include_top=False, input_shape=(299, 299, 3), classes=class_count)
-x = model.output
-x = Flatten()(x)
-output_layer = Dense(class_count, activation='softmax')(x)
-model = Model(inputs=model.input, outputs=output_layer)
+model = VGG16(weights='imagenet', include_top=False, input_shape=(299,299,3), classes=class_count)
+model = VGG19(weights='imagenet', include_top=False, input_shape=(299,299,3), classes=class_count)
+model = ResNet50(weights='imagenet', include_top=False, input_shape=(299,299,3), classes=class_count)
+model = InceptionV3(weights='imagenet', include_top=False, input_shape=(299,299,3), classes=class_count)
+
+# x = model.output
+# x = Flatten()(x)
+# output_layer = Dense(class_count, activation='softmax')(x)
+# model = Model(inputs=model.input, outputs=output_layer)
 print('Model loaded!\n')
 
 # Multi-gpu
@@ -81,29 +90,14 @@ from keras.preprocessing.image import ImageDataGenerator
 # )
 #-----------------------------------------------------------------------------------------------#
 # Loss
-from keras import backend as K
-def logistic_loss(y_true, y_pred):
-    """
-    From Andrew Ng's course.
-    """
-    loss = 0
-    m = 2000
-    n = 15
-    for i in range(m):
-        l_temp = 0
-        for j in range(n):
-            l_temp += -y_true[i][j] * K.log(K.cast_to_floatx(y_pred[i][j])) - (1-y_true[i][j]) * K.log(K.cast_to_floatx(1 - y_pred[i][j]))
-        loss += l_temp 
-    return (1/m)*loss
-
 from keras import losses
 squared_hinge = losses.squared_hinge
 categorical_hinge = losses.categorical_hinge
 categorical_cross_entropy = losses.categorical_crossentropy
 sparse_categorical_crossentropy = losses.sparse_categorical_crossentropy
 
-loss_function = logistic_loss
-loss_name = 'logistic_loss'
+loss_function = multitask_loss
+loss_name = 'multitask_loss'
 # Compile
 from keras import metrics
 model.compile(
