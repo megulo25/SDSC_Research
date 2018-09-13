@@ -4,7 +4,7 @@ import numpy as np
 import h5py
 import os
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '3'
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 #-----------------------------------------------------------------------------------------------#
 # Load in data
 
@@ -24,70 +24,23 @@ class_count = y_train.shape[1]
 
 # Import InceptionNet
 print('Loading in model...')
-from keras.applications.inception_resnet_v2 import InceptionResNetV2
 from keras.applications.vgg16 import VGG16
 from keras.applications.vgg19 import VGG19
 from keras.applications.resnet50 import ResNet50
 from keras.applications.inception_v3 import InceptionV3
 from keras.layers import Flatten, Dense, Dropout
 from keras.models import Model
-model = InceptionResNetV2(weights='imagenet', include_top=False, input_shape=(299, 299, 3), classes=class_count)
-model = VGG16(weights='imagenet', include_top=False, input_shape=(299,299,3), classes=class_count)
-model = VGG19(weights='imagenet', include_top=False, input_shape=(299,299,3), classes=class_count)
-model = ResNet50(weights='imagenet', include_top=False, input_shape=(299,299,3), classes=class_count)
-model = InceptionV3(weights='imagenet', include_top=False, input_shape=(299,299,3), classes=class_count)
 
-# x = model.output
-# x = Flatten()(x)
-# output_layer = Dense(class_count, activation='softmax')(x)
-# model = Model(inputs=model.input, outputs=output_layer)
+model = VGG16(weights='imagenet', input_shape=(299,299,3), classes=class_count)
+model = VGG19(weights='imagenet', input_shape=(299,299,3), classes=class_count)
+model = ResNet50(weights='imagenet', input_shape=(299,299,3), classes=class_count)
+model = InceptionV3(weights='imagenet', input_shape=(299,299,3), classes=class_count)
+
+model_name = 'vgg16'
 print('Model loaded!\n')
-
-# Multi-gpu
-# from keras.utils import multi_gpu_model
-# model = multi_gpu_model(model)
 
 # Output Model Summary
 model.summary()
-#-----------------------------------------------------------------------------------------------#
-# Image Pre-processing
-from keras.preprocessing.image import ImageDataGenerator
-
-# Training Generator
-# train_datagen = ImageDataGenerator(width_shift_range=0.1,
-#                                     height_shift_range=0.1,
-#                                     horizontal_flip=True,
-#                                     rescale=1./255,
-#                                     vertical_flip=True,
-#                                     featurewise_center=True,
-#                                     featurewise_std_normalization=True,
-#                                     rotation_range=20,
-#                                     shear_range=0.2,
-#                                     zoom_range=0.2,
-#                                     zca_epsilon=1e-6,
-#                                     fill_mode="nearest")
-
-# compute quantities required for featurewise normalization
-# (std, mean, and principal components if ZCA whitening is applied)
-# train_datagen.fit(X_train)
-
-# train_generator = train_datagen.flow(
-#     x=X_train,
-#     y=y_train,
-#     batch_size=16,
-#     shuffle=True
-# )
-
-# validation_datagen = ImageDataGenerator(
-#     rescale=1./255
-# )
-
-# validation_generator = validation_datagen.flow(
-#     x=X_test,
-#     y=y_test,
-#     batch_size=1,
-#     shuffle=True
-# )
 #-----------------------------------------------------------------------------------------------#
 # Loss
 from keras import losses
@@ -98,6 +51,7 @@ sparse_categorical_crossentropy = losses.sparse_categorical_crossentropy
 
 loss_function = multitask_loss
 loss_name = 'multitask_loss'
+
 # Compile
 from keras import metrics
 model.compile(
@@ -108,19 +62,11 @@ model.compile(
 
 # Callback function (save best model only)
 from keras.callbacks import ModelCheckpoint
-checkpoint = ModelCheckpoint('./model_multi_task_best_{0}.hdf5'.format(loss_name), monitor='val_acc', verbose=1, save_best_only=True, save_weights_only=False, mode='max')
+checkpoint = ModelCheckpoint('./model_multi_task_best_{0}_{1}.hdf5'.format(model_name,loss_name), monitor='val_acc', verbose=1, save_best_only=True, save_weights_only=False, mode='max')
 callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Train Model
 print('Beginning training...')
-
-# history = model.fit_generator(
-#     train_generator,
-#     validation_data = validation_generator,
-#     epochs=1000,
-#     verbose=2,
-#     callbacks=callback_list
-# )
 
 history = model.fit(
     x=X_train,
