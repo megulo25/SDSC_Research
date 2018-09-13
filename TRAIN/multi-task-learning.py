@@ -81,14 +81,29 @@ from keras.preprocessing.image import ImageDataGenerator
 # )
 #-----------------------------------------------------------------------------------------------#
 # Loss
+from keras import backend as K
+def logistic_loss(y_true, y_pred):
+    """
+    From Andrew Ng's course.
+    """
+    loss = 0
+    m = 2000
+    n = 15
+    for i in range(m):
+        l_temp = 0
+        for j in range(n):
+            l_temp += -y_true[i][j] * K.log(K.cast_to_floatx(y_pred[i][j])) - (1-y_true[i][j]) * K.log(K.cast_to_floatx(1 - y_pred[i][j]))
+        loss += l_temp 
+    return (1/m)*loss
+
 from keras import losses
 squared_hinge = losses.squared_hinge
 categorical_hinge = losses.categorical_hinge
 categorical_cross_entropy = losses.categorical_crossentropy
 sparse_categorical_crossentropy = losses.sparse_categorical_crossentropy
 
-loss_function = squared_hinge
-loss_name = 'squared_hinge'
+loss_function = logistic_loss
+loss_name = 'logistic_loss'
 # Compile
 from keras import metrics
 model.compile(
@@ -117,8 +132,8 @@ history = model.fit(
     x=X_train,
     y=y_train,
     batch_size=16,
-    epochs=300,
-    verbose=2,
+    epochs=500,
+    verbose=1,
     validation_data=(X_test, y_test),
     callbacks=callback_list
 )

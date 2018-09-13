@@ -6,7 +6,8 @@ from keras.models import load_model
 import os
 
 # Load Model
-model = load_model('model/model_multi_task_best_categorical_hinge.hdf5', custom_objects={'multitask_loss':multitask_loss})
+model_name = 'multitask_loss'
+# model = load_model('model/model_multi_task_best_multitask_loss.hdf5', custom_objects={'multitask_loss':multitask_loss})
 
 # Get a list of images to test against
 n = 10
@@ -31,6 +32,21 @@ class_dict = {
     13: 'Spotted_Towhee',
     14: 'Western_Grebe'
 }
+
+# Plot Training vs Validation
+import numpy as np
+train_acc = np.load('model/history_data/train_acc_{0}.npy'.format(model_name))
+val_acc = np.load('model/history_data/val_acc_{0}.npy'.format(model_name))
+n = np.arange(len(train_acc))
+
+plt.figure()
+plt.plot(n, train_acc, 'b', label='Training')
+plt.plot(n, val_acc, 'g', label='Validation')
+plt.xlabel('Number of iterations')
+plt.ylabel('Accuracy (%)')
+plt.grid()
+plt.legend()
+plt.show()
 
 # Directory for Plots
 if not os.path.isdir('multi-task-test'):
