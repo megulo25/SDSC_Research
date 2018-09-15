@@ -48,19 +48,19 @@ model.summary()
 #-----------------------------------------------------------------------------------------------#
 # Loss
 from keras import losses
-squared_hinge = losses.squared_hinge
-categorical_hinge = losses.categorical_hinge
-categorical_cross_entropy = losses.categorical_crossentropy
-sparse_categorical_crossentropy = losses.sparse_categorical_crossentropy
+mse = losses.mean_squared_error
+mae = losses.mean_absolute_error
+msle = losses.mean_squared_logarithmic_error
+mape = losses.mean_absolute_percentage_error
 
-loss_function = multitask_loss
-loss_name = 'multitask_loss'
+loss_function = mae
+loss_name = 'mae'
 
 # Compile
 from keras import metrics
 model.compile(
     loss=loss_function,
-    optimizer='adam',
+    optimizer='SGD',
     metrics=['accuracy']
 )
 
@@ -76,7 +76,7 @@ history = model.fit(
     x=X_train,
     y=y_train,
     batch_size=16,
-    epochs=500,
+    epochs=1500,
     verbose=1,
     validation_data=(X_test, y_test),
     callbacks=callback_list
