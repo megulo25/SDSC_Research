@@ -1,3 +1,48 @@
+Note to self:
+    - Stick with pulling the data from the directories instead of importing all of the data.
+Next steps:
+
+    1. Set up multi-task learning with the the final hidden layer initialized like the one done in the paper by Simon Baker.
+        * Get a list of all the possible hierarchies.
+        * Use that list to initialize the final hidden layer.
+        * The remaining rows will be one of the following:
+            * Initialized with zeros.
+            * Initialized with random values pulled from a uniform distribution.
+        * Then train on multiple models.
+            * VGG 16, Resnet50, InceptionV3
+
+
+    2. Construct CNN-RNN network like the one used in Yanming Guo paper.
+        * There's an example CNN-RNN architecture in the Desktop. We can use this as a guide to build our own.
+        * But we need to figure out what is being passed into the RNN.
+
+Things to do while model is training:
+    - Since we are doing hierarchical learning (our AI is trying to learn the implicit hierarchy from the labels), we should
+    add a feature that shows the hierarchy of the bird it's trying to classify in a tree like structure.
+        * https://plot.ly/python/tree-plots/
+
+Things to try for training:
+    - Try freezing the first couple of layers of a network that has been trained on one task, then retrain network on new task.
+        * Look at Yashua Bengio's work on multi-task learning.
+    - Try Cerri et al. (2014) work that proposes a method for hierarchical multi-label text classification that incrementally
+    trains a multi-layer perceptron for each level of the classification hierarchy. 
+        * Predictions made by a neural network in a given layer are used as inputs to the neural network responsible for the
+        prediction in the next level.
+    - Look for Chen et al. (2017) work on create an ensemble of a CNN and RNN for modeling high-order label correlation.
+    - Combining CNN-RNN: https://github.com/ShadyF/cnn-rnn-classifier/blob/master/cnn_rnn_classifier.py
+
+Reading for MTL:
+    - Visualizing weights from keras model
+        * https://blog.keras.io/how-convolutional-neural-networks-see-the-world.html
+    - HD-MTL Paper, learn their algorithm for visual tree learning. They describe their process in steps:
+        1. Extract 5 sets of multi-level deep features from 5 convolutional layers.
+            F = [F1, F2, F3, F4, F5]
+        2. Estimate their inter-class similarity under all of these 5 features sets and generating a similarity matrices.
+            S = [S1, S2, S3, S4, S5]
+        3. Selecting the most discriminative feature set Fc for each non-leaf node (superclass, c).
+        4. Partitioning each non-leaf node c (i.e. its associated atomic object classes L(c)) under the selected feature set Fc.
+        
+
 - Continue working on building X and y for 555, you need to figure out how to map the dir names to a one hot encoder. Heres a way to do it.
     a = [100, 102, 103, 106, 111, 112, 120]
     s = pd.Series(a)

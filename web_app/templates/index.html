@@ -9,6 +9,9 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="static/css/style.css">
+    <link href="static/css/interactive_tree.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?1.27.2"></script>
+    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.layout.js?1.27.2"></script>
     <title>SDSC AI Research</title>
 </head>
 
@@ -22,6 +25,11 @@
     </nav>
 
     <br>
+
+    <!-- Insert Tree -->
+    <div class="row container_color side_border_margin" id="chart">
+        <h2 class="header_color">Hierarchy Structure:</h2>
+    </div>
 
     <!-- Main row -->
     <div class="row">
@@ -45,6 +53,7 @@
         <center><p>&#169; Copyright Megulo Abebe 2018</p></center>
     </nav>
     <script src="static/js/app.js"></script>
+    <script src="static/js/hierarchy_plot.js"></script>
 </body>
   
 </html>
