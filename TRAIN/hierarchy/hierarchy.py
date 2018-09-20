@@ -1,4 +1,4 @@
-with open('hierarchy.txt', 'r') as file_reader:
+with open('/home/megulo25/Documents/Machine_Learning/SDSC_Research/TRAIN/data/nabirds_555/nabirds/hierarchy.txt', 'r') as file_reader:
     list_ = file_reader.readlines()
 
 new_list = []
