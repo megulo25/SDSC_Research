@@ -1,12 +1,21 @@
 # Here we need to produce the hierarchy as a json file for the website
 
 import numpy as np
+import os
 
-hierarchy_dict = np.load('hierarchy_dict.npy').item()
-class_dict_555 = np.load('/home/megulo25/Documents/Machine_Learning/SDSC_Research/TRAIN/data/class_dict_555.npy').item()
+cur_dir = os.getcwd()
+a = cur_dir.split('/')
+b = a[:-1]
+c = '/'.join(b)
+
+hierarchy_dict = np.load(os.path.join(c, 'hierarchy_dict.npy')).item()
+
+
+class_dict_555 = np.load(os.path.join(c, 'data', 'class_dict_555.npy').item()
 
 # Get leaf nodes
-path_to_image_class_labels = '/home/megulo25/Documents/Machine_Learning/SDSC_Research/TRAIN/data/nabirds_555/nabirds/image_class_labels.txt'
+
+path_to_image_class_labels = os.path.join(c, 'nabirds_555', 'nabirds', 'image_class_labels.txt')
 
 with open(path_to_image_class_labels, 'r') as txt_reader:
     class_labels_list = txt_reader.readlines()

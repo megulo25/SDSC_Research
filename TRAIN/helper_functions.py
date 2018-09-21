@@ -11,6 +11,7 @@ import cv2
 from keras import backend as K
 import h5py
 import pandas as pd
+import shutil
 
 def load_data(message):
     if not os.path.isdir('data'):
@@ -154,9 +155,6 @@ def move_files(list_, base_dir, flag):
 
         copyfile(input_full_path, output_full_path)
 
-def multitask_loss(y_true, y_pred):
-    y_pred = K.clip(y_pred, K.epsilon(), 1 - K.epsilon())
-    return K.mean(K.sum(- y_true * K.log(y_pred) - (1 - y_true) * K.log(1 - y_pred), axis=1))
 
 def build_X_y_10(data_directory):
     """
@@ -279,8 +277,11 @@ def build_X_y_555(data_directory):
     Building for 555 classes. Not for MTL.
     """
 
+    # Bring in hierarchy for multi-task learning
+    hierarchy_dict = np.load(os.path.join(os.getcwd(), 'data', 'hierarchy_dict.npy')).item()
+
     X = np.zeros((1, 299, 299, 3))
-    y = np.zeros((1, 555))
+    y = np.zeros((1, 1011))
 
     full_path_list = []
 
@@ -289,14 +290,6 @@ def build_X_y_555(data_directory):
         1
         break
     dir_names.sort()
-    s = pd.Series(dir_names)
-    one_hot = pd.get_dummies(s)
-    columns = list(one_hot.columns)
-
-    # Create a dictionary
-    dict_ = {}
-    for i in columns:
-        dict_[int(i)] = one_hot[i]
 
 
     for (full, _, _) in os.walk(data_directory):
@@ -325,12 +318,16 @@ def build_X_y_555(data_directory):
             X = np.concatenate([X, img])
 
             # Add to y
-            list_ = dir_.split('/')
-            relative_name = int(list_[-1])
-            idx = dict_[int(relative_name)]
-            y[0, idx] = 1
+            leaf_node = int(dir_.split('/')[-1])
+            full_hierarchy = list(hierarchy_dict[leaf_node])
+
+            temp_y = np.zeros((1, 1011))
+            temp_y[0, leaf_node]=1
+            temp_y[0, full_hierarchy]=1
+            y = np.concatenate([y, temp_y])
 
             c+=1
+
             if c % 100 == 0:
                 print('Completed: {0}/{1}'.format(c, n))
 
@@ -338,7 +335,7 @@ def build_X_y_555(data_directory):
     X = X[1:]
     y = y[1:]
 
-    h5f = h5py.File('data_555.h5', 'w')
+    h5f = h5py.File('data_555_MTL.h5', 'w')
     h5f.create_dataset('X', data=X)
     h5f.create_dataset('y', data=y)
     h5f.close()

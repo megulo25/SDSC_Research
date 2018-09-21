@@ -64,6 +64,82 @@ output_layer = Dense(class_count, activation='softmax')(x)
 model = Model(inputs=model.input, outputs=output_layer)
 print('Model loaded!\n')
 
+def create_final_hidden_layer():
+    
+    # Hierarchy file
+    a = os.getcwd()
+    b = a.split('/')
+    b = b[:-1]
+    c = '/'.join(b)
+    hierarchy_dict = np.load(os.path.join(c, 'data', 'hierarchy_dict.npy')).item()
+
+    # Get a list of all the classes 
+    path = os.path.join(c, 'data', 'nabirds_555', 'nabirds', 'images')
+    list_ = []
+    for (_, l, _) in os.walk(path):
+        list_.append(l)
+    list_ = list_[0]
+
+    # Create array
+    final_hidden_layer = np.zeros((len(list_), 1011))
+
+    # Get the heirarchy for each class and place into array
+    c = 0
+    for i, j in enumerate(list_):
+        
+        # Convert to integer
+        j = int(j)
+
+        # Get hierarchy 
+        y = list(hierarchy_dict[j])
+
+        # Index array
+        final_hidden_layer_old = final_hidden_layer[i]
+        print(final_hidden_layer_old)
+        final_hidden_layer[i][y] = 1
+
+        print('-------------------------------')
+        print('y: {0}'.format(y))
+        print('old layer: {0}'.format(final_hidden_layer_old))
+        print('new layer: {0}'.format(final_hidden_layer[:i]))
+
+    return final_hidden_layer
+
+# Initialize weights in final hidden layer
+def initialze_final_hidden_layer(weights, array_of_all_hierarchies_in_training_set, flag='init_a'):
+
+    # Grab the weights from the last hidden layer
+    last_hidden_layer_weights = weights[-2]
+    n = len(array_of_all_hierarchies_in_training_set)
+
+    # Replace the first n rows with possible hierarchies
+    last_hidden_layer_weights[:n] = array_of_all_hierarchies_in_training_set
+
+    # Initialize the rest of the rows with one of the following
+    if (flag == 'init_a'):
+        # Initialize the rest with zeros
+        na = last_hidden_layer_weights[n:].shape
+        last_hidden_layer_weights[n:] = np.zeros(na)
+        
+    elif (flag == 'init_b'):
+        # Initialize the rest with random values.
+        nb = last_hidden_layer_weights[n:].shape
+        last_hidden_layer_weights[n:] = np.random.rand(nb)
+    
+    # Replace last hidden layer in weights list
+    weights[-2] = last_hidden_layer_weights
+
+    return weights
+
+# weights = model.get_weights()
+array_of_all_hierarchies_in_training_set = create_final_hidden_layer()
+import time
+time.sleep(32424234)
+new_weights = initialze_final_hidden_layer(weights=weights, array_of_all_hierarchies_in_training_set=array_of_all_hierarchies_in_training_set)
+
+# Set new weights to the model
+model.set_weights(new_weights)
+
 # Output Model Summary
 model.summary()
 #-----------------------------------------------------------------------------------------------#
