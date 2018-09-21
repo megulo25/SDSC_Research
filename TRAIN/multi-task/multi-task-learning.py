@@ -64,6 +64,7 @@ output_layer = Dense(class_count, activation='softmax')(x)
 model = Model(inputs=model.input, outputs=output_layer)
 print('Model loaded!\n')
 
+# Create the final hidden layer
 def create_final_hidden_layer():
     
     # Hierarchy file
@@ -132,13 +133,11 @@ def initialze_final_hidden_layer(weights, array_of_all_hierarchies_in_training_s
     return weights
 
 # weights = model.get_weights()
-array_of_all_hierarchies_in_training_set = create_final_hidden_layer()
-import time
-time.sleep(32424234)
-new_weights = initialze_final_hidden_layer(weights=weights, array_of_all_hierarchies_in_training_set=array_of_all_hierarchies_in_training_set)
+# array_of_all_hierarchies_in_training_set = create_final_hidden_layer()
+# new_weights = initialze_final_hidden_layer(weights=weights, array_of_all_hierarchies_in_training_set=array_of_all_hierarchies_in_training_set)
 
-# Set new weights to the model
-model.set_weights(new_weights)
+# # Set new weights to the model
+# model.set_weights(new_weights)
 
 # Output Model Summary
 model.summary()
