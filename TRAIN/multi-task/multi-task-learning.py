@@ -44,15 +44,15 @@ class_count = y_train.shape[1]
 
 # Import InceptionNet
 print('Loading in model...')
-from keras.applications.vgg16 import VGG16
-# from keras.applications.resnet50 import ResNet50
+# from keras.applications.vgg16 import VGG16
+from keras.applications.resnet50 import ResNet50
 # from keras.applications.inception_v3 import InceptionV3
 from keras.layers import Flatten, Dense, Dropout
 from keras.models import Model
 
 
-model = VGG16(weights='imagenet', include_top=False, input_shape=(299,299,3), classes=class_count)
-# model = ResNet50(weights='imagenet', include_top=False,input_shape=(299,299,3), classes=class_count)
+# model = VGG16(weights='imagenet', include_top=False, input_shape=(299,299,3), classes=class_count)
+model = ResNet50(weights='imagenet', include_top=False,input_shape=(299,299,3), classes=class_count)
 # model = InceptionV3(weights='imagenet', include_top=False,input_shape=(299,299,3), classes=class_count)
 
 # Get model name
@@ -173,7 +173,7 @@ history = model.fit_generator(
         batch_size=16
     ),
     steps_per_epoch= len(X_train) // 16,
-    epochs=200,
+    epochs=700,
     verbose=1,
     validation_data=(X_test, y_test),
     callbacks=callback_list
@@ -186,13 +186,13 @@ print('Saving history...')
 if not os.path.isdir('history_data'):
     os.mkdir('history_data')
 
-train_acc = history.history['acc']
+train_acc = history.history['categorical_accuracy']
 train_loss = history.history['loss']
 np.save('./history_data/train_acc_{0}.npy'.format(model_name), train_acc)
 np.save('./history_data/train_loss_{0}.npy'.format(model_name), train_loss)
 
 # Validation Accuracy and Loss
-val_acc = history.history['val_acc']
+val_acc = history.history['val_categorical_accuracy']
 val_loss = history.history['val_loss']
 np.save('./history_data/val_acc_{0}.npy'.format(model_name), val_acc)
 np.save('./history_data/val_loss_{0}.npy'.format(model_name), val_loss)

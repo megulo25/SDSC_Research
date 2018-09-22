@@ -1,4 +1,11 @@
-with open('/home/megulo25/Documents/Machine_Learning/SDSC_Research/TRAIN/data/nabirds_555/nabirds/hierarchy.txt', 'r') as file_reader:
+import os
+
+cur_dir = os.getcwd()
+a = cur_dir.split('/')
+b = a[:-1]
+c = '/'.join(b)
+
+with open(os.path.join(c, 'data', 'nabirds_555', 'nabirds', 'hierarchy.txt'), 'r') as file_reader:
     list_ = file_reader.readlines()
 
 new_list = []
