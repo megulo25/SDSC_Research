@@ -3,7 +3,7 @@ import numpy as np
 import h5py
 import os
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 #-----------------------------------------------------------------------------------------------#
 # Load in data
 
@@ -29,7 +29,7 @@ from keras.preprocessing.image import ImageDataGenerator
 datagen = ImageDataGenerator(
     horizontal_flip=True,
     vertical_flip=True,
-    zca_whitening=True,
+    zca_whitening=False,
     rotation_range=90,
     featurewise_center=True,
     featurewise_std_normalization=True,
@@ -160,7 +160,7 @@ model.compile(
 
 # Callback function (save best model only)
 from keras.callbacks import ModelCheckpoint
-checkpoint = ModelCheckpoint('./model_multi_task_best_{0}.hdf5'.format(model_name), monitor='val_acc', verbose=1, save_best_only=True, save_weights_only=False, mode='max')
+checkpoint = ModelCheckpoint('./model_multi_task_best_{0}.hdf5'.format(model_name), monitor='val_categorical_accuracy', verbose=1, save_best_only=True, save_weights_only=False, mode='max')
 callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Train Model

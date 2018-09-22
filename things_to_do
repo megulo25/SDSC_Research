@@ -1,5 +1,7 @@
 Note to self:
-    - Stick with pulling the data from the directories instead of importing all of the data.
+    - Check every image and make sure that they can be resized and reshaped to (1,299,299,3). There was an error with
+    one of the images. 
+
 Next steps:
 
     1. Set up multi-task learning with the the final hidden layer initialized like the one done in the paper by Simon Baker.

@@ -271,7 +271,6 @@ def build_X_y_10(data_directory):
     h5f.create_dataset('y', data=y)
     h5f.close()
 
-import time
 def build_X_y_555(data_directory):
     """
     Building for 555 classes. Not for MTL.
@@ -328,8 +327,13 @@ def build_X_y_555(data_directory):
 
             c+=1
 
-            if c % 100 == 0:
+            if c % 1000 == 0:
                 print('Completed: {0}/{1}'.format(c, n))
+                print('Saving...')
+                f = h5py.File('data_555_MTL.h5', 'w')
+                f.create_dataset('X', data=X)
+                f.create_dataset('y', data=y)
+                f.close()
 
     # Save X and y
     X = X[1:]
