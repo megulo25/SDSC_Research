@@ -307,40 +307,44 @@ def build_X_y_555(data_directory):
 
         # Loop through each image
         for img_name in list_of_images:
-            img_full_path = os.path.join(dir_, img_name)
-            img_old = mpimg.imread(img_full_path)
+            try:
 
-            # Resize and reshape img
-            img = resize_and_reshape_image(img_old)
+                img_full_path = os.path.join(dir_, img_name)
+                img_old = mpimg.imread(img_full_path)
 
-            # Add to X
-            X = np.concatenate([X, img])
+                # Resize and reshape img
+                img = resize_and_reshape_image(img_old)
 
-            # Add to y
-            leaf_node = int(dir_.split('/')[-1])
-            full_hierarchy = list(hierarchy_dict[leaf_node])
+                # Add to X
+                X = np.concatenate([X, img])
 
-            temp_y = np.zeros((1, 1011))
-            temp_y[0, leaf_node]=1
-            temp_y[0, full_hierarchy]=1
-            y = np.concatenate([y, temp_y])
+                # Add to y
+                leaf_node = int(dir_.split('/')[-1])
+                full_hierarchy = list(hierarchy_dict[leaf_node])
 
-            c+=1
+                temp_y = np.zeros((1, 1011))
+                temp_y[0, leaf_node]=1
+                temp_y[0, full_hierarchy]=1
+                y = np.concatenate([y, temp_y])
 
-            if c % 3000 == 0:
-                print('Completed: {0}/{1}'.format(c, n))
-                print('Saving...')
-                f = h5py.File('data_555_MTL_{0}.h5'.format(cc), 'w')
-                f.create_dataset('X', data=X)
-                f.create_dataset('y', data=y)
-                f.close()
-                print('Done. Working on the next batch.')
-                cc+=1
-                del X
-                del y
+                c+=1
 
-                X = np.zeros((1, 299, 299, 3))
-                y = np.zeros((1, 1011))
+                if c % 3000 == 0:
+                    print('Completed: {0}/{1}'.format(c, n))
+                    print('Saving...')
+                    f = h5py.File('data_555_MTL_{0}.h5'.format(cc), 'w')
+                    f.create_dataset('X', data=X)
+                    f.create_dataset('y', data=y)
+                    f.close()
+                    print('Done. Working on the next batch.')
+                    cc+=1
+                    del X
+                    del y
+
+                    X = np.zeros((1, 299, 299, 3))
+                    y = np.zeros((1, 1011))
+            except:
+                print('This image failed: {0}'.format(img_name))
 
     # Save X and y
     X = X[1:]
