@@ -2,6 +2,7 @@
 import numpy as np
 import os
 import time
+import json
 
 cur_dir = os.getcwd()
 a = cur_dir.split('/')
@@ -31,25 +32,34 @@ arr = array[idx]
 dict_ = {}
 old_j = None
 f=0
-list_dict = []
+c=0
 for j in arr:
-    node_name = j[1]
+    node_name = class_dict_555[j[1]]
     if old_j == node_name:
         # Adding to current parent node
         dict_['children'].append({
-            'name':j[0],
+            'name':class_dict_555[j[0]],
             'children':[]
         })
     elif (old_j != node_name) and (f==0):
         # Create a new branch
         dict_['name'] = node_name
         dict_['children'] = [{
-            'name': j[0],
+            'name': class_dict_555[j[0]],
             'children': []
         }]
         f=1
         old_j = node_name
     else:
-        np.save('H_{0}.npy'.format(node_name-1), dict_)
+        # np.save('H_{0}.npy'.format(node_name-1), dict_)
+        with open('H_{0}_{1}.json'.format(c,dict_['name']), 'w') as fp:
+            json.dump(dict_, fp)
         dict_ = {}
         f=0
+        c+=1
+
+def fnc(list_):
+    for i,j in enumerate(list_):
+        print('-------------------------')
+        print(i)
+        print(j)

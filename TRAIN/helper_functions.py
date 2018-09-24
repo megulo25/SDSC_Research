@@ -299,7 +299,7 @@ def build_X_y_555(data_directory):
 
     n = 49117
     c = 0
-
+    cc=0
     # Loop through each subdirectory and build X and y
     for dir_ in full_path_list:
         for (_, _, list_of_images) in os.walk(dir_):
@@ -327,23 +327,30 @@ def build_X_y_555(data_directory):
 
             c+=1
 
-            if c % 1000 == 0:
+            if c % 3000 == 0:
                 print('Completed: {0}/{1}'.format(c, n))
                 print('Saving...')
-                f = h5py.File('data_555_MTL.h5', 'w')
+                f = h5py.File('data_555_MTL_{0}.h5'.format(cc), 'w')
                 f.create_dataset('X', data=X)
                 f.create_dataset('y', data=y)
                 f.close()
+                print('Done. Working on the next batch.')
+                cc+=1
+                del X
+                del y
+
+                X = np.zeros((1, 299, 299, 3))
+                y = np.zeros((1, 1011))
 
     # Save X and y
     X = X[1:]
     y = y[1:]
 
-    h5f = h5py.File('data_555_MTL.h5', 'w')
+    h5f = h5py.File('data_555_MTL_{0}.h5'.format(cc), 'w')
     h5f.create_dataset('X', data=X)
     h5f.create_dataset('y', data=y)
     h5f.close()
-            
+
 def random_images(n, dir_):
     full_path_list = []
     list_ = []
