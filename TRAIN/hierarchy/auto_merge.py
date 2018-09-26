@@ -1,7 +1,7 @@
 import json
 
 # Super Classes
-next_class = 12
+next_class = 0
 with open('birds.json', 'r') as f:
     h0 = json.load(f)
 
@@ -37,6 +37,9 @@ new_super_class = auto_merg(h0, list_, next_class)
 
 with open('birds.json', 'w') as w0:
     json.dump(new_super_class, w0)
+
+with open('birds_backup.json', 'w') as w1:
+    json.dump(new_super_class, w1)
 
 import os
 for i in list_:

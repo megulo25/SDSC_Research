@@ -58,8 +58,8 @@ for j in arr:
         f=0
         c+=1
 
-def fnc(list_):
-    for i,j in enumerate(list_):
-        print('-------------------------')
-        print(i)
-        print(j)
+# def fnc(list_):
+#     for i,j in enumerate(list_):
+#         print('-------------------------')
+#         print(i)
+#         print(j)
