@@ -82,7 +82,7 @@ def create_final_hidden_layer():
     # Hierarchy file
     a = os.getcwd()
     b = a.split('/')
-    b = b[:-1]
+    b = b[:-2]
     c = '/'.join(b)
     hierarchy_dict = np.load(os.path.join(c, 'data', 'hierarchy_dict.npy')).item()
     # Get a list of all the classes 
