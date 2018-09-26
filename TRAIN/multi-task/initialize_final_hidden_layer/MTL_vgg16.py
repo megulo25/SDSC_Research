@@ -159,7 +159,7 @@ callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Train Model
 print('Beginning training...')
-batchsize = 32
+batchsize = 16
 
 history = model.fit_generator(
     datagen.flow(
