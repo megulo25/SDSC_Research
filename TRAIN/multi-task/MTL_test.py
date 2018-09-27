@@ -31,7 +31,7 @@ for (_, sub_directory_list, _) in os.walk(path_to_subdirectories):
     break
 
 # Randomly select images to test model
-for n in range(100):
+for n in range(5*4):
     item = choice(sub_directory_list)
     path_to_images = os.path.join(path_to_subdirectories, item)
     for (_, _, img_names) in os.walk(path_to_images):
@@ -80,4 +80,3 @@ for n in range(100):
 
     if n % 4 == 0:
         plt.savefig('./model_results/plt_{0}.jpg'.format(int(np.random.rand()*1e7)))
-        plt.show()
