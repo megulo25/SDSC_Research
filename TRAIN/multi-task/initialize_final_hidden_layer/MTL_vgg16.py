@@ -125,13 +125,13 @@ def initialze_final_hidden_layer(weights, array_of_all_hierarchies_in_training_s
     weights[-2] = last_hidden_layer_weights
     return weights
 
-# print('Initializing weights...')
-# weights = model.get_weights()
-# array_of_all_hierarchies_in_training_set = create_final_hidden_layer()
-# new_weights = initialze_final_hidden_layer(weights=weights, array_of_all_hierarchies_in_training_set=array_of_all_hierarchies_in_training_set)
+print('Initializing weights...')
+weights = model.get_weights()
+array_of_all_hierarchies_in_training_set = create_final_hidden_layer()
+new_weights = initialze_final_hidden_layer(weights=weights, array_of_all_hierarchies_in_training_set=array_of_all_hierarchies_in_training_set)
 
-# # Set new weights to the model
-# model.set_weights(new_weights)
+# Set new weights to the model
+model.set_weights(new_weights)
 
 # Output Model Summary
 model.summary()
@@ -145,11 +145,10 @@ library.
 """
 # Compile
 from keras import metrics
-from keras.metrics import categorical_accuracy
 model.compile(
-    loss='binary_crossentropy',
+    loss='categorical_crossentropy',
     optimizer='SGD',
-    metrics=['accuracy']
+    metrics=['categorical_accuracy']
 )
 
 # Callback function (save best model only)
@@ -157,7 +156,7 @@ if not os.path.isdir('models'):
     os.mkdir('models')
 
 from keras.callbacks import ModelCheckpoint
-checkpoint = ModelCheckpoint('./models/model_multi_task_best_{0}_inita.hdf5'.format(model_name), monitor='val_acc', verbose=1, save_best_only=True, save_weights_only=False, mode='max')
+checkpoint = ModelCheckpoint('./models/model_multi_task_best_{0}_inita.hdf5'.format(model_name), monitor='val_loss', verbose=1, save_best_only=True, save_weights_only=False, mode='min')
 callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Train Model
@@ -171,7 +170,7 @@ history = model.fit_generator(
         batch_size=batchsize
     ),
     steps_per_epoch= len(X_train) // batchsize,
-    epochs=200,
+    epochs=500,
     verbose=1,
     validation_data=(X_test, y_test),
     callbacks=callback_list
