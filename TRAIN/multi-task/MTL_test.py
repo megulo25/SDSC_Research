@@ -44,8 +44,8 @@ for n in range(100):
 
     # Pre-process image
     img_original = mpimg.imread(full_path)
-    img = cv2.resize(img_original, (299,299))
-    img = img.astype('float') / 255.0
+    img_original = cv2.resize(img_original, (299,299))
+    img = img_original.astype('float') / 255.0
     img = np.reshape(img, (1,299,299,3))
 
     # Get ground truth class names
@@ -68,10 +68,16 @@ for n in range(100):
     # Plot model predictions
     n = n % 4
     n = [1,2,3,4][n]
+    if n==1:
+        plt.subplots(2,2, figsize=(25,25))
     plt.subplot(2,2,n)
     plt.imshow(img_original)
     plt.title('Ground Truth: {0}'.format(ground_truth_classes))
     plt.xlabel('Prediction: {0}'.format(predicted_classes))
 
+    if not os.path.isdir('model_results'):
+        os.mkdir('model_results')
+
     if n % 4 == 0:
+        plt.savefig('./model_results/plt_{0}.jpg'.format(int(np.random.rand()*1e7)))
         plt.show()
