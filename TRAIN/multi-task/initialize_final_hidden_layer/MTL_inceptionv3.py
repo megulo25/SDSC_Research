@@ -154,8 +154,11 @@ model.compile(
 )
 
 # Callback function (save best model only)
+if not os.path.isdir('models'):
+    os.mkdir('models')
+
 from keras.callbacks import ModelCheckpoint
-checkpoint = ModelCheckpoint('./model_multi_task_best_{0}_inita.hdf5'.format(model_name), monitor='val_categorical_accuracy', verbose=1, save_best_only=True, save_weights_only=False, mode='max')
+checkpoint = ModelCheckpoint('./models/model_multi_task_best_{0}_inita.hdf5'.format(model_name), monitor='val_categorical_accuracy', verbose=1, save_best_only=True, save_weights_only=False, mode='max')
 callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Train Model
@@ -179,18 +182,18 @@ print('Training complete!\n')
 # Save Model and Training Process
 print('Saving history...')
 
-if not os.path.isdir('history_data'):
-    os.mkdir('history_data')
+if not os.path.isdir('./models/history_data'):
+    os.mkdir('./models/history_data')
 
 train_acc = history.history['categorical_accuracy']
 train_loss = history.history['loss']
-np.save('./history_data/train_acc_{0}.npy'.format(model_name), train_acc)
-np.save('./history_data/train_loss_{0}.npy'.format(model_name), train_loss)
+np.save('./models/history_data/train_acc_{0}.npy'.format(model_name), train_acc)
+np.save('./models/history_data/train_loss_{0}.npy'.format(model_name), train_loss)
 
 # Validation Accuracy and Loss
 val_acc = history.history['val_categorical_accuracy']
 val_loss = history.history['val_loss']
-np.save('./history_data/val_acc_{0}.npy'.format(model_name), val_acc)
-np.save('./history_data/val_loss_{0}.npy'.format(model_name), val_loss)
+np.save('./models/history_data/val_acc_{0}.npy'.format(model_name), val_acc)
+np.save('./models/history_data/val_loss_{0}.npy'.format(model_name), val_loss)
 
 print('History saved!\n')
