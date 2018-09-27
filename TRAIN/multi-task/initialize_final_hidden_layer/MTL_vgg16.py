@@ -4,8 +4,14 @@ import numpy as np
 import h5py
 import os
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 #-----------------------------------------------------------------------------------------------#
+# Arg parser
+arg = argparse.ArgumentParser()
+arg.add_argument('-gpu_id', '--gpu_id', required=True, help='ID of GPU')
+args = vars(arg.parse_args())
+#-----------------------------------------------------------------------------------------------#
+os.environ['CUDA_VISIBLE_DEVICES'] = str(args['gpu_id'])
+
 # Load in data
 print('Loading in data...')
 a = os.getcwd()
@@ -60,14 +66,6 @@ from keras.models import Model
 # VGG 16
 from keras.applications.vgg16 import VGG16
 model = VGG16(weights='imagenet', include_top=False, input_shape=(299,299,3), classes=class_count)
-
-# Resnet 50
-# from keras.applications.resnet50 import ResNet50
-# model = ResNet50(weights='imagenet', include_top=False,input_shape=(299,299,3), classes=class_count)
-
-# InceptionV3
-# from keras.applications.inception_v3 import InceptionV3
-# model = InceptionV3(weights='imagenet', include_top=False,input_shape=(299,299,3), classes=class_count)
 
 # Get model name
 model_name = model.name
@@ -126,13 +124,13 @@ def initialze_final_hidden_layer(weights, array_of_all_hierarchies_in_training_s
     weights[-2] = last_hidden_layer_weights
     return weights
 
-print('Initializing weights...')
-weights = model.get_weights()
-array_of_all_hierarchies_in_training_set = create_final_hidden_layer()
-new_weights = initialze_final_hidden_layer(weights=weights, array_of_all_hierarchies_in_training_set=array_of_all_hierarchies_in_training_set)
+# print('Initializing weights...')
+# weights = model.get_weights()
+# array_of_all_hierarchies_in_training_set = create_final_hidden_layer()
+# new_weights = initialze_final_hidden_layer(weights=weights, array_of_all_hierarchies_in_training_set=array_of_all_hierarchies_in_training_set)
 
-# Set new weights to the model
-model.set_weights(new_weights)
+# # Set new weights to the model
+# model.set_weights(new_weights)
 
 # Output Model Summary
 model.summary()
@@ -140,7 +138,7 @@ model.summary()
 # Loss
 # Binary Cross-Entropy Loss (Logistic Loss)
 """
-The only way to use this loss function properly is to make sure that the accuracy is 
+The only way to use this loss function properly is to make sure that the acc is 
 defined as categorical accuracy. We must call this accuracy from the keras.metrics
 library.
 """
@@ -150,7 +148,7 @@ from keras.metrics import categorical_accuracy
 model.compile(
     loss='binary_crossentropy',
     optimizer='SGD',
-    metrics=[categorical_accuracy]
+    metrics=['accuracy']
 )
 
 # Callback function (save best model only)
@@ -158,7 +156,7 @@ if not os.path.isdir('models'):
     os.mkdir('models')
 
 from keras.callbacks import ModelCheckpoint
-checkpoint = ModelCheckpoint('./models/model_multi_task_best_{0}_inita.hdf5'.format(model_name), monitor='val_categorical_accuracy', verbose=1, save_best_only=True, save_weights_only=False, mode='max')
+checkpoint = ModelCheckpoint('./models/model_multi_task_best_{0}_inita.hdf5'.format(model_name), monitor='val_acc', verbose=1, save_best_only=True, save_weights_only=False, mode='max')
 callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Train Model
@@ -172,7 +170,7 @@ history = model.fit_generator(
         batch_size=batchsize
     ),
     steps_per_epoch= len(X_train) // batchsize,
-    epochs=500,
+    epochs=200,
     verbose=1,
     validation_data=(X_test, y_test),
     callbacks=callback_list
@@ -185,13 +183,13 @@ print('Saving history...')
 if not os.path.isdir('./models/history_data'):
     os.mkdir('./models/history_data')
 
-train_acc = history.history['categorical_accuracy']
+train_acc = history.history['acc']
 train_loss = history.history['loss']
 np.save('./models/history_data/train_acc_{0}.npy'.format(model_name), train_acc)
 np.save('./models/history_data/train_loss_{0}.npy'.format(model_name), train_loss)
 
 # Validation Accuracy and Loss
-val_acc = history.history['val_categorical_accuracy']
+val_acc = history.history['val_acc']
 val_loss = history.history['val_loss']
 np.save('./models/history_data/val_acc_{0}.npy'.format(model_name), val_acc)
 np.save('./models/history_data/val_loss_{0}.npy'.format(model_name), val_loss)
