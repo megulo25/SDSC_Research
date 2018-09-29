@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, render_template
+from flask_talisman import Talisman
 from sqlalchemy import create_engine
 
 # Create an app
@@ -10,4 +11,4 @@ def home():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    Talisman(app.run(debug=True))

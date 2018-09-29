@@ -118,29 +118,30 @@ def split_train_test_dir():
         if len(img_file_names) > 10:
             for img_name in img_file_names:
 
-                full_img_path = os.path.join(full_path_sub_dirs, img_name)
+                try:      
+                    full_img_path = os.path.join(full_path_sub_dirs, img_name)
 
-                img = mpimg.imread(full_img_path)
-                img = cv2.resize(img, (224, 224))
-                img = np.reshape(img, (1, 224, 224, 3))
+                    img = mpimg.imread(full_img_path)
+                    img = cv2.resize(img, (224, 224))
+                    img = np.reshape(img, (1, 224, 224, 3))
 
-                y_ex = np.zeros((1, class_count))
-                true_class = int(full_path_sub_dirs.split('/')[-1])
-                label_index = label_dict[true_class]
-                y_ex[0, label_index] = 1
+                    y_ex = np.zeros((1, class_count))
+                    true_class = int(full_path_sub_dirs.split('/')[-1])
+                    label_index = label_dict[true_class]
+                    y_ex[0, label_index] = 1
 
-                # Place into either train or test set
-                if dict_[img_name[:-4]] == 1:
-                    X_train = np.concatenate([X_train, img])
-                    y_train = np.concatenate([y_train, y_ex])
-                    tr+=1
-                else:
-                    X_test = np.concatenate([X_test, img])
-                    y_test = np.concatenate([y_test, y_ex])
-                    te+=1
+                    # Place into either train or test set
+                    if dict_[img_name[:-4]] == 1:
+                        X_train = np.concatenate([X_train, img])
+                        y_train = np.concatenate([y_train, y_ex])
+                        tr+=1
+                    else:
+                        X_test = np.concatenate([X_test, img])
+                        y_test = np.concatenate([y_test, y_ex])
+                        te+=1
+                except:
+                    print('Error with image: {0}'.format(os.path.join(full_path_sub_dirs, img_name)))
             c+=1
-            if c > 5:
-                break
             print('Completed: {0}/{1} directories'.format(c, class_count))
     
     print('Num. of training ex: {0}'.format(tr))
