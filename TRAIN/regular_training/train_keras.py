@@ -11,100 +11,43 @@ args = parser.parse_args()
 
 os.environ["CUDA_VISIBLE_DEVICES"]= ','.join(args.GPU_IDs)
 #-----------------------------------------------------------------------------------------------#
-# Split to training and testing set
-message = input('Which nabirds dataset are you working on? (Enter 0 for 10_class or 1 for 555_class): ')
-message = int(message)
+# Import Data
+print('Build a .h5 file for the training instead of pulling from the directory during training.')
 
-# Import Training Data
-print('Loading dataset...')
-training_dir, validation_dir = load_data(message)
-print('Dataset loaded!\n')
-
-print('Splitting dataset...')
-training_percentage = 0.7
-# Create Training and Validation folders if they don't exist.
-if not os.path.isdir(training_dir):
-    os.mkdir(training_dir)
-if not os.path.isdir(validation_dir):
-    os.mkdir(validation_dir)
-
-if (len(os.listdir(training_dir)) == 0) and (len(os.listdir(validation_dir)) == 0):
-    split_train_test_dir(
-        dir_of_data=full_path_to_data,
-        train_dir=training_dir,
-        test_dir=validation_dir,
-        train_percentage=training_percentage
-    )
+# Split data (train/dev/test, 70/15/15)
+print('The dev set will be taken from the test set')
 print('Dataset split!\n')
 #-----------------------------------------------------------------------------------------------#
 # Import Model
+class_count = y_train.shape[1]
 
-# Import InceptionNet
 print('Loading in model...')
-from keras.applications.inception_resnet_v2 import InceptionResNetV2
 from keras.layers import Flatten, Dense, Dropout
 from keras.models import Model
-model = InceptionResNetV2(weights='imagenet', include_top=False, input_shape=(299, 299, 3), classes=class_count)
+
+## Models
+
+# VGG 16
+from keras.applications.vgg16 import VGG16
+model = VGG16(weights='imagenet', include_top=False, input_shape=(299,299,3), classes=class_count)
+
+# Get model name
+model_name = model.name
+
 x = model.output
 x = Flatten()(x)
 output_layer = Dense(class_count, activation='softmax')(x)
 model = Model(inputs=model.input, outputs=output_layer)
-print('Model loaded!\n')
-
-# Multi-gpu
-from keras.utils import multi_gpu_model
-model = multi_gpu_model(model)
+print('Model {0} loaded!\n'.format(model_name))
 
 # Output Model Summary
 model.summary()
-#-----------------------------------------------------------------------------------------------#
-# Image Pre-processing
-from keras.preprocessing.image import ImageDataGenerator
-
-# Training Generator
-train_datagen = ImageDataGenerator(width_shift_range=0.1,
-                                    height_shift_range=0.1,
-                                    horizontal_flip=True,
-                                    vertical_flip=True,
-                                    featurewise_center=True,
-                                    featurewise_std_normalization=True,
-                                    rotation_range=20,
-                                    shear_range=0.2,
-                                    zoom_range=0.2,
-                                    zca_epsilon=1e-6,
-                                    fill_mode="nearest")
-
-train_generator = train_datagen.flow_from_directory(
-    directory=training_dir,
-    target_size=(299,299),
-    batch_size=64,
-    class_mode='categorical'
-)
-class_indicies = train_generator.class_indices
-np.save('class_indicies.npy', class_indicies)
-
-# Validation Generator
-test_datagen = ImageDataGenerator(
-    rescale=1
-)
-
-validation_generator = test_datagen.flow_from_directory(
-    directory=validation_dir,
-    target_size=(299,299),
-    batch_size=1,
-    class_mode='categorical'
-)
-#-----------------------------------------------------------------------------------------------#
-# Optimizer
-from keras import optimizers
-# optimizer = optimizers.SGD(lr=0.01, momentum=0.0, decay=0.0, nesterov=True)
-optimizer = optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
 #-----------------------------------------------------------------------------------------------#
 # Compile
 from keras import metrics
 model.compile(
     loss='mean_squared_error',
-    optimizer=optimizer,
+    optimizer='adam',
     metrics=['accuracy']
 )
 
@@ -115,23 +58,21 @@ callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Train
 print('Beginning training...')
+batchsize = 16
+
 history = model.fit_generator(
-    train_generator,
-    validation_data=validation_generator,
-    epochs=200,
-    verbose=2,
+    datagen.flow(
+        x=X_train,
+        y=y_train,
+        batch_size=batchsize
+    ),
+    steps_per_epoch= len(X_train) // batchsize,
+    epochs=500,
+    verbose=1,
+    validation_data=(X_test, y_test),
     callbacks=callback_list
 )
 print('Training complete!\n')
-#-----------------------------------------------------------------------------------------------#
-# Save the weights
-# print('Saving weights and architecture...')
-# model.save_weights('model_weights_{0}.h5'.format(message))
-
-# Save the model architecture
-# model_json = model.to_json()
-# with open('model_architecture_{0}.json'.format(message), 'w') as json_file:
-#     json_file.write(model_json)
 #-----------------------------------------------------------------------------------------------#
 # Save training accuracy and testing accuracy:
 print('Saving history...')
@@ -139,6 +80,7 @@ print('Saving history...')
 # Training Accuracy and Loss
 if not os.path.isdir('history_data'):
     os.mkdir('history_data')
+
 train_acc = history.history['acc']
 train_loss = history.history['loss']
 np.save('./history_data/train_acc_{0}.npy'.format(message), train_acc)

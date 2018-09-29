@@ -1,22 +1,21 @@
 Next steps:
-    Try Last (I want to keep it purely CNN). Construct CNN-RNN network like the one used in Yanming Guo paper.
-        * There's an example CNN-RNN architecture in the Desktop. We can use this as a guide to build our own.
-        * But we need to figure out what is being passed into the RNN.
+    - Develop a train/dev/test set. (70/15/15)
+        * The dev and test sets should be from the same distribution.
+        * The dev set is used to tune the hyperparameters.
+        * The test set should not be used to tune the hyperparameters.
+        * This needs to be developed carefully, then we can iterate through models.
+    
+    - May want to look into Precision, Recall, and F1 score.
+    
+    - 5 fold cross validation
+        * https://machinelearningmastery.com/multi-class-classification-tutorial-keras-deep-learning-library/
+    
+    - Implement the bounding boxes during the training. Create a classifier for identifying the birds.
+    Then use the classifier to implement YOLO to identify where the bird is. Then use heatmap to analyze
+    the decision making process. We can include a combination of predefined hierachy and data in the database to
+    reveal information about that bird. Then it can all go on the website.
 
-Things to try for training:
-    - Try freezing the first couple of layers of a network that has been trained on one task, then retrain network on new task.
-        * Look at Yashua Bengio's work on multi-task learning.
-    - Try Cerri et al. (2014) work that proposes a method for hierarchical multi-label text classification that incrementally
-    trains a multi-layer perceptron for each level of the classification hierarchy. 
-        * Predictions made by a neural network in a given layer are used as inputs to the neural network responsible for the
-        prediction in the next level.
-    - Look for Chen et al. (2017) work on create an ensemble of a CNN and RNN for modeling high-order label correlation.
-    - Combining CNN-RNN: https://github.com/ShadyF/cnn-rnn-classifier/blob/master/cnn_rnn_classifier.py
-
-
-# Things for the future when MTL works:
-- Implement YOLO with out pretrained model. (This will take an image and check each region for a bird. Then it will output a profile for that bird based on the scraped data).
 
 - Heatmap of the image. Highlight important pixels in image.
     * http://heatmapping.org/
-    * We can look at the discriminative images for each level of the hierarchy.
+    * http://www.hackevolve.com/where-cnn-is-looking-grad-cam/

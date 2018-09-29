@@ -4,7 +4,7 @@ from random import sample
 from math import floor
 import numpy as np
 import matplotlib.image as mpimg
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 import itertools
 import cv2
@@ -12,6 +12,7 @@ from keras import backend as K
 import h5py
 import pandas as pd
 import shutil
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
 def load_data(message):
     if not os.path.isdir('data'):
@@ -66,79 +67,95 @@ def load_data(message):
     
     return training_dir, validation_dir
 
-def split_train_test_dir(dir_of_data, train_dir, test_dir, train_percentage):
+def split_train_test_dir():
     """
-    Split Create a training and testing directories for training keras model.
+    Split Create a training and testing directories.
     Arguments:
-    dir_of_data = Full path to the top directory of all the image folders.
-    train_percentage = Float, representing the percentage of the images that 
-    will be used for training.
+    dir_of_data = Full path to the data directory.
     """   
-        
-    # Get a list of all the subdirectories
-    image_dir = []
-    print('Getting a list of the subdirectories...')
-    for (f, d, r) in os.walk(dir_of_data):
-        image_dir.append(d)
+    dir_of_data = os.path.join(os.getcwd(), 'data')
+    path_to_train_test_split_file = os.path.join(dir_of_data, 'nabirds_555', 'nabirds', 'train_test_split.txt')
 
-    image_dir = image_dir[0]
+    # Bring in text file that has the split defined
+    with open(path_to_train_test_split_file, 'r') as file:
+        train_test_split_list = file.readlines()
 
-    # Create directories in the train and test folders
-    print('Creating subdirectories...')
-    for dir_ in image_dir:
-        train_path_ = os.path.join(train_dir, dir_)
+    # Convert list to dictionary (key=filename, value=1/0)
+    dict_ = {}
+    for i in train_test_split_list:
+        i = i.split()
+        key_ = i[0].replace('-','')
+        val_ = int(i[1])
+        dict_[key_] = int(val_)
 
-        if not os.path.isdir(train_path_):
-            os.mkdir(train_path_)
+    # Get list of subdirectories for one-hot encoding
+    for (_, subdirs, _) in os.walk(os.path.join(dir_of_data, 'nabirds_555', 'nabirds', 'images')):
+        True
+        break
+    
+    subdirs = np.array(subdirs)
+    subdirs = subdirs.astype('int')
 
-        test_path_ = os.path.join(test_dir, dir_)
+    label_encoder = LabelEncoder()
+    subdir_encodings = label_encoder.fit_transform(subdirs)
 
-        if not os.path.isdir(test_path_):
-            os.mkdir(test_path_)
-    print('Created the subdirectories!')
+    label_dict = {}
+    for j_idx, j_val in enumerate(subdirs):
+        label_dict[j_val] = subdir_encodings[j_idx]
 
-    # Loop through each directory and create the split
-    print('Looping through each subdirectory...\n')
-    for img_dir in image_dir:
+    # Build X_train, y_train, X_test, y_test   
+    class_count = 555
 
-        full_path_img_dir = os.path.join(dir_of_data, img_dir)
-        print("Splitting the images in: {0}\n".format(full_path_img_dir))
+    X_train = np.zeros((1, 224, 224, 3))
+    X_test = np.zeros((1, 224, 224, 3))
+    y_train = np.zeros((1, class_count))
+    y_test = np.zeros((1, class_count))
 
-        for (_, _, files_list) in os.walk(full_path_img_dir):
-            pass
+    c=0
+    tr=0
+    te=0
+    for (full_path_sub_dirs, _, img_file_names) in os.walk(os.path.join(dir_of_data, 'nabirds_555', 'nabirds', 'images')):
+        if len(img_file_names) > 10:
+            for img_name in img_file_names:
 
-        # Place training split into training folder
-        'Get a percentage of the training images'
-        num_images = len(files_list)
-        num_training_images = floor(num_images*train_percentage)
+                full_img_path = os.path.join(full_path_sub_dirs, img_name)
 
-        # Training Split
-        training_images_files = sample(files_list, num_training_images)
+                img = mpimg.imread(full_img_path)
+                img = cv2.resize(img, (224, 224))
+                img = np.reshape(img, (1, 224, 224, 3))
 
-        # Testing Split
-        files_set = set(files_list)
-        train_set = set(training_images_files)
-        test_set = files_set - train_set
-        testing_images_files = list(test_set)
+                y_ex = np.zeros((1, class_count))
+                true_class = int(full_path_sub_dirs.split('/')[-1])
+                label_index = label_dict[true_class]
+                y_ex[0, label_index] = 1
 
-        # Moves the files
-        move_files(
-            list_ = training_images_files,
-            base_dir=full_path_img_dir,
-            flag='train'
-        )
+                # Place into either train or test set
+                if dict_[img_name[:-4]] == 1:
+                    X_train = np.concatenate([X_train, img])
+                    y_train = np.concatenate([y_train, y_ex])
+                    tr+=1
+                else:
+                    X_test = np.concatenate([X_test, img])
+                    y_test = np.concatenate([y_test, y_ex])
+                    te+=1
+            c+=1
+            if c > 5:
+                break
+            print('Completed: {0}/{1} directories'.format(c, class_count))
+    
+    print('Num. of training ex: {0}'.format(tr))
+    print('Num. of testing ex: {0}'.format(te))
+    X_train = X_train[1:]
+    X_test = X_test[1:]
+    y_train = y_train[1:]
+    y_test = y_test[1:]
 
-        move_files(
-            list_ = testing_images_files,
-            base_dir=full_path_img_dir,
-            flag='test'
-        )
-
-    # Get rid of extra test and train dirs
-    os.rmdir(os.path.join(train_dir, 'train'))
-    os.rmdir(os.path.join(train_dir, 'test'))
-    os.rmdir(os.path.join(test_dir, 'train'))
-    os.rmdir(os.path.join(test_dir, 'test'))
+    h = h5py.File('data_555.h5', 'w')
+    h.create_dataset('X_train', data=X_train)
+    h.create_dataset('X_test', data=X_test)
+    h.create_dataset('y_train', data=y_train)
+    h.create_dataset('y_test', data=y_test)
+    h.close()
 
 def move_files(list_, base_dir, flag):
     """
@@ -154,7 +171,6 @@ def move_files(list_, base_dir, flag):
         output_full_path = os.path.join(part_1_dir, flag, part_2_dir, filename)
 
         copyfile(input_full_path, output_full_path)
-
 
 def build_X_y_10(data_directory):
     """
@@ -373,11 +389,6 @@ def random_images(n, dir_):
 
     return sample(list_, n)
 
-def resize_and_reshape_image(img):
-    img = cv2.resize(img, (299, 299))
-    img = np.reshape(img, (1,299,299,3))
-    return img
-
 def classes_to_dict(path_to_file):
     """
     The purpose of this function is to take the classes.txt file 
@@ -399,3 +410,49 @@ def classes_to_dict(path_to_file):
 
     # Save dict
     np.save('class_dict_555.npy', dict_)
+
+def create_final_hidden_layer():
+    # Hierarchy file
+    a = os.getcwd()
+    b = a.split('/')
+    b = b[:-2]
+    c = '/'.join(b)
+    hierarchy_dict = np.load(os.path.join(c, 'data', 'hierarchy_dict.npy')).item()
+    # Get a list of all the classes 
+    path = os.path.join(c, 'data', 'nabirds_555', 'nabirds', 'images')
+    list_ = []
+    for (_, l, _) in os.walk(path):
+        list_.append(l)
+    list_ = list_[0]
+    # Create array
+    final_hidden_layer = np.zeros((len(list_), 1011))
+    # Get the heirarchy for each class and place into array
+    c = 0
+    for i, j in enumerate(list_):
+        # Convert to integer
+        j = int(j)
+        # Get hierarchy 
+        y = list(hierarchy_dict[j])
+        # Index array
+        final_hidden_layer_old = final_hidden_layer[i]
+        final_hidden_layer[i][y] = 1
+    return final_hidden_layer
+
+def initialze_final_hidden_layer(weights, array_of_all_hierarchies_in_training_set, flag='init_a'):
+    # Grab the weights from the last hidden layer
+    last_hidden_layer_weights = weights[-2]
+    n = len(array_of_all_hierarchies_in_training_set)
+    # Replace the first n rows with possible hierarchies
+    last_hidden_layer_weights[:n] = array_of_all_hierarchies_in_training_set
+    # Initialize the rest of the rows with one of the following
+    if (flag == 'init_a'):
+        # Initialize the rest with zeros
+        na = last_hidden_layer_weights[n:].shape
+        last_hidden_layer_weights[n:] = np.zeros(na)
+    elif (flag == 'init_b'):
+        # Initialize the rest with random values.
+        nb = last_hidden_layer_weights[n:].shape
+        last_hidden_layer_weights[n:] = np.random.rand(nb)
+    # Replace last hidden layer in weights list
+    weights[-2] = last_hidden_layer_weights
+    return weights
