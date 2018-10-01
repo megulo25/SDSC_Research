@@ -165,7 +165,7 @@ def split_train_test_dir():
 
                 
                 # Place into either train or test set
-                if dict_[img_name[:-4]] == 1:
+                if dict_[img_name[:-4]][0] == 1:
                     X_train = np.concatenate([X_train, img])
                     y_train = np.concatenate([y_train, y_ex])
                     tr+=1
