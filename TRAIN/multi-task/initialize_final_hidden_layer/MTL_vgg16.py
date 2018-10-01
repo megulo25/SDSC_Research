@@ -80,6 +80,9 @@ print('Model {0} loaded!\n'.format(model_name))
 print('Initializing weights...')
 weights = model.get_weights()
 
+import sys
+sys.path.insert(0, '../..')
+from helper_functions import create_final_hidden_layer, initialze_final_hidden_layer
 # Create the final hidden layer
 array_of_all_hierarchies_in_training_set = create_final_hidden_layer()
 
@@ -120,7 +123,7 @@ history = model.fit_generator(
         batch_size=batchsize
     ),
     steps_per_epoch= len(X_train) // batchsize,
-    epochs=500,
+    epochs=5000,
     verbose=1,
     validation_data=(X_test, y_test),
     callbacks=callback_list

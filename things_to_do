@@ -1,4 +1,5 @@
 Next steps:
+    - Scale down bbox to account for image rescale. Then continue the building of the dataset.
     - Develop a train/dev/test set. (70/15/15)
         * The dev and test sets should be from the same distribution.
         * The dev set is used to tune the hyperparameters.
