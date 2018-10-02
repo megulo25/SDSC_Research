@@ -1,5 +1,5 @@
 Next steps:
-    - Scale down bbox to account for image rescale. Then continue the building of the dataset.
+    - Continue working on MTL_vgg code for training.
     - Develop a train/dev/test set. (70/15/15)
         * The dev and test sets should be from the same distribution.
         * The dev set is used to tune the hyperparameters.
@@ -11,10 +11,12 @@ Next steps:
     - 5 fold cross validation
         * https://machinelearningmastery.com/multi-class-classification-tutorial-keras-deep-learning-library/
     
-    - Implement the bounding boxes during the training. Create a classifier for identifying the birds.
-    Then use the classifier to implement YOLO to identify where the bird is. Then use heatmap to analyze
-    the decision making process. We can include a combination of predefined hierachy and data in the database to
-    reveal information about that bird. Then it can all go on the website.
+    - Implement the bounding boxes during the training. 
+    - Create a classifier for identifying the birds.
+    - Then use the classifier to implement YOLO to identify where the bird is. 
+    - Then use heatmap to analyze the decision making process. 
+    - We can include a combination of predefined hierachy and data in the database to reveal information about that bird. 
+    - Then it can all go on the website.
 
 
 - Heatmap of the image. Highlight important pixels in image.

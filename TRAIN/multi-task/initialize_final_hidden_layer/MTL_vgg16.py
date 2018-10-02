@@ -17,23 +17,28 @@ os.environ['CUDA_VISIBLE_DEVICES'] = str(args['gpu_id'])
 print('Loading in data...')
 a = os.getcwd()
 b = a.split('/')
-b = b[:-2]
+b = b[:-1]
 c = '/'.join(b)
-filename = os.path.join(c, 'data' , 'dataset_555','data_555_MTL.h5')
+filename = os.path.join(c, 'data' , 'dataset_555','data_555.h5')
 
 # Loading in the 555 class dataset for MTL
 f = h5py.File(filename)
-X = np.array(f['X'])
-y = np.array(f['y'])
+X_train = np.array(f['X_train'])
+X_validation = np.array(f['X_test'])
+y_train = np.array(f['y_train'])
+y_validation = np.array(f['y_test'])
 
 print('Dataset loaded!\n')
 #-----------------------------------------------------------------------------------------------#
-# Split dataset
-test_split = .3
+# Split test into dev/test
+test_split = .5
 print('Splitting dataset: {0} training, {1} validation'.format(1-test_split, test_split))
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_split, random_state=42)
-del X
-del y
+X_dev, X_test, y_dev, y_test = train_test_split(X_validation, y_validation, test_size=test_split, random_state=42)
+
+print('Data:')
+print('Training set: {0}'.format(X_train.shape))
+print('Dev set: {0}'.format(X_dev.shape))
+print('Test set: {0}'.format(X_test.shape))
 print('Dataset split!\n)')
 #-----------------------------------------------------------------------------------------------#
 # Apply Image Data Augmentation
@@ -66,7 +71,7 @@ from keras.models import Model
 
 # VGG 16
 from keras.applications.vgg16 import VGG16
-model = VGG16(weights='imagenet', include_top=False, input_shape=(299,299,3), classes=class_count)
+model = VGG16(weights='imagenet', include_top=False, input_shape=(224,224,3), classes=class_count)
 
 # Get model name
 model_name = model.name
@@ -76,21 +81,6 @@ x = Flatten()(x)
 output_layer = Dense(class_count, activation='softmax')(x)
 model = Model(inputs=model.input, outputs=output_layer)
 print('Model {0} loaded!\n'.format(model_name))
-
-print('Initializing weights...')
-weights = model.get_weights()
-
-import sys
-sys.path.insert(0, '../..')
-from helper_functions import create_final_hidden_layer, initialze_final_hidden_layer
-# Create the final hidden layer
-array_of_all_hierarchies_in_training_set = create_final_hidden_layer()
-
-# Initialize weights in final hidden layer
-new_weights = initialze_final_hidden_layer(weights=weights, array_of_all_hierarchies_in_training_set=array_of_all_hierarchies_in_training_set)
-
-# Set new weights to the model
-model.set_weights(new_weights)
 
 # Output Model Summary
 model.summary()
@@ -109,7 +99,7 @@ if not os.path.isdir('models'):
     os.mkdir('models')
 
 from keras.callbacks import ModelCheckpoint
-checkpoint = ModelCheckpoint('./models/model_multi_task_best_{0}_inita.hdf5'.format(model_name), monitor='val_loss', verbose=1, save_best_only=True, save_weights_only=False, mode='min')
+checkpoint = ModelCheckpoint('./models/model_multi_task_best_{0}.hdf5'.format(model_name), monitor='val_loss', verbose=1, save_best_only=True, save_weights_only=False, mode='min')
 callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Train Model
@@ -123,28 +113,25 @@ history = model.fit_generator(
         batch_size=batchsize
     ),
     steps_per_epoch= len(X_train) // batchsize,
-    epochs=5000,
+    epochs=200,
     verbose=1,
-    validation_data=(X_test, y_test),
+    validation_data=(X_dev, y_dev),
     callbacks=callback_list
 )
 print('Training complete!\n')
 #-----------------------------------------------------------------------------------------------#
+# Evaluate on test set
+from sklearn.metrics import accuracy_score, log_loss
+y_pred = model.predict(X_test)
+y_true = y_test
+
+acc_class = log_loss(y_true[:-4], y_pred[:-4])
+acc_bbox = accuracy_score(y_true[-4:], y_pred[-4:])
+
+print('Class accuracy on test set: {0]'.format(acc))
+print('Bounding box accuracy: {0}'.format(1-acc_bbox))
+#-----------------------------------------------------------------------------------------------#
 # Save Model and Training Process
 print('Saving history...')
-
-if not os.path.isdir('./models/history_data'):
-    os.mkdir('./models/history_data')
-
-train_acc = history.history['acc']
-train_loss = history.history['loss']
-np.save('./models/history_data/train_acc_{0}.npy'.format(model_name), train_acc)
-np.save('./models/history_data/train_loss_{0}.npy'.format(model_name), train_loss)
-
-# Validation Accuracy and Loss
-val_acc = history.history['val_acc']
-val_loss = history.history['val_loss']
-np.save('./models/history_data/val_acc_{0}.npy'.format(model_name), val_acc)
-np.save('./models/history_data/val_loss_{0}.npy'.format(model_name), val_loss)
-
+np.save('history_{0}.npy'.format(model_name))
 print('History saved!\n')

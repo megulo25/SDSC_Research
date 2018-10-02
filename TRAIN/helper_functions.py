@@ -67,7 +67,7 @@ def load_data(message):
     
     return training_dir, validation_dir
 
-def split_train_test_dir():
+def split_train_test():
     """
     Split Create a training and testing directories.
     Arguments:
@@ -182,6 +182,8 @@ def split_train_test_dir():
             print('Completed: {0}/{1} directories'.format(c, 555))
             tr_prime=0
             te_prime=0
+            if c > 5:
+                break
     
     print('Num. of training ex: {0}'.format(tr))
     print('Num. of testing ex: {0}'.format(te))
