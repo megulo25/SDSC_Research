@@ -184,13 +184,14 @@ def split_train_test():
             te_prime=0
 
             if c % 10 == 0:
+                print('Saving temp. data:')
                 h = h5py.File('data_555_{0}.h5'.format(c), 'w')
                 h.create_dataset('X_train', data=X_train)
                 h.create_dataset('X_test', data=X_test)
                 h.create_dataset('y_train', data=y_train)
                 h.create_dataset('y_test', data=y_test)
                 h.close()
-    
+
     print('Num. of training ex: {0}'.format(tr))
     print('Num. of testing ex: {0}'.format(te))
     X_train = X_train[1:]
