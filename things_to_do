@@ -1,15 +1,4 @@
 Next steps:
-    - Continue working on MTL_vgg code for training.
-    - Develop a train/dev/test set. (70/15/15)
-        * The dev and test sets should be from the same distribution.
-        * The dev set is used to tune the hyperparameters.
-        * The test set should not be used to tune the hyperparameters.
-        * This needs to be developed carefully, then we can iterate through models.
-    
-    - May want to look into Precision, Recall, and F1 score.
-    
-    - 5 fold cross validation
-        * https://machinelearningmastery.com/multi-class-classification-tutorial-keras-deep-learning-library/
     
     - Implement the bounding boxes during the training. 
     - Create a classifier for identifying the birds.

@@ -182,8 +182,6 @@ def split_train_test():
             print('Completed: {0}/{1} directories'.format(c, 555))
             tr_prime=0
             te_prime=0
-            if c > 5:
-                break
     
     print('Num. of training ex: {0}'.format(tr))
     print('Num. of testing ex: {0}'.format(te))

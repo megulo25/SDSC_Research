@@ -17,7 +17,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = str(args['gpu_id'])
 print('Loading in data...')
 a = os.getcwd()
 b = a.split('/')
-b = b[:-1]
+b = b[:-2]
 c = '/'.join(b)
 filename = os.path.join(c, 'data' , 'dataset_555','data_555.h5')
 
@@ -28,36 +28,46 @@ X_validation = np.array(f['X_test'])
 y_train = np.array(f['y_train'])
 y_validation = np.array(f['y_test'])
 
+# Concatenate the data, we will split later
+X = np.concatenate([X_train, X_validation])
+y = np.concatenate([y_train, y_validation])
+
+# Free up memory
+del X_train
+del X_validation
+del y_train
+del y_validation
+
 print('Dataset loaded!\n')
 #-----------------------------------------------------------------------------------------------#
 # Split test into dev/test
-test_split = .5
+
+# Split classification label from bounding box predictions
+def label_split(y):
+    y_new = []
+    for i in y:
+        # Classification, bounding box
+        y_new.append((i[:-4], i[-4:]))
+    return y_new
+
+# Split Data to training/validation (80%, 20%)
+test_split = .2
 print('Splitting dataset: {0} training, {1} validation'.format(1-test_split, test_split))
-X_dev, X_test, y_dev, y_test = train_test_split(X_validation, y_validation, test_size=test_split, random_state=42)
+X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=test_split)
+
+# Free up memory
+del X
+del y
+
+# Separate classification output and bounding box output
+new_y_train = label_split(y_train)
+new_y_val = label_split(y_val)
+
 
 print('Data:')
 print('Training set: {0}'.format(X_train.shape))
-print('Dev set: {0}'.format(X_dev.shape))
-print('Test set: {0}'.format(X_test.shape))
+print('Test set: {0}'.format(X_val.shape))
 print('Dataset split!\n)')
-#-----------------------------------------------------------------------------------------------#
-# Apply Image Data Augmentation
-print('Applying Data augmentation...')
-from keras.preprocessing.image import ImageDataGenerator
-
-datagen = ImageDataGenerator(
-    horizontal_flip=True,
-    vertical_flip=True,
-    zca_whitening=False,
-    rotation_range=90,
-    featurewise_center=True,
-    featurewise_std_normalization=True,
-    width_shift_range=.2,
-    height_shift_range=.2
-    )
-
-datagen.fit(X_train)
-print('Data Augmentation complete!')
 #-----------------------------------------------------------------------------------------------#
 # Import Model
 class_count = y_train.shape[1]
@@ -76,10 +86,18 @@ model = VGG16(weights='imagenet', include_top=False, input_shape=(224,224,3), cl
 # Get model name
 model_name = model.name
 
-x = model.output
-x = Flatten()(x)
-output_layer = Dense(class_count, activation='softmax')(x)
-model = Model(inputs=model.input, outputs=output_layer)
+# Multi-output (class classification, one vs. rest)
+x_class_classification = model.output
+x_class_classification = Flatten()(x_class_classification)
+output_layer_class_classification = Dense(class_count-4, activation='softmax', name='class_classification')(x_class_classification)
+
+# Multi-output (bounding box)
+x_bounding_box = model.output
+x_bounding_box = Flatten()(x_bounding_box)
+output_layer_bounding_box = Dense(4, activation='softmax', name='bounding_box')(x_bounding_box)
+
+
+model = Model(inputs=model.input, outputs=[output_layer_class_classification, output_layer_bounding_box])
 print('Model {0} loaded!\n'.format(model_name))
 
 # Output Model Summary
@@ -89,9 +107,11 @@ model.summary()
 # Compile
 from keras import metrics
 model.compile(
-    loss='categorical_crossentropy',
-    optimizer='SGD',
-    metrics=['categorical_accuracy']
+    loss={
+        'class_classification': 'binary_crossentropy',
+        'bounding_box': 'mean_squared_error'
+    },
+    optimizer='adam'
 )
 
 # Callback function (save best model only)
@@ -106,32 +126,31 @@ callback_list = [checkpoint]
 print('Beginning training...')
 batchsize = 16
 
-history = model.fit_generator(
-    datagen.flow(
-        x=X_train,
-        y=y_train,
-        batch_size=batchsize
-    ),
-    steps_per_epoch= len(X_train) // batchsize,
+y_train_classification, y_train_bounding_box = zip(*new_y_train)
+y_train_classification = np.array(y_train_classification)
+y_train_bounding_box = np.array(y_train_bounding_box)
+
+y_dev_classification, y_dev_bounding_box = zip(*new_y_val)
+
+history = model.fit(
+    {
+        'input_1': X_train
+    },
+    {
+        'class_classification': y_train_classification,
+        'bounding_box': y_train_bounding_box
+    },
+    batch_size=batchsize,
     epochs=200,
     verbose=1,
-    validation_data=(X_dev, y_dev),
+    validation_split=.25,
     callbacks=callback_list
 )
 print('Training complete!\n')
 #-----------------------------------------------------------------------------------------------#
 # Evaluate on test set
-from sklearn.metrics import accuracy_score, log_loss
-y_pred = model.predict(X_test)
-y_true = y_test
-
-acc_class = log_loss(y_true[:-4], y_pred[:-4])
-acc_bbox = accuracy_score(y_true[-4:], y_pred[-4:])
-
-print('Class accuracy on test set: {0]'.format(acc))
-print('Bounding box accuracy: {0}'.format(1-acc_bbox))
 #-----------------------------------------------------------------------------------------------#
 # Save Model and Training Process
-print('Saving history...')
-np.save('history_{0}.npy'.format(model_name))
+print('\nSaving history...')
+np.save('history_{0}.npy'.format(model_name), history)
 print('History saved!\n')
