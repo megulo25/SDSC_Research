@@ -131,52 +131,53 @@ def split_train_test():
     for (full_path_sub_dirs, _, img_file_names) in os.walk(os.path.join(dir_of_data, 'nabirds_555', 'nabirds', 'images')):
         if len(img_file_names) > 10:
             for img_name in img_file_names:
-                try:
-                    full_img_path = os.path.join(full_path_sub_dirs, img_name)
+                if c > 400:
+                    try:
+                        full_img_path = os.path.join(full_path_sub_dirs, img_name)
 
-                    img_old = mpimg.imread(full_img_path)
-                    img_resized = cv2.resize(img_old, (new_img_size, new_img_size))
-                    img = np.reshape(img_resized, (1, new_img_size, new_img_size, 3))
+                        img_old = mpimg.imread(full_img_path)
+                        img_resized = cv2.resize(img_old, (new_img_size, new_img_size))
+                        img = np.reshape(img_resized, (1, new_img_size, new_img_size, 3))
 
-                    y_ex = np.zeros((1, class_count))
-                    true_class = int(full_path_sub_dirs.split('/')[-1])
-                    label_index = label_dict[true_class]
-                    y_ex[0, label_index] = 1
+                        y_ex = np.zeros((1, class_count))
+                        true_class = int(full_path_sub_dirs.split('/')[-1])
+                        label_index = label_dict[true_class]
+                        y_ex[0, label_index] = 1
 
-                    # Scale down/up the bounding box with the image
-                    bbox_ex = dict_[img_name[:-4]][1]
-                    x_scale = new_img_size / img_old.shape[1]
-                    y_scale = new_img_size / img_old.shape[0]
+                        # Scale down/up the bounding box with the image
+                        bbox_ex = dict_[img_name[:-4]][1]
+                        x_scale = new_img_size / img_old.shape[1]
+                        y_scale = new_img_size / img_old.shape[0]
 
-                    bbox1_new = int(bbox_ex[0]*x_scale)
-                    bbox2_new = int(bbox_ex[1]*y_scale)
-                    bbox3_new = int(bbox_ex[2]*x_scale)
-                    bbox4_new = int(bbox_ex[3]*y_scale)
+                        bbox1_new = int(bbox_ex[0]*x_scale)
+                        bbox2_new = int(bbox_ex[1]*y_scale)
+                        bbox3_new = int(bbox_ex[2]*x_scale)
+                        bbox4_new = int(bbox_ex[3]*y_scale)
 
-                    bbox_new = [bbox1_new, bbox2_new, bbox3_new, bbox4_new]
-                    bbox_new = np.array(bbox_new)
-                    bbox_new = bbox_new.astype('float')
-                    y_ex[0, -4:] = bbox_new
-                except:
-                    print('Error occured with: {0}'.format(img_name))
+                        bbox_new = [bbox1_new, bbox2_new, bbox3_new, bbox4_new]
+                        bbox_new = np.array(bbox_new)
+                        bbox_new = bbox_new.astype('float')
+                        y_ex[0, -4:] = bbox_new
+                    except:
+                        print('Error occured with: {0}'.format(img_name))
 
-                # Show that the bounding boxes have been properly scaled.
-                # img_new_w_bbox = cv2.rectangle(img_resized, (bbox_new[0], bbox_new[1]), (bbox_new[0]+bbox_new[2], bbox_new[1]+bbox_new[3]), (255, 0, 0), 2)
-                # plt.imshow(img_new_w_bbox)
-                # plt.show()
+                    # Show that the bounding boxes have been properly scaled.
+                    # img_new_w_bbox = cv2.rectangle(img_resized, (bbox_new[0], bbox_new[1]), (bbox_new[0]+bbox_new[2], bbox_new[1]+bbox_new[3]), (255, 0, 0), 2)
+                    # plt.imshow(img_new_w_bbox)
+                    # plt.show()
 
-                
-                # Place into either train or test set
-                if dict_[img_name[:-4]][0] == 1:
-                    X_train = np.concatenate([X_train, img])
-                    y_train = np.concatenate([y_train, y_ex])
-                    tr+=1
-                    tr_prime+=1
-                else:
-                    X_test = np.concatenate([X_test, img])
-                    y_test = np.concatenate([y_test, y_ex])
-                    te+=1
-                    te_prime+=1
+                    
+                    # Place into either train or test set
+                    if dict_[img_name[:-4]][0] == 1:
+                        X_train = np.concatenate([X_train, img])
+                        y_train = np.concatenate([y_train, y_ex])
+                        tr+=1
+                        tr_prime+=1
+                    else:
+                        X_test = np.concatenate([X_test, img])
+                        y_test = np.concatenate([y_test, y_ex])
+                        te+=1
+                        te_prime+=1
             c+=1
             print('------------------------------')
             print('Num. of training ex: {0}'.format(tr_prime))
@@ -185,7 +186,7 @@ def split_train_test():
             tr_prime=0
             te_prime=0
 
-            if c % 10 == 0:
+            if (c % 10 == 0) and (c > 400):
                 print('Saving temp. data:')
                 h = h5py.File('data_555_{0}.h5'.format(c), 'w')
                 h.create_dataset('X_train', data=X_train)
