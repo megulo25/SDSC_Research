@@ -94,7 +94,7 @@ output_layer_class_classification = Dense(class_count-4, activation='softmax', n
 # Multi-output (bounding box)
 x_bounding_box = model.output
 x_bounding_box = Flatten()(x_bounding_box)
-output_layer_bounding_box = Dense(4, activation='softmax', name='bounding_box')(x_bounding_box)
+output_layer_bounding_box = Dense(4, activation='linear', name='bounding_box')(x_bounding_box)
 
 
 model = Model(inputs=model.input, outputs=[output_layer_class_classification, output_layer_bounding_box])
@@ -109,7 +109,7 @@ from keras import metrics
 model.compile(
     loss={
         'class_classification': 'binary_crossentropy',
-        'bounding_box': 'mean_squared_error'
+        'bounding_box': 'mse'
     },
     optimizer='adam'
 )
@@ -141,7 +141,7 @@ history = model.fit(
         'bounding_box': y_train_bounding_box
     },
     batch_size=batchsize,
-    epochs=200,
+    epochs=2000,
     verbose=1,
     validation_split=.25,
     callbacks=callback_list
