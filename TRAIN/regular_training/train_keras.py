@@ -45,7 +45,7 @@ model_name = model.name
 
 x = model.output
 x = Flatten()(x)
-output_layer = Dense(class_count, activation='softmax')(x)
+output_layer = Dense(10, activation='softmax')(x)
 model = Model(inputs=model.input, outputs=output_layer)
 print('Model {0} loaded!\n'.format(model_name))
 
