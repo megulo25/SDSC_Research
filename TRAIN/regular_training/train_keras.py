@@ -7,7 +7,8 @@ import h5py
 from helper_function import *
 
 parser = argparse.ArgumentParser(description='Arguments for bird training')
-parser.add_argument('-gpu_id', '--GPU_IDs', type=list, required=True,help='The ids of the gpus being used as a string. \nEx: For gpus 0, 1, 2\n\tpython train_keras.py -gpu_id 012')
+parser.add_argument('-gpu_id', '--GPU_IDs', type=list, required=True, help='The ids of the gpus being used as a string. \nEx: For gpus 0, 1, 2\n\tpython train_keras.py -gpu_id 012')
+parser.add_argument('-split', '--split', type=int, required=True, help='Split dataset. 0=no, 1=yes')
 args = parser.parse_args()
 
 os.environ["CUDA_VISIBLE_DEVICES"]= ','.join(args.GPU_IDs)
@@ -19,7 +20,10 @@ check_nabirds10_folder()
 
 # Split dataset
 test_split = .3
-split_data(test_split)
+
+if int(args.split) == 1:
+    split_data(test_split)
+    
 print('Data loaded!\n')
 #-----------------------------------------------------------------------------------------------#
 # Import Model
