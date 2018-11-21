@@ -15,10 +15,9 @@ def check_nabirds10_folder():
         os.system('mv -v AABBixZUh5SiPvFS7eVVVxlHa nabirds10.zip')
         os.system('unzip nabirds10.zip')
         os.remove('nabirds10.zip')
-        list_ = os.listdir()
-        os.removedirs(list_[1])
-        os.removedirs(list_[5])
-        os.removedirs(list_[7])
+        os.removedirs('Western Grebe')
+        os.removedirs('SpottedTowheee')
+        os.removedirs('CommonGoldeneye')
         os.chdir('../..')
 
 def split_data(test_split):
