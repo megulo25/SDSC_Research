@@ -4,6 +4,7 @@ data
 *.hdf5
 *.json
 *.pdf
+*.jpg
 mnist
 history_data
 __pycache__

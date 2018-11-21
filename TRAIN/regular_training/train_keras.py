@@ -4,6 +4,7 @@ import sys
 import shutil
 import argparse
 import h5py
+from helper_function import *
 
 parser = argparse.ArgumentParser(description='Arguments for bird training')
 parser.add_argument('-gpu_id', '--GPU_IDs', type=list, required=True,help='The ids of the gpus being used as a string. \nEx: For gpus 0, 1, 2\n\tpython train_keras.py -gpu_id 012')
@@ -13,20 +14,12 @@ os.environ["CUDA_VISIBLE_DEVICES"]= ','.join(args.GPU_IDs)
 #-----------------------------------------------------------------------------------------------#
 # Import Data
 print('Loading in data...')
+check_data_folder()
+check_nabirds10_folder()
 
-if not os.path.isdir('data'):
-    os.mkdir('data')
-
-if not os.path.isdir('data/nabirds10'):
-    # Add birds directory
-    os.chdir('data')
-    os.mkdir('nabirds10')
-    os.chdir('nabirds10')
-    os.system('wget https://www.dropbox.com/sh/g6aatnar4n5s63g/AABBixZUh5SiPvFS7eVVVxlHa')
-    os.system('mv -v AABBixZUh5SiPvFS7eVVVxlHa nabirds10.zip')
-    os.system('unzip nabirds10.zip')
-    os.remove('nabirds10.zip')
-    os.chdir('../..')
+# Split dataset
+test_split = .3
+split_data(test_split)
 print('Data loaded!\n')
 #-----------------------------------------------------------------------------------------------#
 # Import Model
@@ -66,7 +59,7 @@ train_datagen = ImageDataGenerator(
 )
 
 train_generator = train_datagen.flow_from_directory(
-    'data/nabirds10',
+    'data/nabirds10/train',
     target_size = (224, 224),
     batch_size=16
 )
@@ -77,7 +70,7 @@ val_datagen = ImageDataGenerator(
 )
 
 val_generator = val_datagen.flow_from_directory(
-    'data/nabirds10',
+    'data/nabirds10/validation',
     target_size=(224,224),
     batch_size=2
 )
@@ -85,7 +78,7 @@ val_generator = val_datagen.flow_from_directory(
 # Compile
 from keras import metrics
 model.compile(
-    loss='mean_squared_error',
+    loss='binary_crossentropy',
     optimizer='adam',
     metrics=['accuracy']
 )
@@ -97,12 +90,13 @@ callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Train
 print('Beginning training...')
-batchsize = 16
+batchsize = 32
 
 history = model.fit_generator(
     train_generator,
     epochs=200,
     verbose=1,
+    validation_data=val_generator,
     callbacks=callback_list
 )
 print('Training complete!\n')
