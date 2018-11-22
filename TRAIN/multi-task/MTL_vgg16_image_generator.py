@@ -30,6 +30,20 @@ X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=test_split)
 del X
 del y
 print('Dataset split!\n)')
+
+#-----------------------------------------------------------------------------------------------#
+# Preprocessing
+from keras.preprocessing.image import ImageDataGenerator
+train_datagen = ImageDataGenerator(
+    featurewise_center=True,
+    featurewise_std_normalization=True,
+    rotation_range=20,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    horizontal_flip=True
+)
+
+train_datagen.fit(X_train)
 #-----------------------------------------------------------------------------------------------#
 # Import Model
 class_count = y_train.shape[1]
@@ -77,13 +91,15 @@ callback_list = [checkpoint]
 print('Beginning training...')
 batchsize = 16
 
-history = model.fit(
-    x=X_train,
-    y=y_train,
-    batch_size=batchsize,
+history = model.fit_generator(
+    train_datagen.flow(
+        x=X_train,
+        y=y_train,
+        batch_size=batchsize
+    ),
+    validation_data=(X_val, y_val),
     epochs=200,
     verbose=1,
-    validation_split=.25,
     callbacks=callback_list
 )
 print('Training complete!\n')
