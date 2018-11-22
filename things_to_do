@@ -1,12 +1,6 @@
 Next steps:
-    
-    - Implement the bounding boxes during the training. 
-    - Create a classifier for identifying the birds.
-    - Then use the classifier to implement YOLO to identify where the bird is. 
-    - Then use heatmap to analyze the decision making process. 
-    - We can include a combination of predefined hierachy and data in the database to reveal information about that bird. 
-    - Then it can all go on the website.
-
+- optimizers to try:
+    SGD, RMSprop, Adagrad, Adadelta, Adam, Adamax, Nadam, 
 
 - Heatmap of the image. Highlight important pixels in image.
     * http://heatmapping.org/

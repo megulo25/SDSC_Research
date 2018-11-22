@@ -9,6 +9,7 @@ import os
 # Arg parser
 arg = argparse.ArgumentParser()
 arg.add_argument('-gpu_id', '--gpu_id', required=True, help='ID of GPU')
+arg.add_argument('-o', '--optimizer', required=True, help='select optimizer')
 args = vars(arg.parse_args())
 #-----------------------------------------------------------------------------------------------#
 os.environ['CUDA_VISIBLE_DEVICES'] = str(args['gpu_id'])
@@ -42,7 +43,6 @@ train_datagen = ImageDataGenerator(
     height_shift_range=0.2,
     horizontal_flip=True
 )
-
 train_datagen.fit(X_train)
 #-----------------------------------------------------------------------------------------------#
 # Import Model
@@ -79,12 +79,12 @@ model.summary()
 from keras import metrics
 model.compile(
     loss='binary_crossentropy',
-    optimizer='adam',
+    optimizer=str(args['optimizer']),
     metrics=['accuracy']
 )
 
 from keras.callbacks import ModelCheckpoint
-checkpoint = ModelCheckpoint('./model_multi_task_best_{0}.hdf5'.format(model_name), monitor='val_acc', verbose=1, save_best_only=True)
+checkpoint = ModelCheckpoint('./model_multi_task_best_{0}_{1}_gen.hdf5'.format(model_name, str(args['optimizer'])), monitor='val_acc', verbose=1, save_best_only=True)
 callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Train Model
@@ -98,7 +98,7 @@ history = model.fit_generator(
         batch_size=batchsize
     ),
     validation_data=(X_val, y_val),
-    epochs=200,
+    epochs=100,
     verbose=1,
     callbacks=callback_list
 )
@@ -108,5 +108,6 @@ print('Training complete!\n')
 #-----------------------------------------------------------------------------------------------#
 # Save Model and Training Process
 print('\nSaving history...')
-np.save('history_{0}.npy'.format(model_name), history)
+with open('history_{0}_{1}_gen'.format(model_name, str(args['optimizer'])), 'wb') as file_pi:
+    pickle.dump(history.history, file_pi)
 print('History saved!\n')
