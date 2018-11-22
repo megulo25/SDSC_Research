@@ -76,7 +76,7 @@ val_datagen = ImageDataGenerator(
 val_generator = val_datagen.flow_from_directory(
     'data/nabirds10/validation',
     target_size=(224,224),
-    batch_size=2
+    batch_size=8
 )
 #-----------------------------------------------------------------------------------------------#
 # Compile
