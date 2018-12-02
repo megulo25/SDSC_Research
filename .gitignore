@@ -5,9 +5,12 @@ data
 *.json
 *.pdf
 *.jpg
+*.png
 mnist
+.vscode
 history_data
+temp.py
 __pycache__
 *.ipynb*
 *.vscode
-things_to_do
+*thing*
