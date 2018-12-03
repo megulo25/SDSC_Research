@@ -108,16 +108,17 @@ callback_list = [checkpoint]
 # Generator
 def batch_generator(x, y, preprocess_generator, batch_size):
     gen = preprocess_generator.flow(x=x, y=y, batch_size=batch_size, shuffle=True)
-    next_batch = next(gen)
-    X = next_batch[0]
-    y = next_batch[1]
-    y_leaf = y[:, :10]
-    y_high = y[:, 10:]
-    yield (X, {'leaf_nodes':y_leaf, 'higher_nodes':y_high})
+    while gen:
+        next_batch = next(gen)
+        X = next_batch[0]
+        y = next_batch[1]
+        y_leaf = y[:, :10]
+        y_high = y[:, 10:]
+        yield (X, {'leaf_nodes':y_leaf, 'higher_nodes':y_high})
 #-----------------------------------------------------------------------------------------------#
 # Train Model
 print('Beginning training...')
-batchsize = 1
+batchsize = 16
 
 history = model.fit_generator(
     batch_generator(
@@ -130,7 +131,7 @@ history = model.fit_generator(
     epochs=100,
     verbose=1,
     callbacks=callback_list,
-    steps_per_epoch=2
+    steps_per_epoch=X_train.shape[0] // batchsize
 )
 print('Training complete!\n')
 #-----------------------------------------------------------------------------------------------#
@@ -138,6 +139,6 @@ print('Training complete!\n')
 #-----------------------------------------------------------------------------------------------#
 # Save Model and Training Process
 print('\nSaving history...')
-with open('history_{0}_{1}_gen'.format(model_name, str(args['optimizer'])), 'wb') as file_pi:
-    pickle.dump(history.history, file_pi)
+with open('history_{0}_{1}_gen'.format(model_name, str(args['optimizer'])), 'wb') as file_writer:
+    pickle.dump(history.history, file_writer)
 print('History saved!\n')
