@@ -23,9 +23,6 @@ X = np.array(f['X'])
 y = np.array(f['y'])
 print('Dataset loaded!\n')
 
-# Temp test
-X = X[:10]
-y = y[:10]
 #-----------------------------------------------------------------------------------------------#
 # Split test into dev/test
 test_split = .2
@@ -40,8 +37,8 @@ print('Dataset split!\n)')
 # Split output
 
 # Validation
-y_leaf_val = y_val[:, :10]
-y_higher_val = y_val[:, 10:]
+y_leaf_val = y_val[:, 5:]
+y_higher_val = y_val[:, :5]
 
 del y_val
 #-----------------------------------------------------------------------------------------------#
@@ -102,18 +99,18 @@ model.compile(
 )
 
 from keras.callbacks import ModelCheckpoint
-checkpoint = ModelCheckpoint('./model_multi_task_best_{0}_{1}_gen.hdf5'.format(model_name, str(args['optimizer'])), monitor='val_acc', verbose=1, save_best_only=True)
+checkpoint = ModelCheckpoint('./models/model_multi_task_best_{0}_{1}_gen.hdf5'.format(model_name, str(args['optimizer'])), monitor='val_acc', verbose=1, save_best_only=True)
 callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Generator
 def batch_generator(x, y, preprocess_generator, batch_size):
     gen = preprocess_generator.flow(x=x, y=y, batch_size=batch_size, shuffle=True)
-    while gen:
+    while True:
         next_batch = next(gen)
         X = next_batch[0]
         y = next_batch[1]
-        y_leaf = y[:, :10]
-        y_high = y[:, 10:]
+        y_leaf = y[:, 5:]
+        y_high = y[:, :5]
         yield (X, {'leaf_nodes':y_leaf, 'higher_nodes':y_high})
 #-----------------------------------------------------------------------------------------------#
 # Train Model
@@ -131,7 +128,7 @@ history = model.fit_generator(
     epochs=100,
     verbose=1,
     callbacks=callback_list,
-    steps_per_epoch=X_train.shape[0] // batchsize
+    steps_per_epoch=100
 )
 print('Training complete!\n')
 #-----------------------------------------------------------------------------------------------#

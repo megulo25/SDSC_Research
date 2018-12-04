@@ -1,7 +1,5 @@
 Next steps:
-- In order to do multi output and have a generator, I'll need to build my own data batch generator for the fit_generator
-    https://stackoverflow.com/questions/38972380/keras-how-to-use-fit-generator-with-multiple-outputs-of-different-type
-    https://github.com/keras-team/keras/issues/7003
+
 - optimizers to focus on for VGG16:
     Adadelta, Adamax, SGD
 
