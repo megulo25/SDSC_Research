@@ -95,11 +95,14 @@ from keras import metrics
 model.compile(
     loss=losses,
     optimizer=str(args['optimizer']),
-    metrics=['accuracy']
+    metrics={
+        'leaf_nodes':'acc',
+        'higher_nodes':'acc'
+    }
 )
 
 from keras.callbacks import ModelCheckpoint
-checkpoint = ModelCheckpoint('./models/model_multi_task_best_{0}_{1}_gen.hdf5'.format(model_name, str(args['optimizer'])), monitor='val_acc', verbose=1, save_best_only=True)
+checkpoint = ModelCheckpoint('./models/model_multi_task_best_{0}_{1}_gen.hdf5'.format(model_name, str(args['optimizer'])), monitor='val_acc', verbose=1, save_best_only=False)
 callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Generator

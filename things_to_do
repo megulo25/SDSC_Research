@@ -1,5 +1,6 @@
 Next steps:
 
+- Figure out how to monitor the validation accuracy of the multiple outputs.
 - optimizers to focus on for VGG16:
     Adadelta, Adamax, SGD
 
