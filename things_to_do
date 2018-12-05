@@ -1,13 +1,11 @@
 Next steps:
-- Take another look at the data. Make sure all of the imgs data type is uint8 instead of float. Then train again.
-    https://stackoverflow.com/questions/42094568/corrupted-image-is-being-saved-with-pil
-- Figure out how to monitor the validation accuracy of the multiple outputs.
-- Implement the heatmap on the model.
+- Get model from google drive.
+
+- Implement the heatmap on the model. Upload to the webapp.
+
 - optimizers to focus on for VGG16:
     Adadelta, Adamax, SGD
 
-- Create multiple output model.
-    https://keras.io/getting-started/functional-api-guide/#multi-input-and-multi-output-models
 
 - Heatmap of the image. Highlight important pixels in image.
     * http://heatmapping.org/
