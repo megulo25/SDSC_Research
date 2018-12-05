@@ -1,4 +1,6 @@
 from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 import cv2
 import numpy as np
 import h5py
@@ -95,8 +97,8 @@ def build_X_y_10(data_directory):
             0   <- Western_Grebe
     ]
     """
-    X = np.zeros((1, 224, 224, 3))
-    y = np.zeros((1,15))
+    X = np.zeros((1, 224, 224, 3)).astype(np.uint8)
+    y = np.zeros((1,15)).astype(np.uint8)
 
     child_class_dict = {
         'barrows_goldeneye': 5,
@@ -123,7 +125,7 @@ def build_X_y_10(data_directory):
         # Loop through each image
         for img_name in list_of_images:
             img_full_path = os.path.join(data_directory, dir_, img_name)
-            img_old = cv2.imread(img_full_path)
+            img_old = mpimg.imread(img_full_path)
 
             # Resize the image
             img = cv2.resize(img_old, (224, 224))
@@ -173,6 +175,8 @@ def build_X_y_10(data_directory):
 
     X = X[1:]
     y = y[1:]
+    X = X.astype(np.uint8)
+    y = y.astype(np.uint8)
     h5f = h5py.File('data_10.h5', 'w')
     h5f.create_dataset('X', data=X)
     h5f.create_dataset('y', data=y)

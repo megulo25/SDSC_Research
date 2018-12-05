@@ -1,6 +1,8 @@
 Next steps:
-
+- Take another look at the data. Make sure all of the imgs data type is uint8 instead of float. Then train again.
+    https://stackoverflow.com/questions/42094568/corrupted-image-is-being-saved-with-pil
 - Figure out how to monitor the validation accuracy of the multiple outputs.
+- Implement the heatmap on the model.
 - optimizers to focus on for VGG16:
     Adadelta, Adamax, SGD
 

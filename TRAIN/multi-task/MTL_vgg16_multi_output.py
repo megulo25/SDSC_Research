@@ -24,22 +24,32 @@ y = np.array(f['y'])
 print('Dataset loaded!\n')
 
 #-----------------------------------------------------------------------------------------------#
-# Split test into dev/test
+# Split data into train/dev
 test_split = .2
-print('Splitting dataset: {0} training, {1} validation'.format(1-test_split, test_split))
-X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=test_split)
+print('Splitting dataset: {0} training, {1} development'.format(1-test_split, test_split))
+X_train, X_dev, y_train, y_dev = train_test_split(X, y, test_size=test_split)
+
+# Split test set into dev/val
+X_test, X_val, y_test, y_val = train_test_split(X_dev, y_dev, test_size=.5)
 
 # Free up memory
 del X
 del y
+del X_dev
+del y_dev
 print('Dataset split!\n)')
 #-----------------------------------------------------------------------------------------------#
 # Split output
 
-# Validation
+# Val set
 y_leaf_val = y_val[:, 5:]
 y_higher_val = y_val[:, :5]
 
+# test set
+y_leaf_test = y_test[:, 5:]
+y_higher_test = y_test[:, :5]
+
+del y_test
 del y_val
 #-----------------------------------------------------------------------------------------------#
 # Preprocessing
@@ -85,7 +95,6 @@ model.summary()
 #-----------------------------------------------------------------------------------------------#
 # Loss
 # Compile
-
 losses = {
     'leaf_nodes':'binary_crossentropy',
     'higher_nodes':'binary_crossentropy'
@@ -105,7 +114,7 @@ from keras.callbacks import ModelCheckpoint
 checkpoint = ModelCheckpoint('./models/model_multi_task_best_{0}_{1}_gen.hdf5'.format(model_name, str(args['optimizer'])), monitor='val_acc', verbose=1, save_best_only=False)
 callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
-# Generator
+# Data batch Generator
 def batch_generator(x, y, preprocess_generator, batch_size):
     gen = preprocess_generator.flow(x=x, y=y, batch_size=batch_size, shuffle=True)
     while True:
@@ -136,9 +145,27 @@ history = model.fit_generator(
 print('Training complete!\n')
 #-----------------------------------------------------------------------------------------------#
 # Evaluate on test set
+from sklearn.metrics import accuracy_score
+print('Evaluating on test set...')
+y_test_pred = model.predict(X_test)
+with open('y_test_pred', 'wb') as y_writer:
+    pickle.dump(y_test_pred, y_writer)
+
+print('Evaluation done and saved!')
+
+# Report
+print('Creating report...\n')
+y_test_leaf_pred = y_test_pred[0]
+y_test_high_pred = y_test_pred[1]
+
+leaf_test_acc = accuracy_score(y_leaf_test, y_test_leaf_pred)
+high_test_acc = accuracy_score(y_higher_test, y_test_high_pred)
+print('Report:')
+print('Higher node acc: {0}'.format(high_test_acc))
+print('Leaf node acc: {0}'.format(leaf_test_acc))
 #-----------------------------------------------------------------------------------------------#
 # Save Model and Training Process
 print('\nSaving history...')
-with open('history_{0}_{1}_gen'.format(model_name, str(args['optimizer'])), 'wb') as file_writer:
+with open('history/history_{0}_{1}_gen'.format(model_name, str(args['optimizer'])), 'wb') as file_writer:
     pickle.dump(history.history, file_writer)
 print('History saved!\n')
