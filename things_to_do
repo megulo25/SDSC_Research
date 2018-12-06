@@ -1,12 +1,4 @@
 Next steps:
-- Get model from google drive.
 
-- Implement the heatmap on the model. Upload to the webapp.
-
-- optimizers to focus on for VGG16:
-    Adadelta, Adamax, SGD
-
-
-- Heatmap of the image. Highlight important pixels in image.
-    * http://heatmapping.org/
-    * http://www.hackevolve.com/where-cnn-is-looking-grad-cam/
+- Implement model and heatmap on web app.
+- Figure out how to abstract the heatmap for each level of the hierachy.
