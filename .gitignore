@@ -3,9 +3,6 @@ data
 *.h5
 *.hdf5
 *.json
-*.pdf
-*.jpg
-*.png
 mnist
 .vscode
 history_data
@@ -14,3 +11,4 @@ __pycache__
 *.ipynb*
 *.vscode
 *thing*
+imgs

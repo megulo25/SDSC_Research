@@ -27,8 +27,8 @@ model = load_model(str(args['MODEL']))
 #----------------------------------------------------------------------#
 # Run Model
 y_pred = model.predict(x)
-y_leaf = y_pred[0]
-y_high = y_pred[1]
+y_child = y_pred[0]
+y_parent = y_pred[1]
 
 class_dict = {
         0: 'Goldeneye',
@@ -48,42 +48,43 @@ class_dict = {
         14: 'Western_Grebe'
 }
 
-def get_class_name(dict_, y_leaf, y_high):
+def get_class_name(dict_, y_child, y_parent):
     i=0
     while True:
-        leaf = list(y_leaf[i])
-        high = list(y_high[i])
-        idx_leaf = leaf.index(1) + 5
-        idx_high = high.index(1)
+        child = list(y_child[i].round())
+        parent = list(y_parent[i].round())
+        idx_child = child.index(1) + 5
+        idx_parent = parent.index(1)
         i+=1
-        yield (dict_[idx_leaf], dict_[idx_high])
-gen = get_class_name(class_dict, y_leaf, y_high)
+        yield (dict_[idx_child], dict_[idx_parent])
 
-y_leaf_label, y_high_label = next(gen)
+gen = get_class_name(class_dict, y_child, y_parent)
 
-# Get Leaf and high outputs
-y_leaf_idx = np.argmax(y_pred[0])
+y_child_label, y_parent_label = next(gen)
 
-y_leaf_output = model.output[0][:, y_leaf_idx]
+# Get child and parent outputs
+y_child_idx = np.argmax(y_pred[0])
+
+y_child_output = model.output[0][:, y_child_idx]
 #----------------------------------------------------------------------#
 # Apply heatmap
 
 last_conv_layer = model.get_layer("block5_conv3")
 
-leaf_grads = K.gradients(y_leaf_output, last_conv_layer.output)[0]
+child_grads = K.gradients(y_child_output, last_conv_layer.output)[0]
 
-leaf_pool = K.mean(leaf_grads, axis=(0, 1, 2))
+child_pool = K.mean(child_grads, axis=(0, 1, 2))
 
-leaf_iterate = K.function([model.input], [leaf_pool, last_conv_layer.output[0]])
+child_iterate = K.function([model.input], [child_pool, last_conv_layer.output[0]])
 
-leaf_pool_value, leaf_conv_layer_value = leaf_iterate([x])
+child_pool_value, child_conv_layer_value = child_iterate([x])
 
 for i in range(512):
-    leaf_conv_layer_value[:, :, i] *= leaf_pool_value[i]
+    child_conv_layer_value[:, :, i] *= child_pool_value[i]
 
-leaf_heatmap = np.mean(leaf_conv_layer_value, axis=-1)
-leaf_heatmap = np.maximum(leaf_heatmap, 0)
-leaf_heatmap /= np.max(leaf_heatmap)
+child_heatmap = np.mean(child_conv_layer_value, axis=-1)
+child_heatmap = np.maximum(child_heatmap, 0)
+child_heatmap /= np.max(child_heatmap)
 #----------------------------------------------------------------------#
 # Plot result
 img_old = mpimg.imread(img_path)
@@ -91,17 +92,17 @@ img_old = cv2.resize(img_old, (224, 224))
 
 
 
-leaf_heatmap = cv2.resize(leaf_heatmap, (img_old.shape[1], img_old.shape[0]))
-leaf_heatmap = np.uint8(255 * leaf_heatmap)
-leaf_heatmap = cv2.applyColorMap(leaf_heatmap, cv2.COLORMAP_JET)
-leaf_superimposed_img = cv2.addWeighted(img_old, 0.6, leaf_heatmap, 0.4, 0)
+child_heatmap = cv2.resize(child_heatmap, (img_old.shape[1], img_old.shape[0]))
+child_heatmap = np.uint8(255 * child_heatmap)
+child_heatmap = cv2.applyColorMap(child_heatmap, cv2.COLORMAP_JET)
+child_superimposed_img = cv2.addWeighted(img_old, 0.6, child_heatmap, 0.4, 0)
 
 plt.subplot(1, 2, 1)
 plt.imshow(img_old)
-plt.title('True:\nHigh: {0}\nLeaf: {1}'.format(str('Goldeneye'), str('Barrows_Goldeneye')))
+plt.title('True:\nParent: {0}\nChild: {1}'.format(str('Grebe'), str('Clarks Grebe')))
 
 
 plt.subplot(1, 2, 2)
-plt.imshow(leaf_superimposed_img)
-plt.title('Pred:\nHigh: {0}\nLeaf: {1}'.format(str(y_high_label), str(y_leaf_label)))
+plt.imshow(child_superimposed_img)
+plt.title('Pred:\nParent: {0}\nChild: {1}'.format(str(y_parent_label), str(y_child_label)))
 plt.show()

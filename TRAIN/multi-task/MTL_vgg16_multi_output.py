@@ -42,12 +42,12 @@ print('Dataset split!\n)')
 # Split output
 
 # Val set
-y_leaf_val = y_val[:, 5:]
-y_higher_val = y_val[:, :5]
+y_child_val = y_val[:, 5:]
+y_parent_val = y_val[:, :5]
 
 # test set
-y_leaf_test = y_test[:, 5:]
-y_higher_test = y_test[:, :5]
+y_child_test = y_test[:, 5:]
+y_parent_test = y_test[:, :5]
 
 del y_test
 del y_val
@@ -83,8 +83,8 @@ model_name = model.name
 # Multi-output (class classification, one vs. rest)
 x_class_classification = model.output
 x_class_classification = Flatten()(x_class_classification)
-output_layer_class_10_classification = Dense(10, activation='softmax', name='leaf_nodes')(x_class_classification)
-output_layer_class_5_classification = Dense(5, activation='softmax', name='higher_nodes')(x_class_classification)
+output_layer_class_10_classification = Dense(10, activation='softmax', name='child_nodes')(x_class_classification)
+output_layer_class_5_classification = Dense(5, activation='softmax', name='parent_nodes')(x_class_classification)
 
 
 model = Model(inputs=model.input, outputs=[output_layer_class_10_classification, output_layer_class_5_classification])
@@ -96,8 +96,8 @@ model.summary()
 # Loss
 # Compile
 losses = {
-    'leaf_nodes':'binary_crossentropy',
-    'higher_nodes':'binary_crossentropy'
+    'child_nodes':'binary_crossentropy',
+    'parent_nodes':'binary_crossentropy'
 }
 
 from keras import metrics
@@ -105,8 +105,8 @@ model.compile(
     loss=losses,
     optimizer=str(args['optimizer']),
     metrics={
-        'leaf_nodes':'acc',
-        'higher_nodes':'acc'
+        'child_nodes':'acc',
+        'parent_nodes':'acc'
     }
 )
 
@@ -121,9 +121,9 @@ def batch_generator(x, y, preprocess_generator, batch_size):
         next_batch = next(gen)
         X = next_batch[0]
         y = next_batch[1]
-        y_leaf = y[:, 5:]
+        y_child = y[:, 5:]
         y_high = y[:, :5]
-        yield (X, {'leaf_nodes':y_leaf, 'higher_nodes':y_high})
+        yield (X, {'child_nodes':y_child, 'parent_nodes':y_high})
 #-----------------------------------------------------------------------------------------------#
 # Train Model
 print('Beginning training...')
@@ -136,7 +136,7 @@ history = model.fit_generator(
         preprocess_generator=train_datagen,
         batch_size=batchsize
     ),
-    validation_data=(X_val, {'leaf_nodes':y_leaf_val, 'higher_nodes':y_higher_val}),
+    validation_data=(X_val, {'child_nodes':y_child_val, 'parent_nodes':y_parent_val}),
     epochs=100,
     verbose=1,
     callbacks=callback_list,
@@ -155,14 +155,14 @@ print('Evaluation done and saved!')
 
 # Report
 print('Creating report...\n')
-y_test_leaf_pred = y_test_pred[0]
+y_test_child_pred = y_test_pred[0]
 y_test_high_pred = y_test_pred[1]
 
-leaf_test_acc = accuracy_score(y_leaf_test, y_test_leaf_pred)
-high_test_acc = accuracy_score(y_higher_test, y_test_high_pred)
+child_test_acc = accuracy_score(y_child_test, y_test_child_pred)
+high_test_acc = accuracy_score(y_parent_test, y_test_high_pred)
 print('Report:')
-print('Higher node acc: {0}'.format(high_test_acc))
-print('Leaf node acc: {0}'.format(leaf_test_acc))
+print('Parent node acc: {0}'.format(high_test_acc))
+print('Child node acc: {0}'.format(child_test_acc))
 #-----------------------------------------------------------------------------------------------#
 # Save Model and Training Process
 print('\nSaving history...')
