@@ -12,3 +12,4 @@ __pycache__
 *.vscode
 *thing*
 imgs
+!./data/dataset_builder.py

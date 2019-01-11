@@ -61,13 +61,11 @@ def get_class_name(dict_, y_child, y_parent):
 gen = get_class_name(class_dict, y_child, y_parent)
 
 y_child_label, y_parent_label = next(gen)
-
-# Get child and parent outputs
+#----------------------------------------------------------------------#
+# Apply heatmap
 y_child_idx = np.argmax(y_pred[0])
 
 y_child_output = model.output[0][:, y_child_idx]
-#----------------------------------------------------------------------#
-# Apply heatmap
 
 last_conv_layer = model.get_layer("block5_conv3")
 
@@ -85,18 +83,30 @@ for i in range(512):
 child_heatmap = np.mean(child_conv_layer_value, axis=-1)
 child_heatmap = np.maximum(child_heatmap, 0)
 child_heatmap /= np.max(child_heatmap)
+print('=================================================')
+print('Summary:')
+print('y_child_idx: {0}'.format(y_child_idx))
+print('y_child_output: {0}'.format(y_child_output))
+print('last_conv_layer: {0}'.format(last_conv_layer))
+print('child_grads: {0}'.format(child_grads))
+print('child_pool: {0}'.format(child_pool))
+print('child_iterate: {0}'.format(child_iterate))
+print('child_pool_value: {0}'.format(child_pool_value.shape))
+print('child_conv_layer_value: {0}'.format(child_conv_layer_value.shape))
+print('=================================================')
 #----------------------------------------------------------------------#
 # Plot result
 img_old = mpimg.imread(img_path)
 img_old = cv2.resize(img_old, (224, 224))
 
-
-
 child_heatmap = cv2.resize(child_heatmap, (img_old.shape[1], img_old.shape[0]))
 child_heatmap = np.uint8(255 * child_heatmap)
 child_heatmap = cv2.applyColorMap(child_heatmap, cv2.COLORMAP_JET)
 child_superimposed_img = cv2.addWeighted(img_old, 0.6, child_heatmap, 0.4, 0)
-
+print('===================================')
+print('child super: {0}'.format(type(child_superimposed_img[0][0][0])))
+print('img_old: {0}'.format(type(img_old[0][0][0])))
+print('===================================')
 plt.subplot(1, 2, 1)
 plt.imshow(img_old)
 plt.title('True:\nParent: {0}\nChild: {1}'.format(str('Grebe'), str('Clarks Grebe')))

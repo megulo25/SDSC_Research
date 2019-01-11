@@ -1,20 +1,28 @@
 # Complete
+from ..datapath import get_data_base_path
 from sklearn.model_selection import train_test_split
 import pickle
 import numpy as np
 import argparse
 import h5py
 import os
-
 #-----------------------------------------------------------------------------------------------#
 # Arg parser
 arg = argparse.ArgumentParser()
-arg.add_argument('-gpu_id', '--gpu_id', required=True, help='ID of GPU')
-arg.add_argument('-o', '--optimizer', required=True, help='select optimizer')
+arg.add_argument('-gpu_id', '--GPU_ID', required=True, help='ID of GPU')
+arg.add_argument('-o', '--OPTIMIZER', required=True, help='select optimizer')
 args = vars(arg.parse_args())
 #-----------------------------------------------------------------------------------------------#
-os.environ['CUDA_VISIBLE_DEVICES'] = str(args['gpu_id'])
-filename = os.path.join(os.getcwd(), 'data_10.h5')
+# Output Paths
+BASE_OUTPUT_PATH = os.path.join(os.getcwd(), 'output')
+MODEL_OUTPUT_PATH = os.path.join(BASE_OUTPUT_PATH, 'model')
+HISTORY_OUTPUT_PATH = os.path.join(BASE_OUTPUT_PATH, 'history')
+#-----------------------------------------------------------------------------------------------#
+# Import Data
+os.environ['CUDA_VISIBLE_DEVICES'] = str(args['GPU_ID'])
+filename = os.path.join(os.getcwd(), str(args['PATH']))
+
+BASE_DATA_DIR = get_data_base_path()
 
 # Load in data
 print('Loading in data...')
@@ -103,7 +111,7 @@ losses = {
 from keras import metrics
 model.compile(
     loss=losses,
-    optimizer=str(args['optimizer']),
+    optimizer=str(args['OPTIMIZER']),
     metrics={
         'child_nodes':'acc',
         'parent_nodes':'acc'
@@ -111,7 +119,7 @@ model.compile(
 )
 
 from keras.callbacks import ModelCheckpoint
-checkpoint = ModelCheckpoint('./models/model_multi_task_best_{0}_{1}_gen.hdf5'.format(model_name, str(args['optimizer'])), monitor='val_acc', verbose=1, save_best_only=False)
+checkpoint = ModelCheckpoint('{0}/model_multi_task_best_{1}_{2}_gen.hdf5'.format(MODEL_OUTPUT_PATH, model_name, str(args['OPTIMIZER'])), monitor='val_acc', verbose=1, save_best_only=False)
 callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
 # Data batch Generator
@@ -166,6 +174,6 @@ print('Child node acc: {0}'.format(child_test_acc))
 #-----------------------------------------------------------------------------------------------#
 # Save Model and Training Process
 print('\nSaving history...')
-with open('history/history_{0}_{1}_gen'.format(model_name, str(args['optimizer'])), 'wb') as file_writer:
+with open('{0}/history_{1}_{2}_gen'.format(HISTORY_OUTPUT_PATH, model_name, str(args['OPTIMIZER'])), 'wb') as file_writer:
     pickle.dump(history.history, file_writer)
 print('History saved!\n')
