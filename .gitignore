@@ -1,4 +1,4 @@
-data
+datasets
 *.npy
 *.h5
 *.hdf5
