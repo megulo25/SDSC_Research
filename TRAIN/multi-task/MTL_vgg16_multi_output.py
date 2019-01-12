@@ -1,11 +1,21 @@
 # Complete
-from ..datapath import get_data_base_path
-from sklearn.model_selection import train_test_split
-import pickle
-import numpy as np
 import argparse
-import h5py
 import os
+import pickle
+
+import h5py
+import numpy as np
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+
+from keras import metrics
+from keras.applications.vgg16 import VGG16
+from keras.callbacks import ModelCheckpoint
+from keras.layers import Dense, Dropout, Flatten
+from keras.models import Model
+from keras.preprocessing.image import ImageDataGenerator
+
+from ..datapath import get_data_base_path
 #-----------------------------------------------------------------------------------------------#
 # Arg parser
 arg = argparse.ArgumentParser()
@@ -22,11 +32,13 @@ HISTORY_OUTPUT_PATH = os.path.join(BASE_OUTPUT_PATH, 'history')
 os.environ['CUDA_VISIBLE_DEVICES'] = str(args['GPU_ID'])
 filename = os.path.join(os.getcwd(), str(args['PATH']))
 
+filename = None # Name of MTL h5 data
 BASE_DATA_DIR = get_data_base_path()
+DATASET_PATH = os.path.join(BASE_DATA_DIR, 'datasets', 'MTL_555', filename)
 
 # Load in data
 print('Loading in data...')
-f = h5py.File(filename)
+f = h5py.File(DATASET_PATH)
 X = np.array(f['X'])
 y = np.array(f['y'])
 print('Dataset loaded!\n')
@@ -61,7 +73,6 @@ del y_test
 del y_val
 #-----------------------------------------------------------------------------------------------#
 # Preprocessing
-from keras.preprocessing.image import ImageDataGenerator
 train_datagen = ImageDataGenerator(
     featurewise_center=True,
     featurewise_std_normalization=True,
@@ -76,13 +87,10 @@ class_count = 15
 
 # Import Model
 print('Loading in model...')
-from keras.layers import Flatten, Dense, Dropout
-from keras.models import Model
+
 
 ## Models
-
 # VGG 16
-from keras.applications.vgg16 import VGG16
 model = VGG16(weights='imagenet', include_top=False, input_shape=(224,224,3), classes=class_count)
 
 # Get model name
@@ -93,7 +101,6 @@ x_class_classification = model.output
 x_class_classification = Flatten()(x_class_classification)
 output_layer_class_10_classification = Dense(10, activation='softmax', name='child_nodes')(x_class_classification)
 output_layer_class_5_classification = Dense(5, activation='softmax', name='parent_nodes')(x_class_classification)
-
 
 model = Model(inputs=model.input, outputs=[output_layer_class_10_classification, output_layer_class_5_classification])
 print('Model {0} loaded!\n'.format(model_name))
@@ -108,7 +115,6 @@ losses = {
     'parent_nodes':'binary_crossentropy'
 }
 
-from keras import metrics
 model.compile(
     loss=losses,
     optimizer=str(args['OPTIMIZER']),
@@ -118,7 +124,6 @@ model.compile(
     }
 )
 
-from keras.callbacks import ModelCheckpoint
 checkpoint = ModelCheckpoint('{0}/model_multi_task_best_{1}_{2}_gen.hdf5'.format(MODEL_OUTPUT_PATH, model_name, str(args['OPTIMIZER'])), monitor='val_acc', verbose=1, save_best_only=False)
 callback_list = [checkpoint]
 #-----------------------------------------------------------------------------------------------#
@@ -153,7 +158,6 @@ history = model.fit_generator(
 print('Training complete!\n')
 #-----------------------------------------------------------------------------------------------#
 # Evaluate on test set
-from sklearn.metrics import accuracy_score
 print('Evaluating on test set...')
 y_test_pred = model.predict(X_test)
 with open('y_test_pred', 'wb') as y_writer:

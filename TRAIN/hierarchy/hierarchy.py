@@ -1,5 +1,7 @@
 import os
 
+import numpy as np
+
 cur_dir = os.getcwd()
 a = cur_dir.split('/')
 b = a[:-1]
@@ -34,5 +36,4 @@ for row in new_list:
         set_ = set_.union(val)
         dict_[key] = set_
 
-import numpy as np
 np.save('hierarchy_dict.npy', dict_)

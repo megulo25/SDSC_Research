@@ -1,4 +1,5 @@
 import json
+import os
 
 # Super Classes
 next_class = 0
@@ -41,7 +42,6 @@ with open('birds.json', 'w') as w0:
 with open('birds_backup.json', 'w') as w1:
     json.dump(new_super_class, w1)
 
-import os
 for i in list_:
     try:
         os.system('rm -r *{0}*'.format(i['name']))

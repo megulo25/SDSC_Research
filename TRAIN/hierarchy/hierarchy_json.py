@@ -1,8 +1,9 @@
 # Here we need to produce the hierarchy as a json file for the website
-import numpy as np
+import json
 import os
 import time
-import json
+
+import numpy as np
 
 cur_dir = os.getcwd()
 a = cur_dir.split('/')

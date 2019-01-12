@@ -1,10 +1,11 @@
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.multiclass import OneVsRestClassifier
-from sklearn import preprocessing
-import numpy as np
-import h5py
 import os
+
+import h5py
+import numpy as np
+from sklearn import preprocessing
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.multiclass import OneVsRestClassifier
 #----------------------------------------------------------------------#
 # Import Data and Initialize model
 forest = OneVsRestClassifier(RandomForestClassifier(n_estimators=250))

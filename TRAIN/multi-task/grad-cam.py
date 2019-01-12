@@ -1,13 +1,16 @@
 # Modules
-from keras.applications.vgg16 import preprocess_input
-from keras.preprocessing import image
-from keras.models import load_model
+import argparse
+
+import cv2
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
-import keras.backend as K
 import numpy as np
-import argparse
-import cv2
+
+import keras.backend as K
+from keras.applications.vgg16 import preprocess_input
+from keras.models import load_model
+from keras.preprocessing import image
+
 #----------------------------------------------------------------------#
 # Argparser
 arg = argparse.ArgumentParser()
