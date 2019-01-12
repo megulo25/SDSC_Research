@@ -11,7 +11,6 @@ import matplotlib.image as mpimg
 import numpy as np
 from cv2 import resize
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
-
 #------------------------------------------------------------------------------------#
 # Housekeeping
 

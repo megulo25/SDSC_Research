@@ -10,7 +10,6 @@ import keras.backend as K
 from keras.applications.vgg16 import preprocess_input
 from keras.models import load_model
 from keras.preprocessing import image
-
 #----------------------------------------------------------------------#
 # Argparser
 arg = argparse.ArgumentParser()
