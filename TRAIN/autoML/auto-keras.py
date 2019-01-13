@@ -3,10 +3,17 @@ import os
 import h5py
 import numpy as np
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
 
 import autokeras as ak
 from helper_functions_autoML import get_data_base_path
 
+# Output path
+OUTPUT_PATH = os.path.join(os.getcwd(), 'OUTPUT')
+if not os.path.isdir(OUTPUT_PATH):
+    os.mkdir(OUTPUT_PATH)
+
+labelNames = ['Lesser_scaup', 'Eastern_towhee', 'Western_Grebe', 'Common_Goldeneye', 'Spotted_Towheee', 'Ring_necked_duck', 'Barrows_Goldeneye', 'Indigo_Bunting', 'Clarks_Grebe', 'Blue_grosbeak']
 
 # Necessary for autokeras to wrap the whole application in main func.
 def main():
@@ -50,6 +57,18 @@ def main():
 
         # Fit again
         model.final_fit(X_train, y_train, X_test, y_test, retrain=True)
+
+        # Evaluate
+        score = model.evaluate(X_test, y_test)
+        predictions = model.predict(X_test)
+        report = classification_report(y_test, predictions)
+
+        # Write to disk
+        filename = '{0}.txt'.format(seconds)
+        FULL_FILE_PATH = os.path.join(OUTPUT_PATH, filename)
+        with open(FULL_FILE_PATH, 'a') as fw:
+            fw.write(report)
+            fw.write('\nScore: {0}'.format(score))
 
 # if this is the main thread of execution then start the process (our
 # code must be wrapped like this to avoid threading issues with

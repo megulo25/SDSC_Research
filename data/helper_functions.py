@@ -1,7 +1,7 @@
 from sklearn.preprocessing import LabelEncoder
 import os
 
-def getClassDict():
+def getClassDict(CLASSES_TXT_PATH):
     class_dict = {}
     # Read in classes.txt
     with open('{0}'.format(CLASSES_TXT_PATH), 'r') as file_reader:
@@ -33,7 +33,7 @@ def interpretModelOutput(y):
     subdir_encodings = list(subdir_encodings)
 
     # Get class dict
-    class_dict = getClassDict()
+    class_dict = getClassDict(CLASSES_TXT_PATH)
 
     # Convert output to list
     list_ = list(y)
