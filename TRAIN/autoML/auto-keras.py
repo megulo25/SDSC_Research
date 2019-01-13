@@ -1,28 +1,50 @@
-from ..datapath import get_data_base_path
-from helper_functions_autoML import *
-import autokeras as ak
 import os
+import sys
+sys.path.append('..')
+
+import h5py
+import numpy as np
+from sklearn.model_selection import train_test_split
+
+import autokeras as ak
+from datapath import get_data_base_path
+from helper_functions_autoML import *
+
+
 
 # Necessary for autokeras to wrap the whole application in main func.
 def main():
 
     # Set up training times
-    n_sec = 3600
-    TRAINING_TIMES = [2**i * n_sec for i in range(5)]
+    TRAINING_TIMES = [
+            60 * 60 / 2, # 30 mins
+            60 * 60      # 60 mins
+    ]
     
     # Import data
     BASE_DATA_DIR = get_data_base_path()
+    DATASET_PATH = os.path.join(BASE_DATA_DIR, 'STL_10', 'data_STL_10.h5')
+    print(DATASET_PATH)
 
-    # Normalize X
+    # Read in data
+    h5file = h5py.File(DATASET_PATH)
+    X = np.array(h5file['X'])
+    y = np.array(h5file['y'])
+
+    # Temp
+    X = X[:20]
+    y = y[:20]
 
     # Split data
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.3)
+    del X, y
 
-    # Initialize class labels
-    labels = ['western_grebe']
+    # Normalize
+    X_train = X_train.astype("float") / 255.0
+    X_test = X_test.astype("float") / 255.0  
 
     # Loop over the number of seconds to allow the current Auto-Keras 
     # model to train for.
-
     for seconds in TRAINING_TIMES:
         # Initialize model
         model = ak.ImageClassifier(verbose=True)
@@ -32,13 +54,6 @@ def main():
 
         # Fit again
         model.final_fit(X_train, y_train, X_test, y_test, retrain=True)
-
-        # Evaluate model
-
-        # Write report to text file
-
-
-
 
 # if this is the main thread of execution then start the process (our
 # code must be wrapped like this to avoid threading issues with
