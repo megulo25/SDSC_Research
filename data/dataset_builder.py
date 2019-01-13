@@ -11,8 +11,12 @@ import matplotlib.image as mpimg
 import numpy as np
 from cv2 import resize
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+from helper_functions import setup_data_folder_structure
 #------------------------------------------------------------------------------------#
 # Housekeeping
+
+# Set up datapaths
+setup_data_folder_structure()
 
 # Data Paths
 BASE_DIR = os.getcwd()
@@ -65,10 +69,18 @@ def printProgress(class_index, class_len, image_index, image_len):
 #------------------------------------------------------------------------------------#
 # One-Task Learning, 10 classes (Passed: True)
 def build_STL_10():
+    """
+    Builds .h5 file containing 3 keys for a 10 class dataset:
+    X - Training data
+    y - Output label
+    y_label - Output class name
+
+    'y' is not one-hot encoding because autokeras does not allow multi output vector.
+    """
     
     # Initialize variables
     X = np.zeros(IMAGE_SHAPE)
-    y = np.zeros(STL_10_OUTPUT_VECTOR_SIZE)
+    y = []
 
     # Get all labels from subdirectory names
     labels = os.listdir(DATASET_10)
@@ -93,12 +105,10 @@ def build_STL_10():
 
             # Label
             y_labels.append(subdir)
-            y_output_vector = np.zeros(STL_10_OUTPUT_VECTOR_SIZE)
-            y_output_vector[0, label_index] = 1
+            y.append(label_index)
 
             # Build variables
             X = np.concatenate([X, img_reshaped])
-            y = np.concatenate([y, y_output_vector])
 
             # Print Progress
             if image_index % 20 == 0:
@@ -106,7 +116,6 @@ def build_STL_10():
     
     # Remove initial zeros
     X = X[1:]
-    y = y[1:]
     y_labels = np.array(y_labels, dtype='S')
 
     # Save to disk
@@ -119,6 +128,11 @@ def build_STL_10():
 # One-Task Learning, 555+ classes (Passed: True)
 
 def getClassDict():
+    """
+    This creates a dictionary containing:
+    key - Subdirectory name (e.g. 0295)
+    value - Class name (e.g. Western Grebe)
+    """
     class_dict = {}
     # Read in classes.txt
     with open('{0}'.format(CLASSES_TXT_PATH), 'r') as file_reader:
@@ -138,6 +152,12 @@ def getClassDict():
     return class_dict
 
 def build_STL_555():
+    """
+    Build a .h5 file containg 3 keys for a 555 class dataset:
+    X - Training data
+    y - Output label
+    y_label - Output class name
+    """
 
     # Initialize Variables
     X = np.zeros(IMAGE_SHAPE)
