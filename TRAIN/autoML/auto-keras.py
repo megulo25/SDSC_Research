@@ -9,9 +9,19 @@ import autokeras as ak
 from helper_functions_autoML import get_data_base_path
 
 # Output path
-OUTPUT_PATH = os.path.join(os.getcwd(), 'OUTPUT')
-if not os.path.isdir(OUTPUT_PATH):
-    os.mkdir(OUTPUT_PATH)
+BASE_OUTPUT_PATH = os.path.join(os.getcwd(), 'OUTPUT')
+TXT_OUTPUT_PATH = os.path.join(BASE_OUTPUT_PATH, 'txt_files')
+MODEL_OUTPUT_PATH = os.path.join(BASE_OUTPUT_PATH, 'models')
+if not os.path.isdir(BASE_OUTPUT_PATH):
+    os.mkdir(BASE_OUTPUT_PATH)
+
+# Path for txt
+if not os.path.isdir(TXT_OUTPUT_PATH):
+    os.mkdir(TXT_OUTPUT_PATH)
+
+# Path for models
+if not os.path.isdir(MODEL_OUTPUT_PATH):
+    os.mkdir(MODEL_OUTPUT_PATH)
 
 labelNames = ['Lesser_scaup', 'Eastern_towhee', 'Western_Grebe', 'Common_Goldeneye', 'Spotted_Towheee', 'Ring_necked_duck', 'Barrows_Goldeneye', 'Indigo_Bunting', 'Clarks_Grebe', 'Blue_grosbeak']
 
@@ -65,10 +75,15 @@ def main():
 
         # Write to disk
         filename = '{0}.txt'.format(seconds)
-        FULL_FILE_PATH = os.path.join(OUTPUT_PATH, filename)
+        FULL_FILE_PATH = os.path.join(TXT_OUTPUT_PATH, filename)
         with open(FULL_FILE_PATH, 'a') as fw:
             fw.write(report)
             fw.write('\nScore: {0}'.format(score))
+
+        # Export Model
+        model_name = 'autokeras_model_{0}.h5'.format(seconds)
+        FULL_MODEL_PATH = os.path.join(MODEL_OUTPUT_PATH, model_name)
+        model.export_autokeras_model(FULL_MODEL_PATH)
 
 # if this is the main thread of execution then start the process (our
 # code must be wrapped like this to avoid threading issues with
