@@ -30,12 +30,11 @@ def main():
 
     # Set up training times
     TRAINING_TIMES = [
-        60 * 60,		# 1 hour
+        60 * 60 * 1,	# 1 hours
         60 * 60 * 2,	# 2 hours
+        60 * 60 * 3,	# 3 hours
         60 * 60 * 4,	# 4 hours
-        60 * 60 * 8,	# 8 hours
-        60 * 60 * 12,	# 12 hours
-        60 * 60 * 24,	# 24 hours
+        60 * 60 * 5,	# 5 hours
     ]
     
     # Import data

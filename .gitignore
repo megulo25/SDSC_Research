@@ -12,4 +12,5 @@ __pycache__
 *.vscode
 *thing*
 imgs
+txt_files
 !./data/dataset_builder.py
