@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from autokeras.utils import pickle_from_file
-from helper_functions_autoML import (get_data_base_path, getClassDict,
-                                     interpretModelOutput)
+from helper_functions_autoML import get_data_base_path
 
 # Argparser
 arg = argparse.ArgumentParser()
@@ -17,7 +16,23 @@ args = vars(arg.parse_args())
 # Paths
 DATASET_BASE_PATH = get_data_base_path()
 DATASET_PATH = os.path.join(DATASET_BASE_PATH, 'STL_10', 'data_STL_10.h5')
+DATASET_10_PATH = os.path.join(DATASET_BASE_PATH, 'dataset_10')
 MODEL_PATH = os.path.join(os.getcwd(), str(args['MODEL']))
+
+# Help get class name
+dataset_10_list = os.listdir(DATASET_10_PATH)
+class_dict = {
+    0: dataset_10_list[0],
+    1: dataset_10_list[1],
+    2: dataset_10_list[2],
+    3: dataset_10_list[3],
+    4: dataset_10_list[4],
+    5: dataset_10_list[5],
+    6: dataset_10_list[6],
+    7: dataset_10_list[7],
+    8: dataset_10_list[8],
+    9: dataset_10_list[9]
+}
 
 # Import Model
 model = pickle_from_file(MODEL_PATH)
@@ -35,15 +50,18 @@ while True:
     random_number = np.random.randint(X.shape[0])
     img = X[random_number]
     img_plot = img
+    img_shape = img.shape
+    img = img.reshape((1, img_shape[0], img_shape[1], img_shape[2]))
     img_plot = img_plot.astype('int')
     y_output = y[random_number]
     y_class_name = y_labels[random_number].decode('utf-8')
 
     # Model Output
     y_pred = model.predict(img)
-    class_name = interpretModelOutput(y_pred)
-    print(y_pred)
-    print(class_name)
+    y_pred = y_pred[0]
+
+    # Get class name
+    class_name = class_dict[y_pred]
 
     # Plot Results
     plt.imshow(img_plot)
