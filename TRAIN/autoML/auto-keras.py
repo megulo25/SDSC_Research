@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 
 import autokeras as ak
-from helper_functions_autoML import get_data_base_path
+from helper_functions_autoML import get_data_base_path, shuffleData
 
 # Output path
 BASE_OUTPUT_PATH = os.path.join(os.getcwd(), 'OUTPUT')
@@ -46,6 +46,9 @@ def main():
     X = np.array(h5file['X'])
     y = np.array(h5file['y'])
     y = y.reshape((len(y), 1))
+
+    # Shuffle data
+    X, y = shuffleData(X, y)
 
     # Split data
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.3)
